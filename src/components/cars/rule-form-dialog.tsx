@@ -30,7 +30,7 @@ export function RuleFormDialog({
   const t = useTranslations();
   const [open, setOpen] = useState(false);
   const [busy, setBusy] = useState(false);
-  const [intervalError, setIntervalError] = useState(false);
+  const [intervalErrorKey, setIntervalErrorKey] = useState<string | null>(null);
   const { upsertRule } = useGarageStore();
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
@@ -42,15 +42,18 @@ export function RuleFormDialog({
     const intervalKm = kmRaw === "" ? undefined : Number(kmRaw);
     const intervalMonths = monthsRaw === "" ? undefined : Number(monthsRaw);
 
+    if (intervalKm === undefined && intervalMonths === undefined) {
+      setIntervalErrorKey("validation.intervalRequired");
+      return;
+    }
     if (
-      (intervalKm === undefined && intervalMonths === undefined) ||
       (intervalKm !== undefined && intervalKm < 1) ||
       (intervalMonths !== undefined && intervalMonths < 1)
     ) {
-      setIntervalError(true);
+      setIntervalErrorKey("validation.intervalInvalid");
       return;
     }
-    setIntervalError(false);
+    setIntervalErrorKey(null);
     setBusy(true);
 
     try {
@@ -139,14 +142,12 @@ export function RuleFormDialog({
           </div>
           <p
             className={
-              intervalError
+              intervalErrorKey
                 ? "text-sm text-destructive"
                 : "text-sm text-muted-foreground"
             }
           >
-            {intervalError
-              ? t("validation.intervalRequired")
-              : t("car.intervalHint")}
+            {intervalErrorKey ? t(intervalErrorKey) : t("car.intervalHint")}
           </p>
           <Button type="submit" className="w-full" disabled={busy}>
             {t("common.save")}

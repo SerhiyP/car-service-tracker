@@ -1,4 +1,4 @@
-import { cleanup, fireEvent, render, screen, within } from "@testing-library/react";
+import { cleanup, fireEvent, render, within } from "@testing-library/react";
 import { NextIntlClientProvider } from "next-intl";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import en from "@/messages/en.json";
@@ -30,5 +30,20 @@ describe("MileageForm", () => {
     fireEvent.change(view.getByRole("spinbutton"), { target: { value: "" } });
     fireEvent.click(view.getByRole("button", { name: "Update" }));
     expect(onSubmit).not.toHaveBeenCalled();
+  });
+
+  it("resets the input when currentMileage changes externally", () => {
+    const onSubmit = vi.fn();
+    const { rerender, container } = render(
+      <NextIntlClientProvider locale="en" messages={en}>
+        <MileageForm currentMileage={120000} onSubmit={onSubmit} />
+      </NextIntlClientProvider>,
+    );
+    rerender(
+      <NextIntlClientProvider locale="en" messages={en}>
+        <MileageForm currentMileage={125000} onSubmit={onSubmit} />
+      </NextIntlClientProvider>,
+    );
+    expect(within(container).getByRole("spinbutton")).toHaveValue(125000);
   });
 });
