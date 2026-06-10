@@ -10,5 +10,6 @@ export async function setLocale(locale: string) {
     maxAge: 60 * 60 * 24 * 365,
     path: "/",
     sameSite: "lax",
+    httpOnly: true,
   });
 }
