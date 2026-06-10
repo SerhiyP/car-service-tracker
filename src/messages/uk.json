@@ -82,7 +82,9 @@
     "mileageInvalid": "Введіть коректний пробіг",
     "componentRequired": "Вкажіть назву компонента",
     "intervalRequired": "Вкажіть хоча б один інтервал",
-    "dateFuture": "Дата не може бути в майбутньому"
+    "dateFuture": "Дата не може бути в майбутньому",
+    "passwordMax": "Пароль занадто довгий",
+    "intervalInvalid": "Введіть коректний інтервал"
   },
   "locale": {
     "language": "Мова",

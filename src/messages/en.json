@@ -82,7 +82,9 @@
     "mileageInvalid": "Enter a valid mileage",
     "componentRequired": "Component name is required",
     "intervalRequired": "Set at least one interval",
-    "dateFuture": "Date cannot be in the future"
+    "dateFuture": "Date cannot be in the future",
+    "passwordMax": "Password is too long",
+    "intervalInvalid": "Enter a valid interval"
   },
   "locale": {
     "language": "Language",

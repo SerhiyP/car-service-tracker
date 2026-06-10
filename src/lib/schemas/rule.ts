@@ -1,8 +1,8 @@
 import { z } from "zod";
 import { objectIdSchema } from "./common";
 
-const intervalKm = z.number().int().min(1).max(1_000_000);
-const intervalMonths = z.number().int().min(1).max(600);
+const intervalKm = z.number("validation.intervalInvalid").int("validation.intervalInvalid").min(1, "validation.intervalInvalid").max(1_000_000, "validation.intervalInvalid");
+const intervalMonths = z.number("validation.intervalInvalid").int("validation.intervalInvalid").min(1, "validation.intervalInvalid").max(600, "validation.intervalInvalid");
 
 export const ruleInputSchema = z
   .object({
