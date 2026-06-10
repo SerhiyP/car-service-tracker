@@ -5,6 +5,7 @@ import { useTranslations } from "next-intl";
 import { toast } from "sonner";
 import { Pencil, Plus, Trash2 } from "lucide-react";
 import { deleteCarAction } from "@/actions/cars";
+import { actionErrorKey } from "@/lib/action-feedback";
 import { useGarageStore } from "@/stores/garage";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -25,9 +26,10 @@ export function CarList() {
     };
     store.removeCar(carId);
     const result = await deleteCarAction({ carId });
-    if (!result?.data) {
+    const errorKey = actionErrorKey(result);
+    if (errorKey) {
       useGarageStore.setState(snapshot);
-      toast.error(t(result?.serverError ?? "errors.offline"));
+      toast.error(t(errorKey));
     }
   }
 

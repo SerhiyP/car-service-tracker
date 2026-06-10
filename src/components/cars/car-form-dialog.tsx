@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useTranslations } from "next-intl";
 import { toast } from "sonner";
 import { createCarAction, renameCarAction } from "@/actions/cars";
+import { actionErrorKey } from "@/lib/action-feedback";
 import { useGarageStore } from "@/stores/garage";
 import type { Car } from "@/lib/types";
 import { Button } from "@/components/ui/button";
@@ -35,27 +36,32 @@ export function CarFormDialog({
     const name = String(data.get("name")).trim();
     setBusy(true);
 
-    if (car) {
-      // Optimistic rename with rollback
-      const previous = car;
-      upsertCar({ ...car, name });
-      setOpen(false);
-      const result = await renameCarAction({ carId: car.id, name });
-      if (!result?.data) {
-        upsertCar(previous);
-        toast.error(t(result?.serverError ?? "errors.offline"));
-      }
-    } else {
-      const mileage = Number(data.get("mileage"));
-      const result = await createCarAction({ name, currentMileage: mileage });
-      if (result?.data) {
-        upsertCar(result.data);
+    try {
+      if (car) {
+        // Optimistic rename with rollback
+        const previous = car;
+        upsertCar({ ...car, name });
         setOpen(false);
+        const result = await renameCarAction({ carId: car.id, name });
+        const errorKey = actionErrorKey(result);
+        if (errorKey) {
+          upsertCar(previous);
+          toast.error(t(errorKey));
+        }
       } else {
-        toast.error(t(result?.serverError ?? "errors.offline"));
+        const mileage = Number(data.get("mileage"));
+        const result = await createCarAction({ name, currentMileage: mileage });
+        const errorKey = actionErrorKey(result);
+        if (errorKey) {
+          toast.error(t(errorKey));
+        } else {
+          upsertCar(result!.data!);
+          setOpen(false);
+        }
       }
+    } finally {
+      setBusy(false);
     }
-    setBusy(false);
   }
 
   return (
@@ -80,6 +86,7 @@ export function CarFormDialog({
                 type="number"
                 inputMode="numeric"
                 min={0}
+                max={9999999}
                 required
               />
             </div>
