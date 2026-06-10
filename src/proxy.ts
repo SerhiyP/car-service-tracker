@@ -1,22 +1,26 @@
-import { NextResponse, type NextRequest } from "next/server";
+import NextAuth from "next-auth";
+import { NextResponse } from "next/server";
+import { authConfig } from "@/auth.config";
+import type { NextAuthRequest } from "next-auth";
+
+const { auth } = NextAuth(authConfig);
 
 const AUTH_PAGES = ["/login", "/register"];
-const SESSION_COOKIES = ["authjs.session-token", "__Secure-authjs.session-token"];
 
-export function proxy(request: NextRequest) {
-  const hasSession = SESSION_COOKIES.some((c) => request.cookies.has(c));
+export const proxy = auth((request: NextAuthRequest) => {
+  const isLoggedIn = !!request.auth?.user;
   const isAuthPage = AUTH_PAGES.some((p) =>
     request.nextUrl.pathname.startsWith(p),
   );
 
-  if (!hasSession && !isAuthPage) {
-    return NextResponse.redirect(new URL("/login", request.url));
+  if (!isLoggedIn && !isAuthPage) {
+    return NextResponse.redirect(new URL("/login", request.nextUrl));
   }
-  if (hasSession && isAuthPage) {
-    return NextResponse.redirect(new URL("/", request.url));
+  if (isLoggedIn && isAuthPage) {
+    return NextResponse.redirect(new URL("/", request.nextUrl));
   }
   return NextResponse.next();
-}
+});
 
 export const config = {
   // Skip API routes, static assets, the service worker, and files with extensions.
