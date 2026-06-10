@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "next build",
+    "build": "next build && serwist build",
     "start": "next start",
     "lint": "eslint",
     "test": "vitest run",
@@ -33,6 +33,7 @@
     "zustand": "^5.0.14"
   },
   "devDependencies": {
+    "@serwist/cli": "^9.5.11",
     "@serwist/turbopack": "^9.5.11",
     "@tailwindcss/postcss": "^4",
     "@testing-library/jest-dom": "^6.9.1",
