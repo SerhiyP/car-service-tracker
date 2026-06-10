@@ -2,6 +2,7 @@
   "name": "car-service-tracker",
   "version": "0.1.0",
   "private": true,
+  "type": "module",
   "scripts": {
     "dev": "next dev",
     "build": "next build && serwist build",
@@ -34,7 +35,6 @@
   },
   "devDependencies": {
     "@serwist/cli": "^9.5.11",
-    "@serwist/turbopack": "^9.5.11",
     "@tailwindcss/postcss": "^4",
     "@testing-library/jest-dom": "^6.9.1",
     "@testing-library/react": "^16.3.2",

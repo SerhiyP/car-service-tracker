@@ -45,6 +45,7 @@ export default async function RootLayout({
         <SerwistProvider
           swUrl="/sw.js"
           disable={process.env.NODE_ENV === "development"}
+          reloadOnOnline={false}
         >
           <NextIntlClientProvider>{children}</NextIntlClientProvider>
         </SerwistProvider>
