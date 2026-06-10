@@ -29,7 +29,7 @@ export function BottomNav() {
                 active ? "text-primary" : "text-muted-foreground",
               )}
             >
-              <Icon className="size-5" />
+              <Icon className="size-5" aria-hidden="true" />
               {label}
             </Link>
           );

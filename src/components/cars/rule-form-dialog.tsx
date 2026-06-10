@@ -42,7 +42,11 @@ export function RuleFormDialog({
     const intervalKm = kmRaw === "" ? undefined : Number(kmRaw);
     const intervalMonths = monthsRaw === "" ? undefined : Number(monthsRaw);
 
-    if (intervalKm === undefined && intervalMonths === undefined) {
+    if (
+      (intervalKm === undefined && intervalMonths === undefined) ||
+      (intervalKm !== undefined && intervalKm < 1) ||
+      (intervalMonths !== undefined && intervalMonths < 1)
+    ) {
       setIntervalError(true);
       return;
     }

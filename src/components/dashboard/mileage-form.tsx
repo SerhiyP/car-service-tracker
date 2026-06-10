@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -14,11 +14,16 @@ export function MileageForm({
   onSubmit: (mileage: number) => void;
 }) {
   const t = useTranslations("dashboard");
+  // Track the last prop value seen so we can reset the input when it changes
+  // (e.g. after a successful server update). This is the React-approved
+  // "derived state from props" pattern — no effects, no ref reads during render.
+  const [prevMileage, setPrevMileage] = useState(currentMileage);
   const [value, setValue] = useState(String(currentMileage));
 
-  useEffect(() => {
+  if (prevMileage !== currentMileage) {
+    setPrevMileage(currentMileage);
     setValue(String(currentMileage));
-  }, [currentMileage]);
+  }
 
   return (
     <form
