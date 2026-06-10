@@ -40,6 +40,7 @@ export function LogServiceDialog({
 
     const tempId = `temp-${Date.now()}-${Math.random().toString(36).slice(2)}`;
     const previousMileage = car.currentMileage;
+    const didRaiseMileage = mileage > previousMileage;
 
     // Optimistic: add log; raise car mileage if needed
     store.addLog({
@@ -49,7 +50,7 @@ export function LogServiceDialog({
       mileageAtService: mileage,
       dateAtService: new Date(date).toISOString(),
     });
-    if (mileage > previousMileage) store.setCarMileage(car.id, mileage);
+    if (didRaiseMileage) store.setCarMileage(car.id, mileage);
     onOpenChange(false);
 
     const result = await createLogAction({
@@ -65,7 +66,7 @@ export function LogServiceDialog({
         store.setCarMileage(car.id, result.data.newCarMileage);
     } else {
       store.removeLog(tempId);
-      store.setCarMileage(car.id, previousMileage);
+      if (didRaiseMileage) store.setCarMileage(car.id, previousMileage);
       const errorKey = actionErrorKey(result);
       if (errorKey) toast.error(tRoot(errorKey));
     }
