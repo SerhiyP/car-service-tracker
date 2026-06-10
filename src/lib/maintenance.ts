@@ -13,13 +13,17 @@ const YELLOW_KM_FLOOR = 1000;
 const YELLOW_DAYS_FLOOR = 30;
 const YELLOW_RATIO = 0.15;
 
+// Inputs are UTC-midnight dates produced by parsing ISO date strings (e.g. new Date("2026-01-31")),
+// so all arithmetic must stay in UTC to avoid local-timezone day shifts in west-of-UTC environments.
 export function addMonths(date: Date, months: number): Date {
   const d = new Date(date.getTime());
-  const day = d.getDate();
-  d.setDate(1);
-  d.setMonth(d.getMonth() + months);
-  const daysInTarget = new Date(d.getFullYear(), d.getMonth() + 1, 0).getDate();
-  d.setDate(Math.min(day, daysInTarget));
+  const day = d.getUTCDate();
+  d.setUTCDate(1);
+  d.setUTCMonth(d.getUTCMonth() + months);
+  const daysInTarget = new Date(
+    Date.UTC(d.getUTCFullYear(), d.getUTCMonth() + 1, 0),
+  ).getUTCDate();
+  d.setUTCDate(Math.min(day, daysInTarget));
   return d;
 }
 
