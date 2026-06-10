@@ -22,11 +22,19 @@ async function ensureIndexes(db: Db): Promise<void> {
   ]);
 }
 
+let cachedDb: Db | undefined;
+
 export function getDb(): Db {
   if (!global._mongo) {
     const client = createClient();
     const db = client.db(process.env.MONGODB_DB ?? "car_service_tracker");
-    global._mongo = { client, indexesEnsured: ensureIndexes(db) };
+    cachedDb = db;
+    global._mongo = {
+      client,
+      indexesEnsured: ensureIndexes(db).catch((e) =>
+        console.error("ensureIndexes failed:", e)
+      ),
+    };
   }
-  return global._mongo.client.db(process.env.MONGODB_DB ?? "car_service_tracker");
+  return cachedDb!;
 }
