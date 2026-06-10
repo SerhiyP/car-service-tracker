@@ -1,0 +1,104 @@
+{
+  "common": {
+    "appName": "Car Service Tracker",
+    "save": "Зберегти",
+    "cancel": "Скасувати",
+    "delete": "Видалити",
+    "edit": "Редагувати",
+    "add": "Додати",
+    "loading": "Завантаження…",
+    "offline": "Офлайн",
+    "confirmDelete": "Ви впевнені? Цю дію не можна скасувати."
+  },
+  "nav": {
+    "dashboard": "Головна",
+    "garage": "Гараж"
+  },
+  "auth": {
+    "signIn": "Увійти",
+    "signUp": "Створити акаунт",
+    "signOut": "Вийти",
+    "email": "Ел. пошта",
+    "password": "Пароль",
+    "name": "Імʼя",
+    "loginTitle": "З поверненням",
+    "registerTitle": "Створіть акаунт",
+    "noAccount": "Немає акаунта? Створіть",
+    "haveAccount": "Вже є акаунт? Увійдіть",
+    "invalidCredentials": "Неправильна пошта або пароль",
+    "emailTaken": "Акаунт із цією поштою вже існує"
+  },
+  "dashboard": {
+    "title": "Головна",
+    "currentMileage": "Поточний пробіг",
+    "updateMileage": "Оновити",
+    "noCar": "Ще немає автомобілів",
+    "addFirstCar": "Додайте перший автомобіль у Гаражі",
+    "noRules": "Для цього авто ще немає витратників",
+    "addRulesHint": "Відкрийте авто в Гаражі, щоб додати правила обслуговування",
+    "remainingKm": "залишилось {km} км",
+    "remainingDays": "залишилось {days} дн.",
+    "overdueKm": "прострочено на {km} км",
+    "overdueDays": "прострочено на {days} дн.",
+    "neverServiced": "Ще не обслуговувалось",
+    "lastService": "Останнє: {date} на {km} км",
+    "logService": "Записати сервіс"
+  },
+  "garage": {
+    "title": "Гараж",
+    "addCar": "Додати авто",
+    "editCar": "Редагувати авто",
+    "carName": "Назва авто",
+    "mileage": "Пробіг (км)",
+    "deleteCarConfirm": "Видалити це авто разом з усіма правилами та історією?",
+    "details": "Деталі"
+  },
+  "car": {
+    "rules": "Правила обслуговування",
+    "history": "Історія обслуговування",
+    "addRule": "Додати правило",
+    "editRule": "Редагувати правило",
+    "componentName": "Компонент",
+    "intervalKm": "Інтервал (км)",
+    "intervalMonths": "Інтервал (місяців)",
+    "intervalHint": "Вкажіть хоча б один інтервал",
+    "deleteRuleConfirm": "Видалити це правило?",
+    "logService": "Записати сервіс",
+    "serviceDate": "Дата сервісу",
+    "serviceMileage": "Пробіг на момент сервісу (км)",
+    "deleteLogConfirm": "Видалити цей запис?",
+    "noLogs": "Ще немає записів про сервіс"
+  },
+  "errors": {
+    "server": "Щось пішло не так. Спробуйте ще раз.",
+    "unauthorized": "Будь ласка, увійдіть знову",
+    "offline": "Ви офлайн — зміни не збережено",
+    "notFound": "Не знайдено"
+  },
+  "validation": {
+    "nameRequired": "Вкажіть назву",
+    "emailInvalid": "Введіть коректну пошту",
+    "passwordMin": "Пароль має містити щонайменше 8 символів",
+    "mileageInvalid": "Введіть коректний пробіг",
+    "componentRequired": "Вкажіть назву компонента",
+    "intervalRequired": "Вкажіть хоча б один інтервал",
+    "dateFuture": "Дата не може бути в майбутньому"
+  },
+  "locale": {
+    "language": "Мова",
+    "en": "English",
+    "uk": "Українська"
+  },
+  "offlinePage": {
+    "title": "Ви офлайн",
+    "description": "Ця сторінка недоступна офлайн. Головна працює з останніми синхронізованими даними."
+  },
+  "notFoundPage": {
+    "title": "Сторінку не знайдено",
+    "goHome": "На головну"
+  },
+  "errorPage": {
+    "title": "Щось пішло не так",
+    "retry": "Спробувати ще раз"
+  }
+}
