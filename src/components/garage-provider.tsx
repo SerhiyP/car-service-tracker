@@ -9,13 +9,21 @@ export function GarageProvider({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     let cancelled = false;
-    getGarageDataAction().then((result) => {
-      if (!cancelled && result?.data) setAll(result.data);
-    });
-    const onOnline = () => {
-      getGarageDataAction().then((result) => {
+    getGarageDataAction()
+      .then((result) => {
         if (!cancelled && result?.data) setAll(result.data);
+      })
+      .catch(() => {
+        // offline — keep the persisted cached data
       });
+    const onOnline = () => {
+      getGarageDataAction()
+        .then((result) => {
+          if (!cancelled && result?.data) setAll(result.data);
+        })
+        .catch(() => {
+          // offline — keep the persisted cached data
+        });
     };
     window.addEventListener("online", onOnline);
     return () => {

@@ -1,3 +1,5 @@
+"use client";
+
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import type { Car, GarageData, MaintenanceRule, ServiceLog } from "@/lib/types";
@@ -95,6 +97,7 @@ export const useGarageStore = create<GarageState>()(
     }),
     {
       name: "garage-store",
+      version: 0,
       partialize: (s) => ({
         cars: s.cars,
         rules: s.rules,
