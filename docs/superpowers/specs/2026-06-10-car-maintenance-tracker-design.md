@@ -78,6 +78,7 @@ Four collections, per the original spec, with one addition (`passwordHash`) requ
 ## 5. Authentication & Authorization
 
 - Auth.js v5 Credentials provider; passwords hashed with bcrypt; JWT session strategy (required for Credentials; also plays well with cached pages).
+- **Session longevity:** rolling JWT sessions with `session.maxAge: 30 days` and `session.updateAge: 1 day` — the token is re-issued at most once a day on activity, so active users never re-login; only 30 days of inactivity expires the session. A custom access/refresh token pair was considered and rejected: Auth.js's refresh-token rotation applies to OAuth provider tokens, and a hand-rolled scheme would only add server-side revocation at significant complexity cost.
 - Registration via a server action: Zod-validated, unique-email check, hash, insert, then sign-in.
 - `proxy.ts` performs optimistic redirects only (no session → `/login`; logged in visiting auth pages → `/`).
 - **Real authorization lives in server actions:** `lib/safe-action.ts` exports an `authActionClient` whose middleware loads the session and rejects unauthenticated calls. Every data action uses it.
