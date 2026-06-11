@@ -74,7 +74,7 @@ A failed send during registration must not strand the account: the user lands on
 
 ## 7. Error Handling
 
-- All new actions use the existing `actionClient` / `ActionError` pattern with i18n-key messages (`auth.codeInvalid`, `auth.codeExpired`, `auth.tooManyAttempts`, `auth.noActiveCode`, `auth.resendCooldown`, `auth.emailNotVerified`, `auth.sendFailed`).
+- Unexpected failures use the existing `actionClient` / `ActionError` pattern with i18n-key messages (`auth.emailNotFound`, `auth.emailNotVerified`, `auth.sendFailed`). The verify/resend actions return **discriminated status unions** (`{status: "codeInvalid", attemptsLeft}`, `{status: "cooldown", retryAfterSec}`, …) rather than throwing, so structured data travels with each outcome; the form maps statuses to the i18n messages (`auth.tooManyAttempts`, `auth.codeExpired`, `auth.noActiveCode`, …).
 - Verify/resend actions are unauthenticated by design (the user cannot log in yet) and operate on the submitted email.
 - `actionErrorKey()` continues to map results to toasts/inline errors on the client.
 
