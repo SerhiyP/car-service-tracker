@@ -94,5 +94,8 @@ export function compareMaintenanceUrgency(
   b: MaintenanceInfo,
 ): number {
   if (a.status !== b.status) return WORST[b.status] - WORST[a.status];
-  return minRemaining(a) - minRemaining(b);
+  const ra = minRemaining(a);
+  const rb = minRemaining(b);
+  if (ra === rb) return 0; // covers Infinity vs Infinity, which would subtract to NaN
+  return ra < rb ? -1 : 1;
 }

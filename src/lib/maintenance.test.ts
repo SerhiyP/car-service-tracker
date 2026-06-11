@@ -117,6 +117,10 @@ describe("compareMaintenanceUrgency", () => {
     remainingDays: number | null = null,
   ) => ({ status, remainingKm, remainingDays });
 
+  it("treats two entries with no remaining figures as equal", () => {
+    expect(compareMaintenanceUrgency(info("red"), info("red"))).toBe(0);
+  });
+
   it("orders red before yellow before green", () => {
     const sorted = [info("green", 5000), info("red", -200), info("yellow", 900)].sort(
       compareMaintenanceUrgency,
