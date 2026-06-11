@@ -2,12 +2,13 @@
 
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
-import type { Car, GarageData, MaintenanceRule, ServiceLog } from "@/lib/types";
+import type { Car, GarageData, MaintenanceRule, ServiceLog, ServiceVisit } from "@/lib/types";
 
 interface GarageState {
   cars: Car[];
   rules: MaintenanceRule[];
   logs: ServiceLog[];
+  visits: ServiceVisit[];
   selectedCarId: string | null;
   syncedAt: string | null;
   hasHydrated: boolean;
@@ -20,8 +21,9 @@ interface GarageState {
   upsertRule: (rule: MaintenanceRule) => void;
   removeRule: (ruleId: string) => void;
   addLog: (log: ServiceLog) => void;
-  replaceLog: (oldId: string, log: ServiceLog) => void;
   removeLog: (logId: string) => void;
+  addVisit: (visit: ServiceVisit) => void;
+  removeVisit: (visitId: string) => void;
   setHasHydrated: (v: boolean) => void;
 }
 
@@ -31,6 +33,7 @@ export const useGarageStore = create<GarageState>()(
       cars: [],
       rules: [],
       logs: [],
+      visits: [],
       selectedCarId: null,
       syncedAt: null,
       hasHydrated: false,
@@ -40,6 +43,7 @@ export const useGarageStore = create<GarageState>()(
           cars: data.cars,
           rules: data.rules,
           logs: data.logs,
+          visits: data.visits,
           syncedAt: data.syncedAt,
           selectedCarId: data.cars.some((c) => c.id === s.selectedCarId)
             ? s.selectedCarId
@@ -63,6 +67,7 @@ export const useGarageStore = create<GarageState>()(
             cars,
             rules: s.rules.filter((r) => r.carId !== carId),
             logs: s.logs.filter((l) => l.carId !== carId),
+            visits: s.visits.filter((v) => v.carId !== carId),
             selectedCarId:
               s.selectedCarId === carId ? (cars[0]?.id ?? null) : s.selectedCarId,
           };
@@ -87,11 +92,13 @@ export const useGarageStore = create<GarageState>()(
 
       addLog: (log) => set((s) => ({ logs: [log, ...s.logs] })),
 
-      replaceLog: (oldId, log) =>
-        set((s) => ({ logs: s.logs.map((l) => (l.id === oldId ? log : l)) })),
-
       removeLog: (logId) =>
         set((s) => ({ logs: s.logs.filter((l) => l.id !== logId) })),
+
+      addVisit: (visit) => set((s) => ({ visits: [visit, ...s.visits] })),
+
+      removeVisit: (visitId) =>
+        set((s) => ({ visits: s.visits.filter((v) => v.id !== visitId) })),
 
       setHasHydrated: (v) => set({ hasHydrated: v }),
     }),
@@ -102,6 +109,7 @@ export const useGarageStore = create<GarageState>()(
         cars: s.cars,
         rules: s.rules,
         logs: s.logs,
+        visits: s.visits,
         selectedCarId: s.selectedCarId,
         syncedAt: s.syncedAt,
       }),

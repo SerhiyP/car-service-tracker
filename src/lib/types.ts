@@ -19,11 +19,22 @@ export interface ServiceLog {
   componentName: string;
   mileageAtService: number;
   dateAtService: string;
+  /** Present on logs created through a visit; absent on legacy logs. */
+  visitId?: string;
+}
+
+export interface ServiceVisit {
+  id: string;
+  carId: string;
+  mileageAtService: number;
+  dateAtService: string;
+  totalCost?: number;
 }
 
 export interface GarageData {
   cars: Car[];
   rules: MaintenanceRule[];
   logs: ServiceLog[];
+  visits: ServiceVisit[];
   syncedAt: string;
 }

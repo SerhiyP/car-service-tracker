@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 import { registerSchema, verifyEmailSchema, resendCodeSchema } from "./auth";
 import { carInputSchema, mileageUpdateSchema } from "./car";
 import { ruleInputSchema, standardRulesInputSchema } from "./rule";
-import { logInputSchema } from "./log";
+import { visitInputSchema } from "./visit";
 
 const oid = "65f1a2b3c4d5e6f7a8b9c0d1";
 
@@ -64,30 +64,6 @@ describe("rule schema", () => {
   });
 });
 
-describe("log schema", () => {
-  it("accepts a valid log and coerces the date", () => {
-    const parsed = logInputSchema.safeParse({
-      carId: oid,
-      componentName: "Oil",
-      mileageAtService: 100000,
-      dateAtService: "2026-01-15",
-    });
-    expect(parsed.success).toBe(true);
-    if (parsed.success) expect(parsed.data.dateAtService).toBeInstanceOf(Date);
-  });
-  it("rejects future dates", () => {
-    const future = new Date(Date.now() + 7 * 86_400_000).toISOString();
-    expect(
-      logInputSchema.safeParse({
-        carId: oid,
-        componentName: "Oil",
-        mileageAtService: 1,
-        dateAtService: future,
-      }).success,
-    ).toBe(false);
-  });
-});
-
 describe("verifyEmailSchema", () => {
   it("accepts an email with a 6-digit code", () => {
     const result = verifyEmailSchema.safeParse({ email: "a@b.co", code: "012345" });
@@ -130,5 +106,42 @@ describe("standard rules schema", () => {
     expect(
       standardRulesInputSchema.safeParse({ carId: "short", keys: ["engineOil"] }).success,
     ).toBe(false);
+  });
+});
+
+describe("visit schema", () => {
+  const valid = {
+    carId: oid,
+    componentNames: ["Engine oil", "Air filter"],
+    mileageAtService: 120000,
+    dateAtService: "2026-01-15",
+  };
+
+  it("accepts a valid visit without cost and coerces the date", () => {
+    const parsed = visitInputSchema.safeParse(valid);
+    expect(parsed.success).toBe(true);
+    if (parsed.success) {
+      expect(parsed.data.dateAtService).toBeInstanceOf(Date);
+      expect(parsed.data.totalCost).toBeUndefined();
+    }
+  });
+
+  it("accepts a non-negative total cost and rejects bad costs", () => {
+    expect(visitInputSchema.safeParse({ ...valid, totalCost: 1500.5 }).success).toBe(true);
+    expect(visitInputSchema.safeParse({ ...valid, totalCost: 0 }).success).toBe(true);
+    expect(visitInputSchema.safeParse({ ...valid, totalCost: -1 }).success).toBe(false);
+    expect(visitInputSchema.safeParse({ ...valid, totalCost: "free" }).success).toBe(false);
+    expect(visitInputSchema.safeParse({ ...valid, totalCost: 100_000_000 }).success).toBe(false);
+  });
+
+  it("requires at least one component name", () => {
+    expect(visitInputSchema.safeParse({ ...valid, componentNames: [] }).success).toBe(false);
+    expect(visitInputSchema.safeParse({ ...valid, componentNames: [""] }).success).toBe(false);
+  });
+
+  it("rejects future dates and bad car ids", () => {
+    const future = new Date(Date.now() + 7 * 86_400_000).toISOString();
+    expect(visitInputSchema.safeParse({ ...valid, dateAtService: future }).success).toBe(false);
+    expect(visitInputSchema.safeParse({ ...valid, carId: "short" }).success).toBe(false);
   });
 });

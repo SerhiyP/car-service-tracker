@@ -95,6 +95,7 @@ export async function deleteCarCascade(
   await Promise.all([
     getDb().collection("maintenance_rules").deleteMany({ carId: carObjectId }),
     getDb().collection("service_logs").deleteMany({ carId: carObjectId }),
+    getDb().collection("service_visits").deleteMany({ carId: carObjectId }),
   ]);
   return true;
 }

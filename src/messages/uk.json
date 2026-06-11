@@ -102,7 +102,6 @@
     "intervalMonths": "Інтервал (місяців)",
     "intervalHint": "Вкажіть хоча б один інтервал",
     "deleteRuleConfirm": "Видалити це правило?",
-    "logService": "Записати сервіс",
     "serviceDate": "Дата сервісу",
     "serviceMileage": "Пробіг на момент сервісу (км)",
     "deleteLogConfirm": "Видалити цей запис?",
@@ -113,7 +112,13 @@
     "standardRulesDescription": "Типові сервісні роботи зі звичними інтервалами. Зніміть позначки з непотрібного — все можна змінити пізніше.",
     "standardRulesAlreadyAdded": "Вже додано",
     "standardRulesSubmit": "Додати вибрані ({count})",
-    "standardRulesAdded": "{count, plural, one {Додано # правило} few {Додано # правила} many {Додано # правил} other {Додано # правила}}"
+    "standardRulesAdded": "{count, plural, one {Додано # правило} few {Додано # правила} many {Додано # правил} other {Додано # правила}}",
+    "logServices": "Записати сервіси",
+    "logVisitDescription": "Позначте роботи, виконані під час цього візиту. Дата, пробіг і вартість стосуються всього вибраного.",
+    "logVisitSubmit": "Записати вибрані ({count})",
+    "visitLogged": "{count, plural, one {Записано # роботу} few {Записано # роботи} many {Записано # робіт} other {Записано # роботи}}",
+    "totalCost": "Загальна вартість (₴, необовʼязково)",
+    "visitTotal": "Разом за візит: {amount}"
   },
   "standardRules": {
     "engineOil": "Моторна олива та масляний фільтр",
@@ -147,7 +152,9 @@
     "dateFuture": "Дата не може бути в майбутньому",
     "passwordMax": "Пароль занадто довгий",
     "intervalInvalid": "Введіть коректний інтервал",
-    "codeInvalid": "Введіть 6-значний код"
+    "codeInvalid": "Введіть 6-значний код",
+    "costInvalid": "Введіть коректну вартість",
+    "componentsRequired": "Виберіть хоча б одну роботу"
   },
   "locale": {
     "language": "Мова",

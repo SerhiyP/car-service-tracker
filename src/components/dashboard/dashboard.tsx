@@ -10,7 +10,7 @@ import { computeMaintenance, latestLogFor } from "@/lib/maintenance";
 import { useGarageStore } from "@/stores/garage";
 import { Skeleton } from "@/components/ui/skeleton";
 import { CarSwitcher } from "./car-switcher";
-import { LogServiceDialog } from "./log-service-dialog";
+import { LogVisitDialog } from "@/components/cars/log-visit-dialog";
 import { MileageForm } from "./mileage-form";
 import { StatusCard } from "./status-card";
 
@@ -99,9 +99,9 @@ export function Dashboard() {
         </div>
       )}
 
-      <LogServiceDialog
+      <LogVisitDialog
         car={car}
-        componentName={logComponent}
+        preselectedComponent={logComponent}
         open={logComponent !== null}
         onOpenChange={(open) => !open && setLogComponent(null)}
       />
