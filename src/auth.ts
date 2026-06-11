@@ -17,6 +17,8 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         if (!user) return null;
         const valid = await bcrypt.compare(parsed.data.password, user.passwordHash);
         if (!valid) return null;
+        // Unverified (and legacy pre-verification) accounts cannot sign in.
+        if (!user.emailVerified) return null;
         return { id: user._id.toHexString(), email: user.email, name: user.name };
       },
     }),

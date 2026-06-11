@@ -28,7 +28,10 @@
     "invalidCredentials": "Неправильна пошта або пароль",
     "emailTaken": "Акаунт із цією поштою вже існує",
     "verifyEmailSubject": "Ваш код підтвердження Car Service Tracker",
-    "verifyEmailBody": "Ваш код підтвердження: {code}. Він діє 15 хвилин."
+    "verifyEmailBody": "Ваш код підтвердження: {code}. Він діє 15 хвилин.",
+    "emailNotVerified": "Вашу пошту ще не підтверджено",
+    "emailNotFound": "Облікового запису з цією поштою не існує",
+    "sendFailed": "Не вдалося надіслати лист. Спробуйте ще раз."
   },
   "dashboard": {
     "title": "Головна",

@@ -28,7 +28,10 @@
     "invalidCredentials": "Invalid email or password",
     "emailTaken": "An account with this email already exists",
     "verifyEmailSubject": "Your Car Service Tracker verification code",
-    "verifyEmailBody": "Your verification code is {code}. It expires in 15 minutes."
+    "verifyEmailBody": "Your verification code is {code}. It expires in 15 minutes.",
+    "emailNotVerified": "Your email is not verified yet",
+    "emailNotFound": "No account with this email",
+    "sendFailed": "Could not send the email. Try again."
   },
   "dashboard": {
     "title": "Dashboard",
