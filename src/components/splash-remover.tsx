@@ -7,9 +7,11 @@ export function SplashRemover() {
     const el = document.getElementById("app-splash");
     if (!el) return;
     el.style.opacity = "0";
+    el.style.pointerEvents = "none";
     const remove = () => el.remove();
-    el.addEventListener("transitionend", remove, { once: true });
-    return () => el.removeEventListener("transitionend", remove);
+    const tid = setTimeout(remove, 400);
+    el.addEventListener("transitionend", () => { clearTimeout(tid); remove(); }, { once: true });
+    return () => { clearTimeout(tid); };
   }, []);
   return null;
 }

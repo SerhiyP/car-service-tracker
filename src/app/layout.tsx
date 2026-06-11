@@ -45,6 +45,7 @@ export default async function RootLayout({
       <body className="min-h-full flex flex-col" suppressHydrationWarning>
         <div
           id="app-splash"
+          aria-hidden="true"
           style={{
             position: "fixed",
             inset: 0,
