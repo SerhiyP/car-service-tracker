@@ -21,6 +21,7 @@ export function CarActions({ car }: { car: Car }) {
         size="lg"
         className="w-full"
         disabled={!hasRules}
+        title={!hasRules ? t("car.noRulesHint") : undefined}
         onClick={() => setLogOpen(true)}
       >
         <ClipboardList className="size-4" /> {t("car.logServices")}

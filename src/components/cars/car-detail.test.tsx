@@ -91,4 +91,13 @@ describe("CarDetail", () => {
       history.compareDocumentPosition(rules) & Node.DOCUMENT_POSITION_FOLLOWING,
     ).toBeTruthy();
   });
+
+  it("disables Log services when the car has no rules", () => {
+    render(
+      <NextIntlClientProvider locale="en" messages={en}>
+        <CarDetail carId={carB.id} />
+      </NextIntlClientProvider>,
+    );
+    expect(screen.getByRole("button", { name: /Log services/ })).toBeDisabled();
+  });
 });
