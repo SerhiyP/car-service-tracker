@@ -8,7 +8,9 @@ export default async function GaragePage() {
     <div className="space-y-4">
       <h2 className="text-2xl font-semibold tracking-tight">{t("title")}</h2>
       <CarList />
-      <DeleteAccountDialog />
+      <div className="pt-8 text-center">
+        <DeleteAccountDialog />
+      </div>
     </div>
   );
 }
