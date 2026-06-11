@@ -26,7 +26,9 @@
     "noAccount": "No account? Create one",
     "haveAccount": "Already have an account? Sign in",
     "invalidCredentials": "Invalid email or password",
-    "emailTaken": "An account with this email already exists"
+    "emailTaken": "An account with this email already exists",
+    "verifyEmailSubject": "Your Car Service Tracker verification code",
+    "verifyEmailBody": "Your verification code is {code}. It expires in 15 minutes."
   },
   "dashboard": {
     "title": "Dashboard",
