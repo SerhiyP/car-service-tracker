@@ -97,8 +97,8 @@
     "rulesCount": "{count, plural, one {# rule} other {# rules}}",
     "lastService": "Last: {date}",
     "neverServiced": "Never serviced",
-    "overdueCount": "{count, plural, one {# overdue} other {# overdue}}",
-    "dueCount": "{count, plural, one {# due soon} other {# due soon}}"
+    "overdueCount": "{count, plural, one {# item overdue} other {# items overdue}}",
+    "dueCount": "{count, plural, one {# item due soon} other {# items due soon}}"
   },
   "car": {
     "rules": "Maintenance rules",

@@ -97,8 +97,8 @@
     "rulesCount": "{count, plural, one {# правило} few {# правила} many {# правил} other {# правила}}",
     "lastService": "Останнє: {date}",
     "neverServiced": "Ніколи не обслуговувалось",
-    "overdueCount": "{count, plural, one {# прострочено} few {# прострочено} many {# прострочено} other {# прострочено}}",
-    "dueCount": "{count, plural, one {# скоро} few {# скоро} many {# скоро} other {# скоро}}"
+    "overdueCount": "{count, plural, one {# елемент прострочено} few {# елементи прострочено} many {# елементів прострочено} other {# елементи прострочено}}",
+    "dueCount": "{count, plural, one {# елемент скоро} few {# елементи скоро} many {# елементів скоро} other {# елементи скоро}}"
   },
   "car": {
     "rules": "Правила обслуговування",

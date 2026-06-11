@@ -6,7 +6,7 @@ import { toast } from "sonner";
 import { CarFront, Pencil, Plus, Trash2 } from "lucide-react";
 import { deleteCarAction } from "@/actions/cars";
 import { actionErrorKey } from "@/lib/action-feedback";
-import { computeMaintenance, latestLogFor } from "@/lib/maintenance";
+import { computeMaintenance } from "@/lib/maintenance";
 import { useGarageStore } from "@/stores/garage";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -73,10 +73,19 @@ export function CarList() {
               )
             : null;
 
+        // Index carLogs by componentName to avoid O(L) per-rule scans.
+        const latestByComponent = new Map<string, (typeof carLogs)[number]>();
+        for (const log of carLogs) {
+          const cur = latestByComponent.get(log.componentName);
+          if (!cur || log.dateAtService > cur.dateAtService) {
+            latestByComponent.set(log.componentName, log);
+          }
+        }
+
         let redCount = 0;
         let yellowCount = 0;
         for (const rule of carRules) {
-          const last = latestLogFor(logs, car.id, rule.componentName);
+          const last = latestByComponent.get(rule.componentName) ?? null;
           if (!last) continue;
           const info = computeMaintenance(
             rule,

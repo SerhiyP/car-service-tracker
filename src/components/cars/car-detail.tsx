@@ -13,6 +13,8 @@ export function CarDetail({ carId }: { carId: string }) {
   const isServerSyncing = useGarageStore((s) => s.isServerSyncing);
   const carExists = car !== undefined;
 
+  // Viewing a car makes it the selected car so the bottom nav's Car/Log
+  // items and the dashboard follow it.
   useEffect(() => {
     if (carExists) selectCar(carId);
   }, [carExists, carId, selectCar]);
