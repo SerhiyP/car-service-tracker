@@ -1,28 +1,10 @@
 "use server";
 
 import { ActionError, authActionClient } from "@/lib/safe-action";
-import { logDeleteSchema, logInputSchema } from "@/lib/schemas/log";
-import { getCar, setCarMileage } from "@/lib/repositories/cars";
-import { createLog, countLogsByVisitId, deleteLog } from "@/lib/repositories/logs";
+import { logDeleteSchema } from "@/lib/schemas/log";
+import { getCar } from "@/lib/repositories/cars";
+import { countLogsByVisitId, deleteLog } from "@/lib/repositories/logs";
 import { deleteVisit } from "@/lib/repositories/visits";
-
-export const createLogAction = authActionClient
-  .inputSchema(logInputSchema)
-  .action(async ({ parsedInput, ctx }) => {
-    const car = await getCar(ctx.userId, parsedInput.carId);
-    if (!car) throw new ActionError("errors.notFound");
-
-    const log = await createLog(parsedInput);
-
-    // Spec: a service at a higher mileage raises the car's current mileage.
-    let newCarMileage: number | null = null;
-    if (parsedInput.mileageAtService > car.currentMileage) {
-      await setCarMileage(ctx.userId, parsedInput.carId, parsedInput.mileageAtService);
-      newCarMileage = parsedInput.mileageAtService;
-    }
-
-    return { log, newCarMileage };
-  });
 
 export const deleteLogAction = authActionClient
   .inputSchema(logDeleteSchema)

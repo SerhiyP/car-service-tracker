@@ -102,7 +102,6 @@
     "intervalMonths": "Інтервал (місяців)",
     "intervalHint": "Вкажіть хоча б один інтервал",
     "deleteRuleConfirm": "Видалити це правило?",
-    "logService": "Записати сервіс",
     "serviceDate": "Дата сервісу",
     "serviceMileage": "Пробіг на момент сервісу (км)",
     "deleteLogConfirm": "Видалити цей запис?",

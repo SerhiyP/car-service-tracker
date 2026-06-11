@@ -2,7 +2,6 @@ import { describe, expect, it } from "vitest";
 import { registerSchema, verifyEmailSchema, resendCodeSchema } from "./auth";
 import { carInputSchema, mileageUpdateSchema } from "./car";
 import { ruleInputSchema, standardRulesInputSchema } from "./rule";
-import { logInputSchema } from "./log";
 import { visitInputSchema } from "./visit";
 
 const oid = "65f1a2b3c4d5e6f7a8b9c0d1";
@@ -61,30 +60,6 @@ describe("rule schema", () => {
   it("rejects non-positive intervals", () => {
     expect(
       ruleInputSchema.safeParse({ carId: oid, componentName: "Oil", intervalKm: 0 }).success,
-    ).toBe(false);
-  });
-});
-
-describe("log schema", () => {
-  it("accepts a valid log and coerces the date", () => {
-    const parsed = logInputSchema.safeParse({
-      carId: oid,
-      componentName: "Oil",
-      mileageAtService: 100000,
-      dateAtService: "2026-01-15",
-    });
-    expect(parsed.success).toBe(true);
-    if (parsed.success) expect(parsed.data.dateAtService).toBeInstanceOf(Date);
-  });
-  it("rejects future dates", () => {
-    const future = new Date(Date.now() + 7 * 86_400_000).toISOString();
-    expect(
-      logInputSchema.safeParse({
-        carId: oid,
-        componentName: "Oil",
-        mileageAtService: 1,
-        dateAtService: future,
-      }).success,
     ).toBe(false);
   });
 });

@@ -102,7 +102,6 @@
     "intervalMonths": "Interval (months)",
     "intervalHint": "Set at least one interval",
     "deleteRuleConfirm": "Delete this rule?",
-    "logService": "Log service",
     "serviceDate": "Service date",
     "serviceMileage": "Mileage at service (km)",
     "deleteLogConfirm": "Delete this history entry?",

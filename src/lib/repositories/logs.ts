@@ -32,22 +32,6 @@ export async function listLogsByCarIds(carIds: string[]): Promise<ServiceLog[]> 
   return docs.map(toLog);
 }
 
-export async function createLog(input: {
-  carId: string;
-  componentName: string;
-  mileageAtService: number;
-  dateAtService: Date;
-}): Promise<ServiceLog> {
-  const doc: LogDoc = {
-    carId: new ObjectId(input.carId),
-    componentName: input.componentName,
-    mileageAtService: input.mileageAtService,
-    dateAtService: input.dateAtService,
-  };
-  const result = await logs().insertOne(doc);
-  return toLog({ ...doc, _id: result.insertedId });
-}
-
 export async function createLogs(input: {
   carId: string;
   visitId: string;
