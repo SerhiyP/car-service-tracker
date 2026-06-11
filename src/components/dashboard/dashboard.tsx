@@ -6,7 +6,11 @@ import { useTranslations } from "next-intl";
 import { toast } from "sonner";
 import { actionErrorKey } from "@/lib/action-feedback";
 import { updateCarMileageAction } from "@/actions/cars";
-import { computeMaintenance, latestLogFor } from "@/lib/maintenance";
+import {
+  compareMaintenanceUrgency,
+  computeMaintenance,
+  latestLogFor,
+} from "@/lib/maintenance";
 import { useGarageStore } from "@/stores/garage";
 import { Skeleton } from "@/components/ui/skeleton";
 import { CarSwitcher } from "./car-switcher";
@@ -79,20 +83,24 @@ export function Dashboard() {
         </div>
       ) : (
         <div className="space-y-3">
-          {servicedRules.map((rule) => {
-            const last = latestLogFor(logs, car.id, rule.componentName);
-            const info = computeMaintenance(
-              rule,
-              last
-                ? {
-                    mileageAtService: last.mileageAtService,
-                    dateAtService: new Date(last.dateAtService),
-                  }
-                : null,
-              car.currentMileage,
-              now,
-            );
-            return (
+          {servicedRules
+            .map((rule) => {
+              const last = latestLogFor(logs, car.id, rule.componentName);
+              const info = computeMaintenance(
+                rule,
+                last
+                  ? {
+                      mileageAtService: last.mileageAtService,
+                      dateAtService: new Date(last.dateAtService),
+                    }
+                  : null,
+                car.currentMileage,
+                now,
+              );
+              return { rule, last, info };
+            })
+            .sort((a, b) => compareMaintenanceUrgency(a.info, b.info))
+            .map(({ rule, last, info }) => (
               <StatusCard
                 key={rule.id}
                 componentName={rule.componentName}
@@ -100,8 +108,7 @@ export function Dashboard() {
                 lastService={last}
                 onLogService={() => setLogComponent(rule.componentName)}
               />
-            );
-          })}
+            ))}
           {hiddenCount > 0 && (
             <p className="text-center text-sm text-muted-foreground">
               <Link href={`/cars/${car.id}`} className="underline">

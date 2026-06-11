@@ -94,3 +94,32 @@ describe("Dashboard auto-hide", () => {
     expect(screen.queryByText(/not serviced yet/)).not.toBeInTheDocument();
   });
 });
+
+describe("Dashboard urgency sort", () => {
+  it("orders cards overdue, due soon, then ok", () => {
+    useGarageStore.setState({
+      logs: [
+        oilLog, // Engine oil at 115000, interval 10000 -> green
+        {
+          id: "l2",
+          carId,
+          componentName: "Air filter",
+          mileageAtService: 95000, // interval 20000 -> -5000 -> red
+          dateAtService: "2026-05-01T00:00:00.000Z",
+        },
+        {
+          id: "l3",
+          carId,
+          componentName: "Coolant",
+          mileageAtService: 81200, // interval 40000 -> 1200 left -> yellow
+          dateAtService: "2026-05-01T00:00:00.000Z",
+        },
+      ],
+    });
+    renderDashboard();
+    const names = screen
+      .getAllByText(/^(Engine oil|Air filter|Coolant)$/)
+      .map((el) => el.textContent);
+    expect(names).toEqual(["Air filter", "Coolant", "Engine oil"]);
+  });
+});
