@@ -45,6 +45,12 @@ export function Dashboard() {
   }
 
   const carRules = rules.filter((r) => r.carId === car.id);
+  // Never-serviced rules are hidden from the dashboard to keep it focused;
+  // the hint below links to the car page where first services get logged.
+  const servicedRules = carRules.filter(
+    (rule) => latestLogFor(logs, car.id, rule.componentName) !== null,
+  );
+  const hiddenCount = carRules.length - servicedRules.length;
   const now = new Date();
 
   async function handleMileage(mileage: number) {
@@ -73,7 +79,7 @@ export function Dashboard() {
         </div>
       ) : (
         <div className="space-y-3">
-          {carRules.map((rule) => {
+          {servicedRules.map((rule) => {
             const last = latestLogFor(logs, car.id, rule.componentName);
             const info = computeMaintenance(
               rule,
@@ -96,6 +102,13 @@ export function Dashboard() {
               />
             );
           })}
+          {hiddenCount > 0 && (
+            <p className="text-center text-sm text-muted-foreground">
+              <Link href={`/cars/${car.id}`} className="underline">
+                {t("hiddenRules", { count: hiddenCount })}
+              </Link>
+            </p>
+          )}
         </div>
       )}
 
