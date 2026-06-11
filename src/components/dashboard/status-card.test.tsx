@@ -1,8 +1,10 @@
-import { render, screen } from "@testing-library/react";
+import { cleanup, render, screen } from "@testing-library/react";
 import { NextIntlClientProvider } from "next-intl";
-import { describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it } from "vitest";
 import en from "@/messages/en.json";
 import { StatusCard } from "./status-card";
+
+afterEach(cleanup);
 
 function renderCard(props: Parameters<typeof StatusCard>[0]) {
   return render(
@@ -43,5 +45,35 @@ describe("StatusCard", () => {
       onLogService: () => {},
     });
     expect(screen.getByText(/500 km overdue/)).toBeInTheDocument();
+  });
+
+  it("shows the OK pill for a green component", () => {
+    renderCard({
+      componentName: "Engine Oil",
+      info: { status: "green", remainingKm: 8000, remainingDays: 120 },
+      lastService: null,
+      onLogService: () => {},
+    });
+    expect(screen.getByText("OK")).toBeInTheDocument();
+  });
+
+  it("shows the Overdue pill for a red component", () => {
+    renderCard({
+      componentName: "Brakes",
+      info: { status: "red", remainingKm: -500, remainingDays: null },
+      lastService: null,
+      onLogService: () => {},
+    });
+    expect(screen.getByText("Overdue")).toBeInTheDocument();
+  });
+
+  it("shows the Due soon pill for a yellow component", () => {
+    renderCard({
+      componentName: "Air Filter",
+      info: { status: "yellow", remainingKm: 500, remainingDays: 10 },
+      lastService: null,
+      onLogService: () => {},
+    });
+    expect(screen.getByText("Due soon")).toBeInTheDocument();
   });
 });
