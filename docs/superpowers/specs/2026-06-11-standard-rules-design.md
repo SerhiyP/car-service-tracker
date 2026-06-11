@@ -63,8 +63,8 @@ sets, per project convention).
 - `authActionClient`, input `{ carId: string, keys: string[] }`.
 - Zod validates `keys` against the known `StandardRuleKey` set (min 1,
   deduplicated) — arbitrary strings are rejected.
-- Ownership check via `ownsCar(carId, ctx.userId)`; throws
-  `ActionError("car.notFound")` (same key as `createRuleAction`) on failure.
+- Ownership check via `ownsCar(ctx.userId, carId)`; throws
+  `ActionError("errors.notFound")` (same key as `createRuleAction`) on failure.
 - Resolves names server-side with next-intl `getTranslations` for the request
   locale (`standardRules` namespace).
 - Skips keys whose resolved name already exists on the car
@@ -85,13 +85,14 @@ without hitting the driver.
   items: translated name + interval summary + checkbox.
 - Pre-checked by default; entries matching an existing rule name
   (case-insensitive) are unchecked and disabled with an "already added" hint.
-- Submit calls `addStandardRulesAction` with the checked keys via `useAction`.
-  Non-optimistic (creates need server ids): on success → toast + close +
-  `router.refresh()`; on error → toast via `actionErrorKey`.
-- Entry points (rules section of the dashboard):
-  - "Add standard rules" secondary button next to the existing "Add rule"
-    button.
-  - The rules empty state mentions/offers the same dialog.
+- Submit calls `addStandardRulesAction` directly with the checked keys
+  (project pattern: direct action call + `actionErrorKey`, not `useAction`).
+  Non-optimistic (creates need server ids): on success the created rules are
+  upserted into the Zustand garage store + success toast + close; on error →
+  toast via `actionErrorKey`.
+- Entry point: an "Add standard rules" button next to the existing "Add rule"
+  button at the bottom of the rules section — visible in the empty state too,
+  so new cars see it immediately.
 
 ### i18n additions (`en.json` + `uk.json`)
 
@@ -110,9 +111,9 @@ without hitting the driver.
 ## Testing
 
 - `standard-rules-dialog.test.tsx` — follows `verify-form.test.tsx` pattern
-  (real `NextIntlClientProvider` + en catalog, `vi.hoisted` mocks, mocked
-  `useAction`): renders all items, disables existing ones, submits selected
-  keys, handles success/error.
+  (real `NextIntlClientProvider` + en catalog, `vi.hoisted` mocked action):
+  renders all items, disables existing ones, submits selected keys, handles
+  success/error against the real garage store.
 - Unit test for the action input schema (rejects unknown keys, requires ≥1)
   and for the case-insensitive skip logic.
 - Full gate: `npx vitest run`, `npx tsc --noEmit && npx eslint src`,
