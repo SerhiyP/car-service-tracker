@@ -3,7 +3,8 @@
 import { ActionError, authActionClient } from "@/lib/safe-action";
 import { logDeleteSchema, logInputSchema } from "@/lib/schemas/log";
 import { getCar, setCarMileage } from "@/lib/repositories/cars";
-import { createLog, deleteLog } from "@/lib/repositories/logs";
+import { createLog, countLogsByVisitId, deleteLog } from "@/lib/repositories/logs";
+import { deleteVisit } from "@/lib/repositories/visits";
 
 export const createLogAction = authActionClient
   .inputSchema(logInputSchema)
@@ -28,7 +29,17 @@ export const deleteLogAction = authActionClient
   .action(async ({ parsedInput, ctx }) => {
     if (!(await getCar(ctx.userId, parsedInput.carId)))
       throw new ActionError("errors.notFound");
-    const ok = await deleteLog(parsedInput.logId, parsedInput.carId);
-    if (!ok) throw new ActionError("errors.notFound");
-    return { ok: true };
+    const deleted = await deleteLog(parsedInput.logId, parsedInput.carId);
+    if (!deleted) throw new ActionError("errors.notFound");
+
+    // Last log of a visit gone → remove the now-orphaned visit.
+    let removedVisitId: string | null = null;
+    if (deleted.visitId) {
+      const remaining = await countLogsByVisitId(deleted.visitId, parsedInput.carId);
+      if (remaining === 0) {
+        await deleteVisit(deleted.visitId, parsedInput.carId);
+        removedVisitId = deleted.visitId;
+      }
+    }
+    return { ok: true, removedVisitId };
   });
