@@ -48,7 +48,6 @@ beforeEach(() => {
     logs: [oilLog],
     visits: [],
     selectedCarId: carId,
-    hasHydrated: true,
     isServerSyncing: false,
   });
 });
