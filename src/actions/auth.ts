@@ -61,6 +61,7 @@ async function issueCode(userId: ObjectId | string, email: string): Promise<bool
       codeHash: hashCode(code),
       expiresAt: new Date(now.getTime() + CODE_TTL_MS),
       lastSentAt: now,
+      purpose: "verify",
     },
     RESEND_COOLDOWN_MS,
   );
