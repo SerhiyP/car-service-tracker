@@ -172,6 +172,15 @@ describe("visit update schema", () => {
     expect(visitUpdateSchema.safeParse(withoutTarget).success).toBe(false);
   });
 
+  it("treats an ambiguous target as a visit target (union order) and strips logId", () => {
+    const parsed = visitUpdateSchema.safeParse({
+      ...valid,
+      target: { visitId: oid, logId: oid },
+    });
+    expect(parsed.success).toBe(true);
+    if (parsed.success) expect(parsed.data.target).toEqual({ visitId: oid });
+  });
+
   it("applies the shared field rules", () => {
     expect(
       visitUpdateSchema.safeParse({ ...valid, componentNames: [] }).success,
