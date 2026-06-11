@@ -1,5 +1,6 @@
 import { getTranslations } from "next-intl/server";
 import { CarList } from "@/components/cars/car-list";
+import { DeleteAccountDialog } from "@/components/account/delete-account-dialog";
 
 export default async function GaragePage() {
   const t = await getTranslations("garage");
@@ -7,6 +8,7 @@ export default async function GaragePage() {
     <div className="space-y-4">
       <h2 className="text-xl font-semibold">{t("title")}</h2>
       <CarList />
+      <DeleteAccountDialog />
     </div>
   );
 }

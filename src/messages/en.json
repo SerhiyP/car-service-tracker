@@ -46,6 +46,13 @@
     "verifiedNowLogin": "Email verified — please sign in",
     "verifyNow": "Verify now"
   },
+  "account": {
+    "dangerZone": "Danger zone",
+    "deleteAccount": "Delete account",
+    "deleteWarning": "This permanently deletes your account, cars, rules, and service history. This cannot be undone.",
+    "deleteConfirmInstruction": "Type {word} to confirm",
+    "deleteConfirmWord": "DELETE"
+  },
   "dashboard": {
     "title": "Dashboard",
     "currentMileage": "Current mileage",

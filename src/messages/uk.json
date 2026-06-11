@@ -46,6 +46,13 @@
     "verifiedNowLogin": "Пошту підтверджено — увійдіть",
     "verifyNow": "Підтвердити зараз"
   },
+  "account": {
+    "dangerZone": "Небезпечна зона",
+    "deleteAccount": "Видалити обліковий запис",
+    "deleteWarning": "Це назавжди видалить ваш обліковий запис, автомобілі, правила та історію обслуговування. Цю дію неможливо скасувати.",
+    "deleteConfirmInstruction": "Введіть {word} для підтвердження",
+    "deleteConfirmWord": "ВИДАЛИТИ"
+  },
   "dashboard": {
     "title": "Головна",
     "currentMileage": "Поточний пробіг",
