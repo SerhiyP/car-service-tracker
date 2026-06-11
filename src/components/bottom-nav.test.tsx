@@ -1,4 +1,4 @@
-import { cleanup, fireEvent, render, screen } from "@testing-library/react";
+import { act, cleanup, fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { NextIntlClientProvider } from "next-intl";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import en from "@/messages/en.json";
@@ -100,6 +100,22 @@ describe("BottomNav", () => {
     expect(screen.getByRole("link", { name: "Garage" })).toHaveAttribute(
       "aria-current",
       "page",
+    );
+  });
+
+  it("closes the log dialog when the selected car changes", async () => {
+    renderNav();
+    fireEvent.click(screen.getByRole("button", { name: "Log" }));
+    expect(screen.getByText("Log services")).toBeInTheDocument();
+    const otherId = "65f1a2b3c4d5e6f7a8b9c0d2";
+    act(() =>
+      useGarageStore.setState((s) => ({
+        cars: [...s.cars, { ...car, id: otherId, name: "Golf" }],
+        selectedCarId: otherId,
+      })),
+    );
+    await waitFor(() =>
+      expect(screen.queryByText("Log services")).not.toBeInTheDocument(),
     );
   });
 });

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useSyncExternalStore } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useTranslations } from "next-intl";
@@ -39,10 +39,30 @@ export function BottomNav() {
   const t = useTranslations("nav");
   const pathname = usePathname();
   const [logOpen, setLogOpen] = useState(false);
+  // The persisted store rehydrates synchronously on the client, so without
+  // this gate the first client render (cars present) would not match the
+  // server HTML (no cars) and hydration would fail.
+  // useSyncExternalStore returns the serverSnapshot on the server / first
+  // hydration pass and switches to the clientSnapshot only after mount.
+  const mounted = useSyncExternalStore(
+    () => () => {},
+    () => true,
+    () => false,
+  );
   const cars = useGarageStore((s) => s.cars);
   const rules = useGarageStore((s) => s.rules);
   const selectedCarId = useGarageStore((s) => s.selectedCarId);
-  const car = cars.find((c) => c.id === selectedCarId) ?? null;
+  const car = mounted ? (cars.find((c) => c.id === selectedCarId) ?? null) : null;
+
+  // Selection changed out from under an open dialog (e.g. car deleted):
+  // close instead of silently retargeting the form to another car.
+  // Derived-state reset during render (React-recommended pattern) avoids an
+  // effect and the associated extra render cycle.
+  const [prevCarId, setPrevCarId] = useState(selectedCarId);
+  if (prevCarId !== selectedCarId) {
+    setPrevCarId(selectedCarId);
+    setLogOpen(false);
+  }
   const hasRules = car !== null && rules.some((r) => r.carId === car.id);
 
   const dashboardActive = pathname === "/";
