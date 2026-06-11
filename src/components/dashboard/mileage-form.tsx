@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useTranslations } from "next-intl";
+import { Pencil } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -13,16 +14,30 @@ export function MileageForm({
   currentMileage: number;
   onSubmit: (mileage: number) => void;
 }) {
-  const t = useTranslations("dashboard");
-  // Track the last prop value seen so we can reset the input when it changes
-  // (e.g. after a successful server update). This is the React-approved
-  // "derived state from props" pattern — no effects, no ref reads during render.
-  const [prevMileage, setPrevMileage] = useState(currentMileage);
-  const [value, setValue] = useState(String(currentMileage));
+  const t = useTranslations();
+  const [editing, setEditing] = useState(false);
+  const [value, setValue] = useState("");
 
-  if (prevMileage !== currentMileage) {
-    setPrevMileage(currentMileage);
-    setValue(String(currentMileage));
+  if (!editing) {
+    return (
+      <div className="flex items-center justify-between">
+        <div>
+          <p className="text-sm text-muted-foreground">{t("dashboard.currentMileage")}</p>
+          <p className="font-medium">{currentMileage.toLocaleString()} km</p>
+        </div>
+        <Button
+          variant="ghost"
+          size="icon"
+          aria-label={t("common.edit")}
+          onClick={() => {
+            setValue(String(currentMileage));
+            setEditing(true);
+          }}
+        >
+          <Pencil className="size-4" />
+        </Button>
+      </div>
+    );
   }
 
   return (
@@ -33,20 +48,27 @@ export function MileageForm({
         const mileage = Number(value);
         if (value === "" || !Number.isFinite(mileage) || mileage < 0) return;
         onSubmit(Math.floor(mileage));
+        setEditing(false);
       }}
     >
       <div className="flex-1 space-y-1">
-        <Label htmlFor="mileage">{t("currentMileage")}</Label>
+        <Label htmlFor="mileage">{t("dashboard.currentMileage")}</Label>
         <Input
           id="mileage"
           type="number"
           inputMode="numeric"
           min={0}
+          autoFocus
           value={value}
           onChange={(e) => setValue(e.target.value)}
+          onKeyDown={(e) => {
+            if (e.key === "Escape") setEditing(false);
+          }}
         />
       </div>
-      <Button type="submit" size="lg">{t("updateMileage")}</Button>
+      <Button type="submit" size="lg">
+        {t("dashboard.updateMileage")}
+      </Button>
     </form>
   );
 }
