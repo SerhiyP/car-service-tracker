@@ -41,7 +41,7 @@ export default async function RootLayout({
       lang={locale}
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col">
+      <body className="min-h-full flex flex-col" suppressHydrationWarning>
         <SerwistProvider
           swUrl="/sw.js"
           disable={process.env.NODE_ENV === "development"}
