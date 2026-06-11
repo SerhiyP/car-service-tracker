@@ -86,7 +86,8 @@
     "intervalRequired": "Вкажіть хоча б один інтервал",
     "dateFuture": "Дата не може бути в майбутньому",
     "passwordMax": "Пароль занадто довгий",
-    "intervalInvalid": "Введіть коректний інтервал"
+    "intervalInvalid": "Введіть коректний інтервал",
+    "codeInvalid": "Введіть 6-значний код"
   },
   "locale": {
     "language": "Мова",

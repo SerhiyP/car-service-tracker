@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { registerSchema } from "./auth";
+import { registerSchema, verifyEmailSchema, resendCodeSchema } from "./auth";
 import { carInputSchema, mileageUpdateSchema } from "./car";
 import { ruleInputSchema } from "./rule";
 import { logInputSchema } from "./log";
@@ -85,5 +85,32 @@ describe("log schema", () => {
         dateAtService: future,
       }).success,
     ).toBe(false);
+  });
+});
+
+describe("verifyEmailSchema", () => {
+  it("accepts an email with a 6-digit code", () => {
+    const result = verifyEmailSchema.safeParse({ email: "a@b.co", code: "012345" });
+    expect(result.success).toBe(true);
+  });
+
+  it.each(["12345", "1234567", "12345a", "", "123 56"])("rejects code %j", (code) => {
+    const result = verifyEmailSchema.safeParse({ email: "a@b.co", code });
+    expect(result.success).toBe(false);
+  });
+
+  it("rejects an invalid email", () => {
+    const result = verifyEmailSchema.safeParse({ email: "nope", code: "123456" });
+    expect(result.success).toBe(false);
+  });
+});
+
+describe("resendCodeSchema", () => {
+  it("accepts a valid email", () => {
+    expect(resendCodeSchema.safeParse({ email: "a@b.co" }).success).toBe(true);
+  });
+
+  it("rejects an invalid email", () => {
+    expect(resendCodeSchema.safeParse({ email: "nope" }).success).toBe(false);
   });
 });

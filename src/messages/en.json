@@ -86,7 +86,8 @@
     "intervalRequired": "Set at least one interval",
     "dateFuture": "Date cannot be in the future",
     "passwordMax": "Password is too long",
-    "intervalInvalid": "Enter a valid interval"
+    "intervalInvalid": "Enter a valid interval",
+    "codeInvalid": "Enter the 6-digit code"
   },
   "locale": {
     "language": "Language",
