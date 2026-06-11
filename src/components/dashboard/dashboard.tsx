@@ -22,10 +22,10 @@ export function Dashboard() {
   const t = useTranslations("dashboard");
   const tRoot = useTranslations();
   const store = useGarageStore();
-  const { cars, rules, logs, selectedCarId, hasHydrated } = store;
+  const { cars, rules, logs, selectedCarId, isServerSyncing } = store;
   const [logComponent, setLogComponent] = useState<string | null>(null);
 
-  if (!hasHydrated) {
+  if (isServerSyncing) {
     return (
       <div className="space-y-3">
         <Skeleton className="h-16 w-full" />
