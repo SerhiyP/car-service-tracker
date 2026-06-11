@@ -119,6 +119,7 @@ describe("Dashboard urgency sort", () => {
     renderDashboard();
     const names = screen
       .getAllByText(/^(Engine oil|Air filter|Coolant)$/)
+      .filter((el) => el.tagName === "P")
       .map((el) => el.textContent);
     expect(names).toEqual(["Air filter", "Coolant", "Engine oil"]);
   });
