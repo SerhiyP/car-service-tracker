@@ -91,7 +91,7 @@ export function CarFormDialog({
               />
             </div>
           )}
-          <Button type="submit" className="w-full" disabled={busy}>
+          <Button type="submit" size="lg" className="w-full" disabled={busy}>
             {t("common.save")}
           </Button>
         </form>

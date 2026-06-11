@@ -61,7 +61,7 @@ export function LoginForm({ verified = false }: { verified?: boolean }) {
           ) : result.serverError ? (
             <p className="text-sm text-destructive">{t(result.serverError)}</p>
           ) : null}
-          <Button type="submit" className="w-full" disabled={isExecuting}>
+          <Button type="submit" size="lg" className="w-full" disabled={isExecuting}>
             {isExecuting ? t("common.loading") : t("auth.signIn")}
           </Button>
           <p className="text-center text-sm">
