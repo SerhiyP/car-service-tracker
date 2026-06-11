@@ -12,6 +12,8 @@ interface GarageState {
   selectedCarId: string | null;
   syncedAt: string | null;
   hasHydrated: boolean;
+  isServerSyncing: boolean;
+  setIsServerSyncing: (v: boolean) => void;
 
   setAll: (data: GarageData) => void;
   selectCar: (carId: string) => void;
@@ -42,6 +44,7 @@ export const useGarageStore = create<GarageState>()(
       selectedCarId: null,
       syncedAt: null,
       hasHydrated: false,
+      isServerSyncing: true,
 
       setAll: (data) =>
         set((s) => ({
@@ -119,6 +122,7 @@ export const useGarageStore = create<GarageState>()(
         })),
 
       setHasHydrated: (v) => set({ hasHydrated: v }),
+      setIsServerSyncing: (v) => set({ isServerSyncing: v }),
     }),
     {
       name: "garage-store",

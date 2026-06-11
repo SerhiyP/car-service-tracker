@@ -106,4 +106,11 @@ describe("garage store", () => {
     expect(useGarageStore.getState().visits).toEqual([visit]);
   });
 
+  it("isServerSyncing starts true and setIsServerSyncing clears it", () => {
+    useGarageStore.setState(useGarageStore.getInitialState());
+    expect(useGarageStore.getState().isServerSyncing).toBe(true);
+    useGarageStore.getState().setIsServerSyncing(false);
+    expect(useGarageStore.getState().isServerSyncing).toBe(false);
+  });
+
 });
