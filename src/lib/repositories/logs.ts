@@ -7,6 +7,7 @@ interface LogDoc {
   componentName: string;
   mileageAtService: number;
   dateAtService: Date;
+  visitId?: ObjectId;
 }
 
 const logs = () => getDb().collection<LogDoc>("service_logs");
@@ -18,6 +19,7 @@ function toLog(doc: LogDoc & { _id: ObjectId }): ServiceLog {
     componentName: doc.componentName,
     mileageAtService: doc.mileageAtService,
     dateAtService: doc.dateAtService.toISOString(),
+    ...(doc.visitId !== undefined && { visitId: doc.visitId.toHexString() }),
   };
 }
 
@@ -46,10 +48,36 @@ export async function createLog(input: {
   return toLog({ ...doc, _id: result.insertedId });
 }
 
-export async function deleteLog(logId: string, carId: string): Promise<boolean> {
-  const result = await logs().deleteOne({
+export async function createLogs(input: {
+  carId: string;
+  visitId: string;
+  componentNames: string[];
+  mileageAtService: number;
+  dateAtService: Date;
+}): Promise<ServiceLog[]> {
+  if (input.componentNames.length === 0) return [];
+  const docs: LogDoc[] = input.componentNames.map((componentName) => ({
+    carId: new ObjectId(input.carId),
+    componentName,
+    mileageAtService: input.mileageAtService,
+    dateAtService: input.dateAtService,
+    visitId: new ObjectId(input.visitId),
+  }));
+  const result = await logs().insertMany(docs);
+  return docs.map((doc, i) => toLog({ ...doc, _id: result.insertedIds[i] }));
+}
+
+export async function countLogsByVisitId(visitId: string, carId: string): Promise<number> {
+  return logs().countDocuments({
+    visitId: new ObjectId(visitId),
+    carId: new ObjectId(carId),
+  });
+}
+
+export async function deleteLog(logId: string, carId: string): Promise<ServiceLog | null> {
+  const doc = await logs().findOneAndDelete({
     _id: new ObjectId(logId),
     carId: new ObjectId(carId),
   });
-  return result.deletedCount === 1;
+  return doc ? toLog(doc) : null;
 }

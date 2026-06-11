@@ -13,6 +13,7 @@ const data: GarageData = {
   cars: [car("a"), car("b")],
   rules: [],
   logs: [],
+  visits: [],
   syncedAt: "2026-06-10T00:00:00.000Z",
 };
 
