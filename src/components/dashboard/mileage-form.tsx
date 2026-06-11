@@ -1,7 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import { useTranslations } from "next-intl";
+import { useFormatter, useTranslations } from "next-intl";
+import { Pencil } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -11,42 +12,77 @@ export function MileageForm({
   onSubmit,
 }: {
   currentMileage: number;
-  onSubmit: (mileage: number) => void;
+  onSubmit: (mileage: number) => Promise<boolean>;
 }) {
-  const t = useTranslations("dashboard");
-  // Track the last prop value seen so we can reset the input when it changes
-  // (e.g. after a successful server update). This is the React-approved
-  // "derived state from props" pattern — no effects, no ref reads during render.
-  const [prevMileage, setPrevMileage] = useState(currentMileage);
-  const [value, setValue] = useState(String(currentMileage));
+  const t = useTranslations();
+  const format = useFormatter();
+  const [editing, setEditing] = useState(false);
+  const [value, setValue] = useState("");
+  const [busy, setBusy] = useState(false);
 
-  if (prevMileage !== currentMileage) {
+  // React-approved "derived state from props" reset — no effects.
+  const [prevMileage, setPrevMileage] = useState(currentMileage);
+  if (editing && prevMileage !== currentMileage) {
     setPrevMileage(currentMileage);
     setValue(String(currentMileage));
+  }
+
+  if (!editing) {
+    return (
+      <div className="flex items-center justify-between">
+        <div>
+          <p className="text-sm text-muted-foreground">{t("dashboard.currentMileage")}</p>
+          <p className="font-medium">{format.number(currentMileage)} km</p>
+        </div>
+        <Button
+          variant="ghost"
+          size="icon"
+          aria-label={t("common.edit")}
+          onClick={() => {
+            setValue(String(currentMileage));
+            setPrevMileage(currentMileage);
+            setEditing(true);
+          }}
+        >
+          <Pencil className="size-4" />
+        </Button>
+      </div>
+    );
   }
 
   return (
     <form
       className="flex items-end gap-2"
-      onSubmit={(e) => {
+      onSubmit={async (e) => {
         e.preventDefault();
         const mileage = Number(value);
         if (value === "" || !Number.isFinite(mileage) || mileage < 0) return;
-        onSubmit(Math.floor(mileage));
+        setBusy(true);
+        try {
+          if (await onSubmit(Math.floor(mileage))) setEditing(false);
+        } finally {
+          setBusy(false);
+        }
       }}
     >
       <div className="flex-1 space-y-1">
-        <Label htmlFor="mileage">{t("currentMileage")}</Label>
+        <Label htmlFor="mileage">{t("dashboard.currentMileage")}</Label>
         <Input
           id="mileage"
           type="number"
           inputMode="numeric"
           min={0}
+          autoFocus
           value={value}
           onChange={(e) => setValue(e.target.value)}
+          onKeyDown={(e) => {
+            if (e.key === "Escape" && !busy) setEditing(false);
+          }}
         />
       </div>
-      <Button type="submit" size="lg">{t("updateMileage")}</Button>
+      <Button type="submit" size="lg" disabled={busy}>
+        {t("dashboard.updateMileage")}
+      </Button>
     </form>
   );
 }

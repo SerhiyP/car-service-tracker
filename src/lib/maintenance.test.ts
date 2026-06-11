@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { addMonths, computeMaintenance, latestLogFor } from "./maintenance";
+import { addMonths, computeMaintenance, compareMaintenanceUrgency, latestLogFor } from "./maintenance";
 import type { ServiceLog } from "./types";
 
 const NOW = new Date("2026-06-10T12:00:00Z");
@@ -107,5 +107,48 @@ describe("latestLogFor", () => {
   });
   it("returns null when none exist", () => {
     expect(latestLogFor(logs, "c1", "Coolant")).toBeNull();
+  });
+});
+
+describe("compareMaintenanceUrgency", () => {
+  const info = (
+    status: "green" | "yellow" | "red",
+    remainingKm: number | null = null,
+    remainingDays: number | null = null,
+  ) => ({ status, remainingKm, remainingDays });
+
+  it("treats two entries with no remaining figures as equal", () => {
+    expect(compareMaintenanceUrgency(info("red"), info("red"))).toBe(0);
+  });
+
+  it("orders red before yellow before green", () => {
+    const sorted = [info("green", 5000), info("red", -200), info("yellow", 900)].sort(
+      compareMaintenanceUrgency,
+    );
+    expect(sorted.map((i) => i.status)).toEqual(["red", "yellow", "green"]);
+  });
+
+  it("breaks ties within a status by least remaining", () => {
+    const a = info("yellow", 1200, null);
+    const b = info("yellow", 800, null);
+    expect([a, b].sort(compareMaintenanceUrgency)).toEqual([b, a]);
+  });
+
+  it("uses the smaller of km and days when both exist", () => {
+    const kmCloser = info("green", 500, 400); // effective 400
+    const daysCloser = info("green", 300, 9000); // effective 300
+    expect([kmCloser, daysCloser].sort(compareMaintenanceUrgency)).toEqual([
+      daysCloser,
+      kmCloser,
+    ]);
+  });
+
+  it("sorts entries with no remaining figures last within their status", () => {
+    const noFigures = info("red"); // never serviced: nulls
+    const overdue = info("red", -100);
+    expect([noFigures, overdue].sort(compareMaintenanceUrgency)).toEqual([
+      overdue,
+      noFigures,
+    ]);
   });
 });

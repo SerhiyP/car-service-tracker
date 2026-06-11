@@ -2,14 +2,13 @@
 
 import { useTranslations } from "next-intl";
 import { toast } from "sonner";
-import { ListChecks, Pencil, Plus, Trash2, Wrench } from "lucide-react";
+import { Pencil, Trash2, Wrench } from "lucide-react";
 import { deleteRuleAction } from "@/actions/rules";
 import { actionErrorKey } from "@/lib/action-feedback";
 import { useGarageStore } from "@/stores/garage";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { RuleFormDialog } from "./rule-form-dialog";
-import { StandardRulesDialog } from "./standard-rules-dialog";
 
 export function RuleList({ carId }: { carId: string }) {
   const t = useTranslations();
@@ -75,24 +74,6 @@ export function RuleList({ carId }: { carId: string }) {
           </CardContent>
         </Card>
       ))}
-      <div className="grid grid-cols-2 gap-2">
-        <RuleFormDialog
-          carId={carId}
-          trigger={
-            <Button variant="outline" size="lg">
-              <Plus className="size-4" /> {t("car.addRule")}
-            </Button>
-          }
-        />
-        <StandardRulesDialog
-          carId={carId}
-          trigger={
-            <Button variant="outline" size="lg">
-              <ListChecks className="size-4" /> {t("car.addStandardRules")}
-            </Button>
-          }
-        />
-      </div>
     </div>
   );
 }
