@@ -21,7 +21,6 @@ interface GarageState {
   upsertRule: (rule: MaintenanceRule) => void;
   removeRule: (ruleId: string) => void;
   addLog: (log: ServiceLog) => void;
-  replaceLog: (oldId: string, log: ServiceLog) => void;
   removeLog: (logId: string) => void;
   addVisit: (visit: ServiceVisit) => void;
   removeVisit: (visitId: string) => void;
@@ -92,9 +91,6 @@ export const useGarageStore = create<GarageState>()(
         set((s) => ({ rules: s.rules.filter((r) => r.id !== ruleId) })),
 
       addLog: (log) => set((s) => ({ logs: [log, ...s.logs] })),
-
-      replaceLog: (oldId, log) =>
-        set((s) => ({ logs: s.logs.map((l) => (l.id === oldId ? log : l)) })),
 
       removeLog: (logId) =>
         set((s) => ({ logs: s.logs.filter((l) => l.id !== logId) })),

@@ -8,7 +8,8 @@ export const visitInputSchema = z.object({
   carId: objectIdSchema,
   componentNames: z
     .array(z.string().trim().min(1, "validation.componentRequired").max(100))
-    .min(1, "validation.componentsRequired"),
+    .min(1, "validation.componentsRequired")
+    .max(100),
   mileageAtService: mileageSchema,
   dateAtService: z.coerce.date().refine(notInFuture, "validation.dateFuture"),
   totalCost: z

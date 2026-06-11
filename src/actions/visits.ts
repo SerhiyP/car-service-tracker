@@ -5,7 +5,7 @@ import { visitInputSchema } from "@/lib/schemas/visit";
 import { getCar, setCarMileage } from "@/lib/repositories/cars";
 import { listRulesByCarIds } from "@/lib/repositories/rules";
 import { createLogs } from "@/lib/repositories/logs";
-import { createVisit } from "@/lib/repositories/visits";
+import { createVisit, deleteVisit } from "@/lib/repositories/visits";
 
 export const createVisitAction = authActionClient
   .inputSchema(visitInputSchema)
@@ -19,19 +19,28 @@ export const createVisitAction = authActionClient
     if (!parsedInput.componentNames.every((name) => ruleNames.has(name)))
       throw new ActionError("errors.notFound");
 
+    const componentNames = [...new Set(parsedInput.componentNames)];
+
     const visit = await createVisit({
       carId: parsedInput.carId,
       mileageAtService: parsedInput.mileageAtService,
       dateAtService: parsedInput.dateAtService,
       ...(parsedInput.totalCost !== undefined && { totalCost: parsedInput.totalCost }),
     });
-    const logs = await createLogs({
-      carId: parsedInput.carId,
-      visitId: visit.id,
-      componentNames: parsedInput.componentNames,
-      mileageAtService: parsedInput.mileageAtService,
-      dateAtService: parsedInput.dateAtService,
-    });
+    let logs;
+    try {
+      logs = await createLogs({
+        carId: parsedInput.carId,
+        visitId: visit.id,
+        componentNames,
+        mileageAtService: parsedInput.mileageAtService,
+        dateAtService: parsedInput.dateAtService,
+      });
+    } catch (error) {
+      // No transactions here — compensate so no orphan visit survives a failed log insert.
+      await deleteVisit(visit.id, parsedInput.carId);
+      throw error;
+    }
 
     // Spec: a service at a higher mileage raises the car's current mileage.
     let newCarMileage: number | null = null;

@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it } from "vitest";
 import { useGarageStore } from "./garage";
-import type { Car, GarageData, ServiceLog } from "@/lib/types";
+import type { Car, GarageData } from "@/lib/types";
 
 const car = (id: string, mileage = 1000): Car => ({
   id,
@@ -64,18 +64,4 @@ describe("garage store", () => {
     expect(s.selectedCarId).toBe("b");
   });
 
-  it("addLog + replaceLog swaps the temp entry for the server one", () => {
-    useGarageStore.getState().setAll(data);
-    const temp: ServiceLog = {
-      id: "temp-1",
-      carId: "a",
-      componentName: "Oil",
-      mileageAtService: 1500,
-      dateAtService: "2026-06-09T00:00:00.000Z",
-    };
-    useGarageStore.getState().addLog(temp);
-    useGarageStore.getState().replaceLog("temp-1", { ...temp, id: "real-1" });
-    const ids = useGarageStore.getState().logs.map((l) => l.id);
-    expect(ids).toEqual(["real-1"]);
-  });
 });
