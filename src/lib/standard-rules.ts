@@ -40,3 +40,29 @@ export const STANDARD_RULES: readonly StandardRule[] = [
   { key: "transmissionOil", intervalKm: 60_000 },
   { key: "battery", intervalMonths: 60 },
 ];
+
+export interface StandardRuleResolved {
+  componentName: string;
+  intervalKm?: number;
+  intervalMonths?: number;
+}
+
+/**
+ * Maps selected keys to rule inputs, translating names with `t` and skipping
+ * names that already exist on the car (case-insensitive).
+ */
+export function resolveStandardRules(
+  keys: readonly StandardRuleKey[],
+  existingComponentNames: readonly string[],
+  t: (key: StandardRuleKey) => string,
+): StandardRuleResolved[] {
+  const existing = new Set(existingComponentNames.map((n) => n.toLowerCase()));
+  const selected = new Set(keys);
+  return STANDARD_RULES.filter(
+    (r) => selected.has(r.key) && !existing.has(t(r.key).toLowerCase()),
+  ).map((r) => ({
+    componentName: t(r.key),
+    ...(r.intervalKm !== undefined && { intervalKm: r.intervalKm }),
+    ...(r.intervalMonths !== undefined && { intervalMonths: r.intervalMonths }),
+  }));
+}

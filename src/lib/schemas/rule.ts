@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { STANDARD_RULE_KEYS } from "@/lib/standard-rules";
 import { objectIdSchema } from "./common";
 
 const intervalKm = z.number("validation.intervalInvalid").int("validation.intervalInvalid").min(1, "validation.intervalInvalid").max(1_000_000, "validation.intervalInvalid");
@@ -32,4 +33,12 @@ export const ruleUpdateSchema = z
 export const ruleDeleteSchema = z.object({
   ruleId: objectIdSchema,
   carId: objectIdSchema,
+});
+
+export const standardRulesInputSchema = z.object({
+  carId: objectIdSchema,
+  keys: z
+    .array(z.enum(STANDARD_RULE_KEYS))
+    .min(1, "validation.componentRequired")
+    .max(STANDARD_RULE_KEYS.length),
 });

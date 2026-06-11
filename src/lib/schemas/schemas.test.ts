@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { registerSchema, verifyEmailSchema, resendCodeSchema } from "./auth";
 import { carInputSchema, mileageUpdateSchema } from "./car";
-import { ruleInputSchema } from "./rule";
+import { ruleInputSchema, standardRulesInputSchema } from "./rule";
 import { logInputSchema } from "./log";
 
 const oid = "65f1a2b3c4d5e6f7a8b9c0d1";
@@ -112,5 +112,23 @@ describe("resendCodeSchema", () => {
 
   it("rejects an invalid email", () => {
     expect(resendCodeSchema.safeParse({ email: "nope" }).success).toBe(false);
+  });
+});
+
+describe("standard rules schema", () => {
+  it("accepts known keys", () => {
+    expect(
+      standardRulesInputSchema.safeParse({ carId: oid, keys: ["engineOil", "battery"] })
+        .success,
+    ).toBe(true);
+  });
+  it("rejects unknown keys, empty list, and bad carId", () => {
+    expect(
+      standardRulesInputSchema.safeParse({ carId: oid, keys: ["notAKey"] }).success,
+    ).toBe(false);
+    expect(standardRulesInputSchema.safeParse({ carId: oid, keys: [] }).success).toBe(false);
+    expect(
+      standardRulesInputSchema.safeParse({ carId: "short", keys: ["engineOil"] }).success,
+    ).toBe(false);
   });
 });
