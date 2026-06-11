@@ -47,7 +47,7 @@ beforeEach(() => {
     logs: [],
     visits: [],
     selectedCarId: carA.id,
-    hasHydrated: true,
+    isServerSyncing: false,
   });
 });
 
@@ -121,5 +121,17 @@ describe("CarDetail", () => {
       </NextIntlClientProvider>,
     );
     expect(screen.getByRole("button", { name: /Log services/ })).toBeDisabled();
+  });
+
+  it("shows skeleton while isServerSyncing and hides car content", () => {
+    useGarageStore.setState({ isServerSyncing: true });
+    render(
+      <NextIntlClientProvider locale="en" messages={en}>
+        <CarDetail carId={carB.id} />
+      </NextIntlClientProvider>,
+    );
+    expect(document.querySelector("[data-slot='skeleton']")).toBeInTheDocument();
+    expect(screen.queryByText("Service history")).not.toBeInTheDocument();
+    expect(screen.queryByText("Maintenance rules")).not.toBeInTheDocument();
   });
 });
