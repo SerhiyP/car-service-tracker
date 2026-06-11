@@ -54,7 +54,7 @@ describe("BottomNav", () => {
   it("renders all four items", () => {
     renderNav();
     expect(screen.getByRole("link", { name: "Dashboard" })).toHaveAttribute("href", "/");
-    expect(screen.getByRole("button", { name: "Log" })).toBeEnabled();
+    expect(screen.getByRole("button", { name: "Service" })).toBeEnabled();
     expect(screen.getByRole("link", { name: "Car" })).toHaveAttribute(
       "href",
       `/cars/${carId}`,
@@ -64,7 +64,7 @@ describe("BottomNav", () => {
 
   it("opens the log visit dialog for the selected car", () => {
     renderNav();
-    fireEvent.click(screen.getByRole("button", { name: "Log" }));
+    fireEvent.click(screen.getByRole("button", { name: "Service" }));
     expect(screen.getByText("Log services")).toBeInTheDocument();
     expect(screen.getByRole("checkbox", { name: "Engine oil" })).toBeInTheDocument();
   });
@@ -72,13 +72,13 @@ describe("BottomNav", () => {
   it("disables Log when the selected car has no rules", () => {
     useGarageStore.setState({ rules: [] });
     renderNav();
-    expect(screen.getByRole("button", { name: "Log" })).toBeDisabled();
+    expect(screen.getByRole("button", { name: "Service" })).toBeDisabled();
   });
 
   it("disables Log and Car when there are no cars", () => {
     useGarageStore.setState({ cars: [], rules: [], selectedCarId: null });
     renderNav();
-    expect(screen.getByRole("button", { name: "Log" })).toBeDisabled();
+    expect(screen.getByRole("button", { name: "Service" })).toBeDisabled();
     expect(screen.queryByRole("link", { name: "Car" })).not.toBeInTheDocument();
   });
 
@@ -105,7 +105,7 @@ describe("BottomNav", () => {
 
   it("closes the log dialog when the selected car changes", async () => {
     renderNav();
-    fireEvent.click(screen.getByRole("button", { name: "Log" }));
+    fireEvent.click(screen.getByRole("button", { name: "Service" }));
     expect(screen.getByText("Log services")).toBeInTheDocument();
     const otherId = "65f1a2b3c4d5e6f7a8b9c0d2";
     act(() =>
