@@ -2,6 +2,7 @@
 
 import { useEffect } from "react";
 import { useGarageStore } from "@/stores/garage";
+import { CarActions } from "./car-actions";
 import { RuleList } from "./rule-list";
 import { ServiceHistory } from "./service-history";
 
@@ -26,8 +27,9 @@ export function CarDetail({ carId }: { carId: string }) {
           </p>
         )}
       </div>
-      <RuleList carId={carId} />
+      {car && <CarActions car={car} />}
       <ServiceHistory carId={carId} />
+      <RuleList carId={carId} />
     </div>
   );
 }

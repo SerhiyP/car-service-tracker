@@ -1,4 +1,4 @@
-import { cleanup, render } from "@testing-library/react";
+import { cleanup, render, screen } from "@testing-library/react";
 import { NextIntlClientProvider } from "next-intl";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import en from "@/messages/en.json";
@@ -68,5 +68,27 @@ describe("CarDetail", () => {
       </NextIntlClientProvider>,
     );
     expect(useGarageStore.getState().selectedCarId).toBe(carA.id);
+  });
+
+  it("shows the action buttons above the history and rules sections", () => {
+    useGarageStore.setState({
+      rules: [
+        { id: "r1", carId: carB.id, componentName: "Engine oil", intervalKm: 10000 },
+      ],
+    });
+    render(
+      <NextIntlClientProvider locale="en" messages={en}>
+        <CarDetail carId={carB.id} />
+      </NextIntlClientProvider>,
+    );
+    expect(screen.getByRole("button", { name: /Log services/ })).toBeEnabled();
+    expect(screen.getByRole("button", { name: /Add rule/ })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /Add standard rules/ })).toBeInTheDocument();
+    // History section precedes the rules section in the DOM.
+    const history = screen.getByText("Service history");
+    const rules = screen.getByText("Maintenance rules");
+    expect(
+      history.compareDocumentPosition(rules) & Node.DOCUMENT_POSITION_FOLLOWING,
+    ).toBeTruthy();
   });
 });

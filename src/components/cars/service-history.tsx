@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useFormatter, useTranslations } from "next-intl";
 import { toast } from "sonner";
-import { ClipboardList, Pencil, Trash2 } from "lucide-react";
+import { Pencil, Trash2 } from "lucide-react";
 import { deleteLogAction } from "@/actions/logs";
 import { actionErrorKey } from "@/lib/action-feedback";
 import { useGarageStore } from "@/stores/garage";
@@ -11,15 +11,12 @@ import type { ServiceLog } from "@/lib/types";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { EditVisitDialog } from "./edit-visit-dialog";
-import { LogVisitDialog } from "./log-visit-dialog";
 
 export function ServiceHistory({ carId }: { carId: string }) {
   const t = useTranslations();
   const format = useFormatter();
-  const [logOpen, setLogOpen] = useState(false);
   const [editing, setEditing] = useState<ServiceLog | null>(null);
   const car = useGarageStore((s) => s.cars).find((c) => c.id === carId);
-  const hasRules = useGarageStore((s) => s.rules).some((r) => r.carId === carId);
   const visits = useGarageStore((s) => s.visits);
   const logs = useGarageStore((s) => s.logs)
     .filter((l) => l.carId === carId)
@@ -49,19 +46,7 @@ export function ServiceHistory({ carId }: { carId: string }) {
 
   return (
     <div className="space-y-3">
-      <div className="flex items-center justify-between">
-        <h3 className="text-sm font-medium text-muted-foreground">{t("car.history")}</h3>
-        {car && (
-          <Button
-            variant="outline"
-            size="sm"
-            disabled={!hasRules}
-            onClick={() => setLogOpen(true)}
-          >
-            <ClipboardList className="size-4" /> {t("car.logServices")}
-          </Button>
-        )}
-      </div>
+      <h3 className="text-sm font-medium text-muted-foreground">{t("car.history")}</h3>
       {logs.length === 0 && (
         <p className="text-sm text-muted-foreground">{t("car.noLogs")}</p>
       )}
@@ -115,7 +100,6 @@ export function ServiceHistory({ carId }: { carId: string }) {
           </Card>
         );
       })}
-      {car && <LogVisitDialog car={car} open={logOpen} onOpenChange={setLogOpen} />}
       {car && editing && (
         <EditVisitDialog
           car={car}
