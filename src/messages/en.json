@@ -58,7 +58,6 @@
     "resetNowLogin": "Password updated — please sign in"
   },
   "account": {
-    "dangerZone": "Danger zone",
     "deleteAccount": "Delete account",
     "deleteWarning": "This permanently deletes your account, cars, rules, and service history. This cannot be undone.",
     "deleteConfirmInstruction": "Type {word} to confirm",

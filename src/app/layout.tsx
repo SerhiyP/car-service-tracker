@@ -57,6 +57,7 @@ export default async function RootLayout({
             transition: "opacity 0.3s",
           }}
         >
+          {/* eslint-disable-next-line @next/next/no-img-element */}
           <img src="/icons/icon-192.png" width="96" height="96" alt="" />
         </div>
         <SplashRemover />
