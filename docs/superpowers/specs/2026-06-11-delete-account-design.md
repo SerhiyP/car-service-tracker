@@ -16,7 +16,7 @@ Authenticated users can permanently delete their account and all data. Immediate
 
 ## 3. UI
 
-- `DeleteAccountDialog` (`src/components/account/delete-account-dialog.tsx`): a "Danger zone" block rendered at the bottom of the Garage page (`/cars`) — destructive-styled "Delete account" button → Dialog (existing Base UI dialog primitives, `DialogTrigger render={...}` pattern) with warning text, a text input, and a destructive confirm button disabled until the input matches the localized confirmation word exactly.
+- `DeleteAccountDialog` (`src/components/account/delete-account-dialog.tsx`): a "Danger zone" block rendered at the bottom of the Garage page (`/cars`) — destructive-styled "Delete account" button → Dialog (existing Base UI dialog primitives, `DialogTrigger render={...}` pattern) with warning text, a text input, and a destructive confirm button disabled until the input matches the localized confirmation word (case-insensitive, surrounding whitespace ignored).
 - On confirm: `useGarageStore.persist.clearStorage()` (purges the offline localStorage cache), then execute the action. Buttons disabled while executing. Failure → translated toast via `actionErrorKey` (sonner, same as other mutations).
 - The signOut redirect is a full navigation, so in-memory store state is discarded; only the persisted cache needs explicit clearing.
 

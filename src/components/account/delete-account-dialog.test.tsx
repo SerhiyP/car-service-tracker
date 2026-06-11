@@ -42,7 +42,7 @@ function confirmButton() {
 }
 
 describe("DeleteAccountDialog", () => {
-  it("keeps the confirm button disabled until the exact word is typed", () => {
+  it("keeps the confirm button disabled until the word is typed", () => {
     openDialog();
     expect(confirmButton()).toBeDisabled();
 
@@ -52,12 +52,21 @@ describe("DeleteAccountDialog", () => {
     expect(confirmButton()).toBeDisabled();
 
     fireEvent.change(screen.getByLabelText("Type DELETE to confirm"), {
-      target: { value: "delete" },
+      target: { value: "DELETE" },
     });
-    expect(confirmButton()).toBeDisabled();
+    expect(confirmButton()).not.toBeDisabled();
+  });
+
+  it("accepts the word case-insensitively and with surrounding spaces", () => {
+    openDialog();
 
     fireEvent.change(screen.getByLabelText("Type DELETE to confirm"), {
-      target: { value: "DELETE" },
+      target: { value: "delete" },
+    });
+    expect(confirmButton()).not.toBeDisabled();
+
+    fireEvent.change(screen.getByLabelText("Type DELETE to confirm"), {
+      target: { value: " Delete " },
     });
     expect(confirmButton()).not.toBeDisabled();
   });

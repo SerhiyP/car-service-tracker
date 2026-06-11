@@ -30,6 +30,9 @@ export function DeleteAccountDialog() {
     },
   });
 
+  const confirmed =
+    confirmText.trim().toLocaleLowerCase() === confirmWord.toLocaleLowerCase();
+
   return (
     <section className="space-y-2 rounded-xl border border-destructive/40 p-4">
       <h3 className="text-sm font-semibold text-destructive">
@@ -71,7 +74,7 @@ export function DeleteAccountDialog() {
           <Button
             variant="destructive"
             className="w-full"
-            disabled={confirmText !== confirmWord || isExecuting}
+            disabled={!confirmed || isExecuting}
             onClick={() => {
               // Purge the offline cache before the account disappears.
               useGarageStore.persist.clearStorage();
