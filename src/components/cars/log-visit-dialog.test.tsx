@@ -55,6 +55,49 @@ function renderDialog(preselectedComponent: string | null = null) {
   return onOpenChange;
 }
 
+/**
+ * Renders the dialog and returns a `setProps` function for re-rendering with
+ * new open / preselectedComponent values. The onOpenChange callback is also
+ * exchangeable on each call so tests can swap in a fresh spy.
+ */
+function renderControlled(
+  initial: {
+    open: boolean;
+    preselectedComponent: string | null;
+    onOpenChange?: (open: boolean) => void;
+  },
+) {
+  const { rerender } = render(
+    <NextIntlClientProvider locale="en" messages={en}>
+      <LogVisitDialog
+        car={car}
+        open={initial.open}
+        onOpenChange={initial.onOpenChange ?? (() => {})}
+        preselectedComponent={initial.preselectedComponent}
+      />
+    </NextIntlClientProvider>,
+  );
+
+  function setProps(next: {
+    open: boolean;
+    preselectedComponent: string | null;
+    onOpenChange?: (open: boolean) => void;
+  }) {
+    rerender(
+      <NextIntlClientProvider locale="en" messages={en}>
+        <LogVisitDialog
+          car={car}
+          open={next.open}
+          onOpenChange={next.onOpenChange ?? (() => {})}
+          preselectedComponent={next.preselectedComponent}
+        />
+      </NextIntlClientProvider>,
+    );
+  }
+
+  return { setProps };
+}
+
 describe("LogVisitDialog", () => {
   it("lists a checkbox per rule, unchecked, with submit disabled", () => {
     renderDialog();
@@ -139,5 +182,48 @@ describe("LogVisitDialog", () => {
     expect(useGarageStore.getState().visits).toEqual([]);
     expect(useGarageStore.getState().logs).toEqual([]);
     expect(onOpenChange).not.toHaveBeenCalledWith(false);
+  });
+
+  it("clears manual checkbox state on close and honours a new preselectedComponent on reopen", () => {
+    // Open with no preselect, manually check "Air filter"
+    const { setProps } = renderControlled({ open: true, preselectedComponent: null });
+    fireEvent.click(screen.getByRole("checkbox", { name: "Air filter" }));
+    expect(screen.getByRole("checkbox", { name: "Air filter" })).toBeChecked();
+
+    // Close via the dialog's own close button (renders as a button with sr-only "Close")
+    // This routes through handleOpenChange(false) which calls setChecked({})
+    fireEvent.click(screen.getByRole("button", { name: "Close" }));
+
+    // Re-render closed so the component receives open=false through handleOpenChange's
+    // onOpenChange(false) call — simulate that by re-rendering with open=false first
+    setProps({ open: false, preselectedComponent: null });
+
+    // Reopen with a new preselect
+    setProps({ open: true, preselectedComponent: "Engine oil" });
+
+    // "Engine oil" is pre-checked by prop; "Air filter" must NOT carry over stale state
+    expect(screen.getByRole("checkbox", { name: "Engine oil" })).toBeChecked();
+    expect(screen.getByRole("checkbox", { name: "Air filter" })).not.toBeChecked();
+  });
+
+  it("excludes rules belonging to other cars", () => {
+    // Add a rule for a different car — it must never appear in this dialog
+    useGarageStore.setState({
+      rules: [
+        ...rules,
+        {
+          id: "r3",
+          carId: "65f1a2b3c4d5e6f7a8b9c0d2",
+          componentName: "Coolant",
+          intervalKm: 40000,
+        },
+      ],
+    });
+
+    renderDialog();
+
+    // Only the 2 rules for `carId` should render
+    expect(screen.getAllByRole("checkbox")).toHaveLength(rules.length);
+    expect(screen.queryByRole("checkbox", { name: "Coolant" })).toBeNull();
   });
 });
