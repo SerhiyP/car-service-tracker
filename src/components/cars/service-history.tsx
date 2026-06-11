@@ -31,13 +31,13 @@ export function ServiceHistory({ carId }: { carId: string }) {
 
   return (
     <div className="space-y-3">
-      <h3 className="font-semibold">{t("car.history")}</h3>
+      <h3 className="text-sm font-medium text-muted-foreground">{t("car.history")}</h3>
       {logs.length === 0 && (
         <p className="text-sm text-muted-foreground">{t("car.noLogs")}</p>
       )}
       {logs.map((log) => (
         <Card key={log.id}>
-          <CardContent className="flex items-center justify-between p-4">
+          <CardContent className="flex items-center justify-between">
             <div>
               <p className="font-medium">{log.componentName}</p>
               <p className="text-sm text-muted-foreground">

@@ -10,7 +10,7 @@ export function CarDetail({ carId }: { carId: string }) {
   return (
     <div className="space-y-6">
       <div>
-        <h2 className="text-xl font-semibold">{car?.name ?? ""}</h2>
+        <h2 className="text-2xl font-semibold tracking-tight">{car?.name ?? ""}</h2>
         {car && (
           <p className="text-sm text-muted-foreground">
             {car.currentMileage.toLocaleString()} km

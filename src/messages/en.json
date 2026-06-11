@@ -44,7 +44,16 @@
     "codeExpired": "This code has expired. Request a new code.",
     "noActiveCode": "No active code for this email. Request a new one.",
     "verifiedNowLogin": "Email verified — please sign in",
-    "verifyNow": "Verify now"
+    "verifyNow": "Verify now",
+    "forgotPassword": "Forgot password?",
+    "forgotTitle": "Reset your password",
+    "forgotInstructions": "Enter your account email and we'll send a 6-digit code.",
+    "sendCode": "Send code",
+    "newPassword": "New password",
+    "resetPassword": "Set new password",
+    "resetEmailSubject": "Your Car Service Tracker password reset code",
+    "resetEmailBody": "Your password reset code is {code}. It expires in 15 minutes.",
+    "resetNowLogin": "Password updated — please sign in"
   },
   "account": {
     "dangerZone": "Danger zone",
@@ -67,7 +76,10 @@
     "overdueDays": "{days} days overdue",
     "neverServiced": "Never serviced",
     "lastService": "Last: {date} at {km} km",
-    "logService": "Log service"
+    "logService": "Log service",
+    "statusOk": "OK",
+    "statusDue": "Due soon",
+    "statusOverdue": "Overdue"
   },
   "garage": {
     "title": "Garage",
@@ -76,7 +88,9 @@
     "carName": "Car name",
     "mileage": "Mileage (km)",
     "deleteCarConfirm": "Delete this car and all its rules and history?",
-    "details": "Details"
+    "details": "Details",
+    "noCars": "No cars in your garage yet",
+    "noCarsHint": "Add your first car to start tracking maintenance"
   },
   "car": {
     "rules": "Maintenance rules",
@@ -92,7 +106,9 @@
     "serviceDate": "Service date",
     "serviceMileage": "Mileage at service (km)",
     "deleteLogConfirm": "Delete this history entry?",
-    "noLogs": "No service records yet"
+    "noLogs": "No service records yet",
+    "noRules": "No maintenance rules yet",
+    "noRulesHint": "Add a rule to start tracking this car's consumables"
   },
   "errors": {
     "server": "Something went wrong. Please try again.",

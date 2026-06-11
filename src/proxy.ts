@@ -5,7 +5,7 @@ import type { NextAuthRequest } from "next-auth";
 
 const { auth } = NextAuth(authConfig);
 
-const AUTH_PAGES = ["/login", "/register", "/verify"];
+const AUTH_PAGES = ["/login", "/register", "/verify", "/forgot"];
 
 export const proxy = auth((request: NextAuthRequest) => {
   const isLoggedIn = !!request.auth?.user;

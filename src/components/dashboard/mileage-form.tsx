@@ -46,7 +46,7 @@ export function MileageForm({
           onChange={(e) => setValue(e.target.value)}
         />
       </div>
-      <Button type="submit">{t("updateMileage")}</Button>
+      <Button type="submit" size="lg">{t("updateMileage")}</Button>
     </form>
   );
 }

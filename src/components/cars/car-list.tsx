@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useTranslations } from "next-intl";
 import { toast } from "sonner";
-import { Pencil, Plus, Trash2 } from "lucide-react";
+import { CarFront, Pencil, Plus, Trash2 } from "lucide-react";
 import { deleteCarAction } from "@/actions/cars";
 import { actionErrorKey } from "@/lib/action-feedback";
 import { useGarageStore } from "@/stores/garage";
@@ -35,9 +35,16 @@ export function CarList() {
 
   return (
     <div className="space-y-3">
+      {cars.length === 0 && (
+        <div className="flex flex-col items-center gap-1 py-10 text-center">
+          <CarFront className="mb-2 size-10 text-muted-foreground/40" aria-hidden="true" />
+          <p className="font-medium">{t("garage.noCars")}</p>
+          <p className="text-sm text-muted-foreground">{t("garage.noCarsHint")}</p>
+        </div>
+      )}
       {cars.map((car) => (
         <Card key={car.id}>
-          <CardContent className="flex items-center justify-between p-4">
+          <CardContent className="flex items-center justify-between">
             <Link href={`/cars/${car.id}`} className="min-w-0 flex-1">
               <p className="truncate font-medium">{car.name}</p>
               <p className="text-sm text-muted-foreground">
@@ -67,7 +74,7 @@ export function CarList() {
       ))}
       <CarFormDialog
         trigger={
-          <Button className="w-full">
+          <Button size="lg" className="w-full">
             <Plus className="size-4" /> {t("garage.addCar")}
           </Button>
         }

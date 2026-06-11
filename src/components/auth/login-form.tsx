@@ -10,9 +10,10 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 
-export function LoginForm({ verified = false }: { verified?: boolean }) {
+export function LoginForm({ verified = false, reset = false }: { verified?: boolean; reset?: boolean }) {
   const t = useTranslations();
   const { execute, result, isExecuting } = useAction(loginAction);
+  const [email, setEmail] = useState("");
   const [submittedEmail, setSubmittedEmail] = useState("");
 
   return (
@@ -26,7 +27,6 @@ export function LoginForm({ verified = false }: { verified?: boolean }) {
           onSubmit={(e) => {
             e.preventDefault();
             const data = new FormData(e.currentTarget);
-            const email = String(data.get("email"));
             setSubmittedEmail(email);
             execute({ email, password: String(data.get("password")) });
           }}
@@ -34,9 +34,18 @@ export function LoginForm({ verified = false }: { verified?: boolean }) {
           {verified && (
             <p className="text-sm text-green-600">{t("auth.verifiedNowLogin")}</p>
           )}
+          {reset && <p className="text-sm text-green-600">{t("auth.resetNowLogin")}</p>}
           <div className="space-y-2">
             <Label htmlFor="email">{t("auth.email")}</Label>
-            <Input id="email" name="email" type="email" autoComplete="email" required />
+            <Input
+              id="email"
+              name="email"
+              type="email"
+              autoComplete="email"
+              required
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+            />
           </div>
           <div className="space-y-2">
             <Label htmlFor="password">{t("auth.password")}</Label>
@@ -48,6 +57,14 @@ export function LoginForm({ verified = false }: { verified?: boolean }) {
               required
             />
           </div>
+          <p className="text-right text-sm">
+            <Link
+              href={email ? `/forgot?email=${encodeURIComponent(email)}` : "/forgot"}
+              className="text-muted-foreground underline hover:text-foreground"
+            >
+              {t("auth.forgotPassword")}
+            </Link>
+          </p>
           {result.serverError === "auth.emailNotVerified" ? (
             <div className="space-y-1">
               <p className="text-sm text-destructive">{t("auth.emailNotVerified")}</p>
@@ -61,7 +78,7 @@ export function LoginForm({ verified = false }: { verified?: boolean }) {
           ) : result.serverError ? (
             <p className="text-sm text-destructive">{t(result.serverError)}</p>
           ) : null}
-          <Button type="submit" className="w-full" disabled={isExecuting}>
+          <Button type="submit" size="lg" className="w-full" disabled={isExecuting}>
             {isExecuting ? t("common.loading") : t("auth.signIn")}
           </Button>
           <p className="text-center text-sm">
