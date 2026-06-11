@@ -2,6 +2,7 @@
 
 import { AuthError } from "next-auth";
 import { redirect } from "next/navigation";
+import type { ObjectId } from "mongodb";
 import { MongoServerError } from "mongodb";
 import bcrypt from "bcryptjs";
 import { signIn, signOut } from "@/auth";
@@ -10,6 +11,7 @@ import {
   loginSchema,
   registerSchema,
   resendCodeSchema,
+  resetPasswordSchema,
   verifyEmailSchema,
 } from "@/lib/schemas/auth";
 import {
@@ -17,8 +19,10 @@ import {
   deleteUserCascade,
   findUserByEmail,
   markEmailVerified,
+  updateUserPassword,
 } from "@/lib/repositories/users";
 import {
+  type CodePurpose,
   deleteCodeForUser,
   findCodeByUserId,
 } from "@/lib/repositories/verification-codes";
@@ -39,6 +43,35 @@ export type ResendCodeResult =
   | { status: "sent"; retryAfterSec: number }
   | { status: "alreadyVerified" }
   | { status: "cooldown"; retryAfterSec: number };
+
+type SendCodeOutcome =
+  | { status: "sent"; retryAfterSec: number }
+  | { status: "cooldown"; retryAfterSec: number };
+
+/** Issues a code with send-failure cleanup and cooldown feedback. */
+async function sendCodeWithFeedback(
+  userId: ObjectId,
+  email: string,
+  purpose: CodePurpose,
+): Promise<SendCodeOutcome> {
+  let sent: boolean;
+  try {
+    sent = await issueCode(userId, email, purpose);
+  } catch (e) {
+    console.error(`sending ${purpose} code failed:`, e);
+    // Drop the undelivered code so the cooldown doesn't block an immediate retry.
+    await deleteCodeForUser(userId);
+    throw new ActionError("auth.sendFailed");
+  }
+  if (!sent) {
+    const existing = await findCodeByUserId(userId);
+    const retryAfterSec = existing
+      ? cooldownSecondsLeft(existing.lastSentAt, new Date())
+      : 1;
+    return { status: "cooldown", retryAfterSec: Math.max(1, retryAfterSec) };
+  }
+  return { status: "sent", retryAfterSec: RESEND_COOLDOWN_MS / 1000 };
+}
 
 export const registerAction = actionClient
   .inputSchema(registerSchema)
@@ -114,23 +147,40 @@ export const resendVerificationCodeAction = actionClient
     if (!user) throw new ActionError("auth.emailNotFound");
     if (user.emailVerified) return { status: "alreadyVerified" };
 
-    let sent: boolean;
-    try {
-      sent = await issueCode(user._id, user.email, "verify");
-    } catch (e) {
-      console.error("sending verification code failed:", e);
-      // Drop the undelivered code so the cooldown doesn't block an immediate retry.
-      await deleteCodeForUser(user._id);
-      throw new ActionError("auth.sendFailed");
-    }
-    if (!sent) {
-      const existing = await findCodeByUserId(user._id);
-      const retryAfterSec = existing
-        ? cooldownSecondsLeft(existing.lastSentAt, new Date())
-        : 1;
-      return { status: "cooldown", retryAfterSec: Math.max(1, retryAfterSec) };
-    }
-    return { status: "sent", retryAfterSec: RESEND_COOLDOWN_MS / 1000 };
+    return sendCodeWithFeedback(user._id, user.email, "verify");
+  });
+
+export type RequestPasswordResetResult = SendCodeOutcome;
+
+export const requestPasswordResetAction = actionClient
+  .inputSchema(resendCodeSchema)
+  .action(async ({ parsedInput }): Promise<RequestPasswordResetResult> => {
+    const user = await findUserByEmail(parsedInput.email);
+    if (!user) throw new ActionError("auth.emailNotFound");
+    return sendCodeWithFeedback(user._id, user.email, "reset");
+  });
+
+export type ResetPasswordResult =
+  | { status: "reset" }
+  | { status: "codeInvalid"; attemptsLeft: number }
+  | { status: "tooManyAttempts" }
+  | { status: "codeExpired" }
+  | { status: "noActiveCode" };
+
+export const resetPasswordAction = actionClient
+  .inputSchema(resetPasswordSchema)
+  .action(async ({ parsedInput }): Promise<ResetPasswordResult> => {
+    const user = await findUserByEmail(parsedInput.email);
+    if (!user) throw new ActionError("auth.emailNotFound");
+
+    const consumed = await consumeCode(user._id, parsedInput.code, "reset");
+    if (consumed.status !== "ok") return consumed;
+
+    const passwordHash = await bcrypt.hash(parsedInput.newPassword, 10);
+    await updateUserPassword(user._id, passwordHash);
+    // Receiving the code proves mailbox ownership — unblock unverified accounts.
+    if (!user.emailVerified) await markEmailVerified(user._id);
+    return { status: "reset" };
   });
 
 export const deleteAccountAction = authActionClient.action(async ({ ctx }) => {
