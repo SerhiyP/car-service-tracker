@@ -1,0 +1,132 @@
+{
+  "common": {
+    "appName": "Car Service Tracker",
+    "save": "Save",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "edit": "Edit",
+    "add": "Add",
+    "loading": "Loading…",
+    "offline": "Offline",
+    "confirmDelete": "Are you sure? This cannot be undone."
+  },
+  "nav": {
+    "dashboard": "Dashboard",
+    "garage": "Garage"
+  },
+  "auth": {
+    "signIn": "Sign in",
+    "signUp": "Create account",
+    "signOut": "Sign out",
+    "email": "Email",
+    "password": "Password",
+    "name": "Name",
+    "loginTitle": "Welcome back",
+    "registerTitle": "Create your account",
+    "noAccount": "No account? Create one",
+    "haveAccount": "Already have an account? Sign in",
+    "invalidCredentials": "Invalid email or password",
+    "emailTaken": "An account with this email already exists",
+    "verifyEmailSubject": "Your Car Service Tracker verification code",
+    "verifyEmailBody": "Your verification code is {code}. It expires in 15 minutes.",
+    "emailNotVerified": "Your email is not verified yet",
+    "emailNotFound": "No account with this email",
+    "sendFailed": "Could not send the email. Try again.",
+    "verifyTitle": "Verify your email",
+    "verifyInstructions": "Enter the 6-digit code we sent to your email.",
+    "code": "Verification code",
+    "verify": "Verify",
+    "resendCode": "Resend code",
+    "resendIn": "Resend available in {seconds}s",
+    "codeSent": "A new code was sent",
+    "codeInvalidAttempts": "Wrong code — {attemptsLeft, plural, one {# attempt} other {# attempts}} left",
+    "tooManyAttempts": "Too many wrong attempts. Request a new code.",
+    "codeExpired": "This code has expired. Request a new code.",
+    "noActiveCode": "No active code for this email. Request a new one.",
+    "verifiedNowLogin": "Email verified — please sign in",
+    "verifyNow": "Verify now"
+  },
+  "account": {
+    "dangerZone": "Danger zone",
+    "deleteAccount": "Delete account",
+    "deleteWarning": "This permanently deletes your account, cars, rules, and service history. This cannot be undone.",
+    "deleteConfirmInstruction": "Type {word} to confirm",
+    "deleteConfirmWord": "DELETE"
+  },
+  "dashboard": {
+    "title": "Dashboard",
+    "currentMileage": "Current mileage",
+    "updateMileage": "Update",
+    "noCar": "No cars yet",
+    "addFirstCar": "Add your first car in the Garage",
+    "noRules": "No consumables tracked for this car yet",
+    "addRulesHint": "Open the car in the Garage to add maintenance rules",
+    "remainingKm": "{km} km left",
+    "remainingDays": "{days} days left",
+    "overdueKm": "{km} km overdue",
+    "overdueDays": "{days} days overdue",
+    "neverServiced": "Never serviced",
+    "lastService": "Last: {date} at {km} km",
+    "logService": "Log service"
+  },
+  "garage": {
+    "title": "Garage",
+    "addCar": "Add car",
+    "editCar": "Edit car",
+    "carName": "Car name",
+    "mileage": "Mileage (km)",
+    "deleteCarConfirm": "Delete this car and all its rules and history?",
+    "details": "Details"
+  },
+  "car": {
+    "rules": "Maintenance rules",
+    "history": "Service history",
+    "addRule": "Add rule",
+    "editRule": "Edit rule",
+    "componentName": "Component",
+    "intervalKm": "Interval (km)",
+    "intervalMonths": "Interval (months)",
+    "intervalHint": "Set at least one interval",
+    "deleteRuleConfirm": "Delete this rule?",
+    "logService": "Log service",
+    "serviceDate": "Service date",
+    "serviceMileage": "Mileage at service (km)",
+    "deleteLogConfirm": "Delete this history entry?",
+    "noLogs": "No service records yet"
+  },
+  "errors": {
+    "server": "Something went wrong. Please try again.",
+    "unauthorized": "Please sign in again",
+    "offline": "You are offline — changes were not saved",
+    "notFound": "Not found"
+  },
+  "validation": {
+    "nameRequired": "Name is required",
+    "emailInvalid": "Enter a valid email",
+    "passwordMin": "Password must be at least 8 characters",
+    "mileageInvalid": "Enter a valid mileage",
+    "componentRequired": "Component name is required",
+    "intervalRequired": "Set at least one interval",
+    "dateFuture": "Date cannot be in the future",
+    "passwordMax": "Password is too long",
+    "intervalInvalid": "Enter a valid interval",
+    "codeInvalid": "Enter the 6-digit code"
+  },
+  "locale": {
+    "language": "Language",
+    "en": "English",
+    "uk": "Українська"
+  },
+  "offlinePage": {
+    "title": "You are offline",
+    "description": "This page is not available offline. Your dashboard still works with the latest synced data."
+  },
+  "notFoundPage": {
+    "title": "Page not found",
+    "goHome": "Go to dashboard"
+  },
+  "errorPage": {
+    "title": "Something went wrong",
+    "retry": "Try again"
+  }
+}
