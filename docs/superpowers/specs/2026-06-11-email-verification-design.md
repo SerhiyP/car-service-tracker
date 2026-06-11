@@ -74,9 +74,21 @@ A failed send during registration must not strand the account: the user lands on
 
 ## 7. Error Handling
 
-- All new actions use the existing `actionClient` / `ActionError` pattern with i18n-key messages (`auth.codeInvalid`, `auth.codeExpired`, `auth.tooManyAttempts`, `auth.resendCooldown`, `auth.emailNotVerified`, `auth.sendFailed`).
+- All new actions use the existing `actionClient` / `ActionError` pattern with i18n-key messages (`auth.codeInvalid`, `auth.codeExpired`, `auth.tooManyAttempts`, `auth.noActiveCode`, `auth.resendCooldown`, `auth.emailNotVerified`, `auth.sendFailed`).
 - Verify/resend actions are unauthenticated by design (the user cannot log in yet) and operate on the submitted email.
 - `actionErrorKey()` continues to map results to toasts/inline errors on the client.
+
+**Verification error contract — no blind retries.** Each `verifyEmailAction` failure tells the user exactly what to do next, and the form disables further code submits whenever retrying cannot succeed:
+
+| Server state | Error key | Extra data | Verify form behavior |
+|---|---|---|---|
+| Wrong code, attempts remain | `auth.codeInvalid` | `attemptsLeft` | Inline error "Wrong code — N attempts left"; input cleared, focus returned |
+| Wrong code, cap reached (doc deleted) | `auth.tooManyAttempts` | — | Code input + submit disabled; message points to the resend button |
+| Code expired | `auth.codeExpired` | — | Same as above — only resend re-enables the form |
+| No active code (TTL-cleaned, already used, or never sent) | `auth.noActiveCode` | — | Same as above — only resend re-enables the form |
+| Already verified | — (success) | — | Treated as success: redirect to `/login` with the verified message |
+
+`attemptsLeft` travels alongside the error key (next-safe-action serializable error payload) so the message can interpolate the count. A successful resend resets the form to its active state. Submits are also disabled while an action is in flight, so double-taps cannot consume two attempts.
 
 ## 8. Testing
 
@@ -84,3 +96,4 @@ A failed send during registration must not strand the account: the user lands on
 - Schema tests for the verify input (email + exactly-6-digit code).
 - The Brevo sender is mocked in all tests (no network).
 - Component test for the verify form (submit, error rendering, resend cooldown state).
+- Component tests for the error contract: `attemptsLeft` rendered after a wrong code; form disabled after `tooManyAttempts` / `codeExpired` / `noActiveCode`; resend re-enabling the form.
