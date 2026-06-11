@@ -45,6 +45,25 @@ export async function createRule(input: {
   return toRule({ ...doc, _id: result.insertedId });
 }
 
+export async function createRules(
+  carId: string,
+  inputs: {
+    componentName: string;
+    intervalKm?: number;
+    intervalMonths?: number;
+  }[],
+): Promise<MaintenanceRule[]> {
+  if (inputs.length === 0) return [];
+  const docs: RuleDoc[] = inputs.map((input) => ({
+    carId: new ObjectId(carId),
+    componentName: input.componentName,
+    ...(input.intervalKm !== undefined && { intervalKm: input.intervalKm }),
+    ...(input.intervalMonths !== undefined && { intervalMonths: input.intervalMonths }),
+  }));
+  const result = await rules().insertMany(docs);
+  return docs.map((doc, i) => toRule({ ...doc, _id: result.insertedIds[i] }));
+}
+
 export async function updateRule(input: {
   ruleId: string;
   carId: string;

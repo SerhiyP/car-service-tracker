@@ -108,7 +108,28 @@
     "deleteLogConfirm": "Delete this history entry?",
     "noLogs": "No service records yet",
     "noRules": "No maintenance rules yet",
-    "noRulesHint": "Add a rule to start tracking this car's consumables"
+    "noRulesHint": "Add a rule to start tracking this car's consumables",
+    "addStandardRules": "Add standard rules",
+    "standardRulesDescription": "Typical service items with common intervals. Uncheck what you don't need — you can edit everything later.",
+    "standardRulesAlreadyAdded": "Already added",
+    "standardRulesSubmit": "Add selected ({count})",
+    "standardRulesAdded": "{count, plural, one {# rule added} other {# rules added}}"
+  },
+  "standardRules": {
+    "engineOil": "Engine oil & oil filter",
+    "airFilter": "Air filter",
+    "cabinFilter": "Cabin filter",
+    "fuelFilter": "Fuel filter",
+    "sparkPlugs": "Spark plugs",
+    "brakePadsFront": "Brake pads (front)",
+    "brakePadsRear": "Brake pads (rear)",
+    "brakeDiscsFront": "Brake discs (front)",
+    "brakeDiscsRear": "Brake discs (rear)",
+    "brakeFluid": "Brake fluid",
+    "timingBelt": "Timing belt",
+    "coolant": "Coolant (antifreeze)",
+    "transmissionOil": "Transmission oil",
+    "battery": "Battery"
   },
   "errors": {
     "server": "Something went wrong. Please try again.",

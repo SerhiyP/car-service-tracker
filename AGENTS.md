@@ -49,6 +49,12 @@ Run all four before considering any change done.
   `NextIntlClientProvider` + en catalog, `vi.hoisted` for anything captured by
   `vi.mock` factories, mocked `useAction` driving `onSuccess`/`onError`.
 
+## Git
+
+- **Never commit on `main`.** All work — including design specs and plans —
+  is committed on the feature branch where it will be implemented, and lands
+  on `main` only via PR.
+
 ## Working with MongoDB
 
 Never use MongoDB MCP tools in this project. Interact with the database only
