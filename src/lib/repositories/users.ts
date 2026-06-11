@@ -6,6 +6,7 @@ export interface UserDoc {
   email: string;
   name: string;
   passwordHash: string;
+  emailVerified?: Date | null; // absent on legacy accounts = unverified
 }
 
 const users = () => getDb().collection<Omit<UserDoc, "_id">>("users");
@@ -23,6 +24,12 @@ export async function createUser(input: {
     name: input.name,
     email: input.email.toLowerCase(),
     passwordHash: input.passwordHash,
+    emailVerified: null,
   });
   return result.insertedId.toHexString();
+}
+
+export async function markEmailVerified(userId: ObjectId | string): Promise<void> {
+  const _id = typeof userId === "string" ? new ObjectId(userId) : userId;
+  await users().updateOne({ _id }, { $set: { emailVerified: new Date() } });
 }

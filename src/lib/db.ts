@@ -5,8 +5,8 @@ declare global {
 }
 
 function createClient(): MongoClient {
-  const uri = process.env.MONGODB_URI;
-  if (!uri) throw new Error("MONGODB_URI is not set");
+  const uri = process.env.MONGODB_URI_CAR;
+  if (!uri) throw new Error("MONGODB_URI_CAR is not set");
   return new MongoClient(uri, { maxPoolSize: 10 });
 }
 
@@ -18,6 +18,10 @@ async function ensureIndexes(db: Db): Promise<void> {
     db
       .collection("service_logs")
       .createIndex({ carId: 1, componentName: 1, dateAtService: -1 }),
+    db.collection("verification_codes").createIndex({ userId: 1 }, { unique: true }),
+    db
+      .collection("verification_codes")
+      .createIndex({ expiresAt: 1 }, { expireAfterSeconds: 0 }),
   ]);
 }
 
