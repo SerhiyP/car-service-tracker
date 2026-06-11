@@ -6,7 +6,7 @@ import { MongoServerError, type ObjectId } from "mongodb";
 import bcrypt from "bcryptjs";
 import { getLocale } from "next-intl/server";
 import { signIn, signOut } from "@/auth";
-import { ActionError, actionClient } from "@/lib/safe-action";
+import { ActionError, actionClient, authActionClient } from "@/lib/safe-action";
 import {
   loginSchema,
   registerSchema,
@@ -15,6 +15,7 @@ import {
 } from "@/lib/schemas/auth";
 import {
   createUser,
+  deleteUserCascade,
   findUserByEmail,
   markEmailVerified,
 } from "@/lib/repositories/users";
@@ -176,6 +177,12 @@ export const resendVerificationCodeAction = actionClient
     }
     return { status: "sent", retryAfterSec: RESEND_COOLDOWN_MS / 1000 };
   });
+
+export const deleteAccountAction = authActionClient.action(async ({ ctx }) => {
+  await deleteUserCascade(ctx.userId);
+  // Throws NEXT_REDIRECT — propagates like logoutAction's signOut.
+  await signOut({ redirectTo: "/login" });
+});
 
 export async function logoutAction() {
   await signOut({ redirectTo: "/login" });
