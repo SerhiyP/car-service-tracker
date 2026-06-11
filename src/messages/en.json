@@ -31,7 +31,18 @@
     "verifyEmailBody": "Your verification code is {code}. It expires in 15 minutes.",
     "emailNotVerified": "Your email is not verified yet",
     "emailNotFound": "No account with this email",
-    "sendFailed": "Could not send the email. Try again."
+    "sendFailed": "Could not send the email. Try again.",
+    "verifyTitle": "Verify your email",
+    "verifyInstructions": "Enter the 6-digit code we sent to your email.",
+    "code": "Verification code",
+    "verify": "Verify",
+    "resendCode": "Resend code",
+    "resendIn": "Resend available in {seconds}s",
+    "codeSent": "A new code was sent",
+    "codeInvalidAttempts": "Wrong code — {attemptsLeft, plural, one {# attempt} other {# attempts}} left",
+    "tooManyAttempts": "Too many wrong attempts. Request a new code.",
+    "codeExpired": "This code has expired. Request a new code.",
+    "noActiveCode": "No active code for this email. Request a new one."
   },
   "dashboard": {
     "title": "Dashboard",
