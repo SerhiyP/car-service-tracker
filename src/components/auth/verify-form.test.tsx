@@ -23,9 +23,19 @@ vi.mock("@/actions/auth", () => ({
 vi.mock("next-safe-action/hooks", () => ({
   useAction: (
     action: unknown,
-    opts?: { onSuccess?: (args: { data: unknown }) => void },
+    opts?: {
+      onSuccess?: (args: { data: unknown }) => void;
+      onError?: (args: { error: unknown }) => void;
+    },
   ) => ({
-    execute: () => opts?.onSuccess?.({ data: nextData.get(action) }),
+    execute: () => {
+      const preset = nextData.get(action) as { error?: unknown } | undefined;
+      if (preset && typeof preset === "object" && "error" in preset) {
+        opts?.onError?.({ error: preset.error });
+      } else {
+        opts?.onSuccess?.({ data: preset });
+      }
+    },
     result: {},
     isExecuting: false,
   }),
@@ -78,7 +88,7 @@ describe("VerifyForm", () => {
     expect(screen.getByLabelText("Verification code")).toBeDisabled();
     expect(screen.getByRole("button", { name: "Verify" })).toBeDisabled();
 
-    nextData.set("resendVerificationCodeAction", { status: "sent" });
+    nextData.set("resendVerificationCodeAction", { status: "sent", retryAfterSec: 60 });
     fireEvent.click(screen.getByRole("button", { name: "Resend code" }));
     expect(screen.getByLabelText("Verification code")).not.toBeDisabled();
     expect(screen.getByRole("button", { name: "Verify" })).not.toBeDisabled();
@@ -126,5 +136,12 @@ describe("VerifyForm", () => {
     renderForm();
     fireEvent.click(screen.getByRole("button", { name: "Resend code" }));
     expect(push).toHaveBeenCalledWith("/login?verified=1");
+  });
+
+  it("shows a translated server error from the error path", () => {
+    nextData.set("verifyEmailAction", { error: { serverError: "errors.server" } });
+    renderForm();
+    submitCode("123456");
+    expect(screen.getByText("Something went wrong. Please try again.")).toBeInTheDocument();
   });
 });

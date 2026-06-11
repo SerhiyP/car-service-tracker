@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useAction } from "next-safe-action/hooks";
 import { useTranslations } from "next-intl";
@@ -26,6 +26,7 @@ export function VerifyForm({ initialEmail }: { initialEmail: string }) {
   const [code, setCode] = useState("");
   const [feedback, setFeedback] = useState<Feedback>(null);
   const [cooldown, setCooldown] = useState(0);
+  const codeRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     if (cooldown === 0) return;
@@ -46,6 +47,7 @@ export function VerifyForm({ initialEmail }: { initialEmail: string }) {
         case "codeInvalid":
           setFeedback({ kind: "codeInvalid", attemptsLeft: data.attemptsLeft });
           setCode("");
+          codeRef.current?.focus();
           break;
         case "tooManyAttempts":
           setFeedback({ kind: "locked", key: "auth.tooManyAttempts" });
@@ -79,7 +81,7 @@ export function VerifyForm({ initialEmail }: { initialEmail: string }) {
       }
       setFeedback({ kind: "sent" });
       setCode("");
-      setCooldown(60);
+      setCooldown(data.retryAfterSec);
     },
     onError({ error }) {
       setFeedback({ kind: "error", key: actionErrorKey(error) ?? "errors.server" });
@@ -128,19 +130,24 @@ export function VerifyForm({ initialEmail }: { initialEmail: string }) {
               disabled={locked}
               value={code}
               onChange={(e) => setCode(e.target.value.replace(/\D/g, ""))}
+              ref={codeRef}
+              aria-invalid={feedback?.kind === "codeInvalid" || undefined}
+              aria-describedby={feedback?.kind === "codeInvalid" ? "code-error" : undefined}
             />
           </div>
-          {feedback?.kind === "codeInvalid" && (
-            <p className="text-sm text-destructive">
-              {t("auth.codeInvalidAttempts", { attemptsLeft: feedback.attemptsLeft })}
-            </p>
-          )}
-          {(feedback?.kind === "locked" || feedback?.kind === "error") && (
-            <p className="text-sm text-destructive">{t(feedback.key)}</p>
-          )}
-          {feedback?.kind === "sent" && (
-            <p className="text-sm text-green-600">{t("auth.codeSent")}</p>
-          )}
+          <div aria-live="polite">
+            {feedback?.kind === "codeInvalid" && (
+              <p id="code-error" className="text-sm text-destructive">
+                {t("auth.codeInvalidAttempts", { attemptsLeft: feedback.attemptsLeft })}
+              </p>
+            )}
+            {(feedback?.kind === "locked" || feedback?.kind === "error") && (
+              <p className="text-sm text-destructive">{t(feedback.key)}</p>
+            )}
+            {feedback?.kind === "sent" && (
+              <p className="text-sm text-green-600">{t("auth.codeSent")}</p>
+            )}
+          </div>
           <Button
             type="submit"
             className="w-full"

@@ -43,7 +43,7 @@ export type VerifyEmailResult =
   | { status: "noActiveCode" };
 
 export type ResendCodeResult =
-  | { status: "sent" }
+  | { status: "sent"; retryAfterSec: number }
   | { status: "alreadyVerified" }
   | { status: "cooldown"; retryAfterSec: number };
 
@@ -172,7 +172,7 @@ export const resendVerificationCodeAction = actionClient
         : 1;
       return { status: "cooldown", retryAfterSec: Math.max(1, retryAfterSec) };
     }
-    return { status: "sent" };
+    return { status: "sent", retryAfterSec: RESEND_COOLDOWN_MS / 1000 };
   });
 
 export async function logoutAction() {
