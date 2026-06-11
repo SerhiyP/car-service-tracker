@@ -92,6 +92,28 @@ describe("CarDetail", () => {
     ).toBeTruthy();
   });
 
+  it("hides Add standard rules once the car has more than 3 rules", () => {
+    useGarageStore.setState({
+      rules: ["Engine oil", "Air filter", "Cabin filter", "Brake fluid"].map(
+        (componentName, i) => ({
+          id: `r${i}`,
+          carId: carB.id,
+          componentName,
+          intervalKm: 10000,
+        }),
+      ),
+    });
+    render(
+      <NextIntlClientProvider locale="en" messages={en}>
+        <CarDetail carId={carB.id} />
+      </NextIntlClientProvider>,
+    );
+    expect(
+      screen.queryByRole("button", { name: /Add standard rules/ }),
+    ).not.toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /Add rule/ })).toBeInTheDocument();
+  });
+
   it("disables Log services when the car has no rules", () => {
     render(
       <NextIntlClientProvider locale="en" messages={en}>

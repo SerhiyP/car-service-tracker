@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useTranslations } from "next-intl";
 import { ClipboardList, ListChecks, Plus } from "lucide-react";
 import { useGarageStore } from "@/stores/garage";
+import { cn } from "@/lib/utils";
 import type { Car } from "@/lib/types";
 import { Button } from "@/components/ui/button";
 import { LogVisitDialog } from "./log-visit-dialog";
@@ -13,7 +14,13 @@ import { StandardRulesDialog } from "./standard-rules-dialog";
 export function CarActions({ car }: { car: Car }) {
   const t = useTranslations();
   const [logOpen, setLogOpen] = useState(false);
-  const hasRules = useGarageStore((s) => s.rules).some((r) => r.carId === car.id);
+  const ruleCount = useGarageStore((s) => s.rules).filter(
+    (r) => r.carId === car.id,
+  ).length;
+  const hasRules = ruleCount > 0;
+  // The standard-rules picker is an onboarding shortcut; once the car has a
+  // real rule set, hide it so a bulk add can't trample tuned intervals.
+  const showStandardRules = ruleCount <= 3;
 
   return (
     <div className="space-y-2">
@@ -26,7 +33,7 @@ export function CarActions({ car }: { car: Car }) {
       >
         <ClipboardList className="size-4" /> {t("car.logServices")}
       </Button>
-      <div className="grid grid-cols-2 gap-2">
+      <div className={cn("grid gap-2", showStandardRules ? "grid-cols-2" : "grid-cols-1")}>
         <RuleFormDialog
           carId={car.id}
           trigger={
@@ -35,14 +42,16 @@ export function CarActions({ car }: { car: Car }) {
             </Button>
           }
         />
-        <StandardRulesDialog
-          carId={car.id}
-          trigger={
-            <Button variant="outline" size="lg">
-              <ListChecks className="size-4" /> {t("car.addStandardRules")}
-            </Button>
-          }
-        />
+        {showStandardRules && (
+          <StandardRulesDialog
+            carId={car.id}
+            trigger={
+              <Button variant="outline" size="lg">
+                <ListChecks className="size-4" /> {t("car.addStandardRules")}
+              </Button>
+            }
+          />
+        )}
       </div>
       <LogVisitDialog car={car} open={logOpen} onOpenChange={setLogOpen} />
     </div>
