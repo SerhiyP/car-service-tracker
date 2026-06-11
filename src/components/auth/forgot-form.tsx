@@ -116,6 +116,7 @@ export function ForgotForm({ initialEmail }: { initialEmail: string }) {
               onChange={(e) => {
                 setEmail(e.target.value);
                 setFeedback(null); // a different email is a different reset state
+                setCooldown(0);
               }}
             />
           </div>

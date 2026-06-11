@@ -141,4 +141,58 @@ describe("ForgotForm", () => {
     requestCode();
     expect(screen.getByText("No account with this email")).toBeInTheDocument();
   });
+
+  it("locks the form when the code expired", () => {
+    nextData.set("requestPasswordResetAction", { status: "sent", retryAfterSec: 60 });
+    nextData.set("resetPasswordAction", { status: "codeExpired" });
+    renderForm();
+    requestCode();
+    fireEvent.change(screen.getByLabelText("Verification code"), {
+      target: { value: "123456" },
+    });
+    fireEvent.change(screen.getByLabelText("New password"), {
+      target: { value: "new-password-1" },
+    });
+    fireEvent.click(screen.getByRole("button", { name: "Set new password" }));
+    expect(screen.getByText("This code has expired. Request a new code.")).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Set new password" })).toBeDisabled();
+  });
+
+  it("locks the form when there is no active code", () => {
+    nextData.set("requestPasswordResetAction", { status: "sent", retryAfterSec: 60 });
+    nextData.set("resetPasswordAction", { status: "noActiveCode" });
+    renderForm();
+    requestCode();
+    fireEvent.change(screen.getByLabelText("Verification code"), {
+      target: { value: "123456" },
+    });
+    fireEvent.change(screen.getByLabelText("New password"), {
+      target: { value: "new-password-1" },
+    });
+    fireEvent.click(screen.getByRole("button", { name: "Set new password" }));
+    expect(
+      screen.getByText("No active code for this email. Request a new one."),
+    ).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Set new password" })).toBeDisabled();
+  });
+
+  it("resending a code clears the locked state", () => {
+    // retryAfterSec 0 keeps the resend button enabled so the unlock can be exercised
+    nextData.set("requestPasswordResetAction", { status: "sent", retryAfterSec: 0 });
+    nextData.set("resetPasswordAction", { status: "tooManyAttempts" });
+    renderForm();
+    requestCode();
+    fireEvent.change(screen.getByLabelText("Verification code"), {
+      target: { value: "000000" },
+    });
+    fireEvent.change(screen.getByLabelText("New password"), {
+      target: { value: "new-password-1" },
+    });
+    fireEvent.click(screen.getByRole("button", { name: "Set new password" }));
+    expect(screen.getByRole("button", { name: "Set new password" })).toBeDisabled();
+
+    fireEvent.click(screen.getByRole("button", { name: "Resend code" }));
+    expect(screen.getByRole("button", { name: "Set new password" })).not.toBeDisabled();
+    expect(screen.getByText("A new code was sent")).toBeInTheDocument();
+  });
 });
