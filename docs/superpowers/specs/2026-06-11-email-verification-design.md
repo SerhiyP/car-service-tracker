@@ -17,7 +17,7 @@ Decisions made during brainstorming:
 
 1. **Register** (`registerAction`): create the user with `emailVerified: null` and **remove the existing auto-login**. Generate a 6-digit code, store its hash, send the email via Brevo, then redirect to `/verify?email=<email>`.
 2. **Verify** (`verifyEmailAction`): user submits email + code. On success: set `users.emailVerified = new Date()`, delete the code document, redirect to `/login` with a "verified — please sign in" success message. Auto-login after verification is not possible with the Credentials provider without re-sending the password; one manual login right after registering is acceptable.
-3. **Login**: `authorize()` rejects unverified accounts with a distinct error code (a `CredentialsSignin` subclass), so the login form shows "email not verified" plus a path to `/verify` with a resend option — instead of the generic "invalid credentials".
+3. **Login**: `authorize()` rejects unverified accounts (returns `null`), and `loginAction` classifies the failure (user exists + password correct + unverified → `auth.emailNotVerified`), so the login form shows "email not verified" plus a path to `/verify` with a resend option — instead of the generic "invalid credentials". (A `CredentialsSignin` subclass was considered and rejected: Auth.js wraps authorize-thrown errors inconsistently across versions.)
 4. **Resend** (`resendVerificationCodeAction`): generates a fresh code with a 60-second cooldown. Legacy accounts created before this feature (no `emailVerified` field) self-heal through this path: login fails as unverified → resend → verify. No migration script.
 
 ## 3. Data Model

@@ -91,6 +91,8 @@ export const registerAction = actionClient
     } catch (e) {
       // The account exists either way; the user can resend from /verify.
       console.error("sending verification code failed:", e);
+      // Drop the undelivered code so the cooldown doesn't delay that resend.
+      await deleteCodeForUser(userId).catch(() => {});
     }
 
     redirect(`/verify?email=${encodeURIComponent(email)}`);
