@@ -44,7 +44,16 @@
     "codeExpired": "Термін дії коду минув. Запросіть новий код.",
     "noActiveCode": "Немає активного коду для цієї пошти. Запросіть новий.",
     "verifiedNowLogin": "Пошту підтверджено — увійдіть",
-    "verifyNow": "Підтвердити зараз"
+    "verifyNow": "Підтвердити зараз",
+    "forgotPassword": "Забули пароль?",
+    "forgotTitle": "Відновлення пароля",
+    "forgotInstructions": "Вкажіть email вашого акаунта — ми надішлемо 6-значний код.",
+    "sendCode": "Надіслати код",
+    "newPassword": "Новий пароль",
+    "resetPassword": "Встановити новий пароль",
+    "resetEmailSubject": "Код відновлення пароля Car Service Tracker",
+    "resetEmailBody": "Ваш код відновлення пароля: {code}. Він діє 15 хвилин.",
+    "resetNowLogin": "Пароль оновлено — увійдіть"
   },
   "account": {
     "dangerZone": "Небезпечна зона",

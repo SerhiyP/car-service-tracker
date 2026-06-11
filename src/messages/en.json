@@ -44,7 +44,16 @@
     "codeExpired": "This code has expired. Request a new code.",
     "noActiveCode": "No active code for this email. Request a new one.",
     "verifiedNowLogin": "Email verified — please sign in",
-    "verifyNow": "Verify now"
+    "verifyNow": "Verify now",
+    "forgotPassword": "Forgot password?",
+    "forgotTitle": "Reset your password",
+    "forgotInstructions": "Enter your account email and we'll send a 6-digit code.",
+    "sendCode": "Send code",
+    "newPassword": "New password",
+    "resetPassword": "Set new password",
+    "resetEmailSubject": "Your Car Service Tracker password reset code",
+    "resetEmailBody": "Your password reset code is {code}. It expires in 15 minutes.",
+    "resetNowLogin": "Password updated — please sign in"
   },
   "account": {
     "dangerZone": "Danger zone",
