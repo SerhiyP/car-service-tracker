@@ -29,7 +29,8 @@ export async function createUser(input: {
   return result.insertedId.toHexString();
 }
 
-export async function markEmailVerified(userId: ObjectId | string): Promise<void> {
+export async function markEmailVerified(userId: ObjectId | string): Promise<boolean> {
   const _id = typeof userId === "string" ? new ObjectId(userId) : userId;
-  await users().updateOne({ _id }, { $set: { emailVerified: new Date() } });
+  const result = await users().updateOne({ _id }, { $set: { emailVerified: new Date() } });
+  return result.matchedCount === 1;
 }

@@ -5,7 +5,7 @@ export interface VerificationCodeDoc {
   _id: ObjectId;
   userId: ObjectId;
   codeHash: string;
-  expiresAt: Date; // TTL index — Mongo deletes the doc after this moment
+  expiresAt: Date; // TTL index — Mongo deletes the doc shortly after this moment
   attempts: number;
   lastSentAt: Date;
 }
