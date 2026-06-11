@@ -67,7 +67,10 @@
     "overdueDays": "{days} days overdue",
     "neverServiced": "Never serviced",
     "lastService": "Last: {date} at {km} km",
-    "logService": "Log service"
+    "logService": "Log service",
+    "statusOk": "OK",
+    "statusDue": "Due soon",
+    "statusOverdue": "Overdue"
   },
   "garage": {
     "title": "Garage",
@@ -76,7 +79,9 @@
     "carName": "Car name",
     "mileage": "Mileage (km)",
     "deleteCarConfirm": "Delete this car and all its rules and history?",
-    "details": "Details"
+    "details": "Details",
+    "noCars": "No cars in your garage yet",
+    "noCarsHint": "Add your first car to start tracking maintenance"
   },
   "car": {
     "rules": "Maintenance rules",
@@ -92,7 +97,9 @@
     "serviceDate": "Service date",
     "serviceMileage": "Mileage at service (km)",
     "deleteLogConfirm": "Delete this history entry?",
-    "noLogs": "No service records yet"
+    "noLogs": "No service records yet",
+    "noRules": "No maintenance rules yet",
+    "noRulesHint": "Add a rule to start tracking this car's consumables"
   },
   "errors": {
     "server": "Something went wrong. Please try again.",
