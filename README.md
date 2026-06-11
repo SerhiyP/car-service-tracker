@@ -3,6 +3,8 @@
 Mobile-first PWA for tracking vehicle consumables and maintenance schedules.
 Offline read access, MongoDB Atlas sync, multi-user, multi-vehicle, EN/UK.
 
+**Demo:** <https://car-service-tracker-flame.vercel.app/>
+
 ## Features
 
 - **Garage** — multiple cars per account, quick mileage updates.
