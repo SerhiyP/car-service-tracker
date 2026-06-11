@@ -58,6 +58,7 @@ export async function deleteUserCascade(userId: ObjectId | string): Promise<void
     await Promise.all([
       db.collection("maintenance_rules").deleteMany({ carId: { $in: carIds } }),
       db.collection("service_logs").deleteMany({ carId: { $in: carIds } }),
+      db.collection("service_visits").deleteMany({ carId: { $in: carIds } }),
     ]);
   }
   await Promise.all([
