@@ -81,3 +81,18 @@ export function latestLogFor(
   }
   return latest;
 }
+
+function minRemaining(info: MaintenanceInfo): number {
+  return Math.min(info.remainingKm ?? Infinity, info.remainingDays ?? Infinity);
+}
+
+// Most-urgent-first ordering for dashboard cards: red, yellow, green.
+// Within a status the smaller remaining figure wins — km and days are not
+// commensurable, but "fewest units left" is a fine same-status tie-break.
+export function compareMaintenanceUrgency(
+  a: MaintenanceInfo,
+  b: MaintenanceInfo,
+): number {
+  if (a.status !== b.status) return WORST[b.status] - WORST[a.status];
+  return minRemaining(a) - minRemaining(b);
+}
