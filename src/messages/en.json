@@ -93,7 +93,12 @@
     "deleteCarConfirm": "Delete this car and all its rules and history?",
     "details": "Details",
     "noCars": "No cars in your garage yet",
-    "noCarsHint": "Add your first car to start tracking maintenance"
+    "noCarsHint": "Add your first car to start tracking maintenance",
+    "rulesCount": "{count, plural, one {# rule} other {# rules}}",
+    "lastService": "Last: {date}",
+    "neverServiced": "Never serviced",
+    "overdueCount": "{count, plural, one {# overdue} other {# overdue}}",
+    "dueCount": "{count, plural, one {# due soon} other {# due soon}}"
   },
   "car": {
     "rules": "Maintenance rules",
