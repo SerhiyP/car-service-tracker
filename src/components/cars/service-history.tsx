@@ -83,6 +83,7 @@ export function ServiceHistory({ carId }: { carId: string }) {
                       amount: format.number(visitTotal, {
                         style: "currency",
                         currency: "UAH",
+                        currencyDisplay: "narrowSymbol",
                         minimumFractionDigits: 0,
                         maximumFractionDigits: 2,
                       }),
