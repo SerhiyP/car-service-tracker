@@ -113,7 +113,13 @@
     "standardRulesDescription": "Typical service items with common intervals. Uncheck what you don't need — you can edit everything later.",
     "standardRulesAlreadyAdded": "Already added",
     "standardRulesSubmit": "Add selected ({count})",
-    "standardRulesAdded": "{count, plural, one {# rule added} other {# rules added}}"
+    "standardRulesAdded": "{count, plural, one {# rule added} other {# rules added}}",
+    "logServices": "Log services",
+    "logVisitDescription": "Select the work done during this visit. Date, mileage, and cost apply to everything selected.",
+    "logVisitSubmit": "Log selected ({count})",
+    "visitLogged": "{count, plural, one {# service logged} other {# services logged}}",
+    "totalCost": "Total cost (₴, optional)",
+    "visitTotal": "Visit total: {amount}"
   },
   "standardRules": {
     "engineOil": "Engine oil & oil filter",
@@ -147,7 +153,9 @@
     "dateFuture": "Date cannot be in the future",
     "passwordMax": "Password is too long",
     "intervalInvalid": "Enter a valid interval",
-    "codeInvalid": "Enter the 6-digit code"
+    "codeInvalid": "Enter the 6-digit code",
+    "costInvalid": "Enter a valid cost",
+    "componentsRequired": "Select at least one service item"
   },
   "locale": {
     "language": "Language",
