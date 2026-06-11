@@ -168,8 +168,8 @@ export function ForgotForm({ initialEmail }: { initialEmail: string }) {
             )}
           </div>
           {stage === "request" ? (
-            <Button type="submit" size="lg" className="w-full" disabled={busy || !email}>
-              {request.isExecuting ? t("common.loading") : t("auth.sendCode")}
+            <Button type="submit" size="lg" className="w-full" loading={request.isExecuting} disabled={reset.isExecuting || !email}>
+              {t("auth.sendCode")}
             </Button>
           ) : (
             <>
@@ -177,26 +177,24 @@ export function ForgotForm({ initialEmail }: { initialEmail: string }) {
                 type="submit"
                 size="lg"
                 className="w-full"
-                disabled={locked || busy}
+                loading={reset.isExecuting}
+                disabled={locked || request.isExecuting}
               >
-                {reset.isExecuting ? t("common.loading") : t("auth.resetPassword")}
+                {t("auth.resetPassword")}
               </Button>
               <Button
                 type="button"
                 variant="outline"
                 size="lg"
                 className="w-full"
-                disabled={busy || cooldown > 0 || !email}
+                loading={request.isExecuting}
+                disabled={reset.isExecuting || cooldown > 0 || !email}
                 onClick={() => {
                   if (locked) setFeedback(null); // a fresh code unlocks the form
                   request.execute({ email });
                 }}
               >
-                {cooldown > 0
-                  ? t("auth.resendIn", { seconds: cooldown })
-                  : request.isExecuting
-                    ? t("common.loading")
-                    : t("auth.resendCode")}
+                {cooldown > 0 ? t("auth.resendIn", { seconds: cooldown }) : t("auth.resendCode")}
               </Button>
             </>
           )}

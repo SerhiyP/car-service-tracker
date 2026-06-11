@@ -61,8 +61,8 @@ export function RegisterForm() {
           {result.serverError && (
             <p className="text-sm text-destructive">{t(result.serverError)}</p>
           )}
-          <Button type="submit" size="lg" className="w-full" disabled={isExecuting}>
-            {isExecuting ? t("common.loading") : t("auth.signUp")}
+          <Button type="submit" size="lg" className="w-full" loading={isExecuting}>
+            {t("auth.signUp")}
           </Button>
           <p className="text-center text-sm">
             <Link href="/login" className="underline">

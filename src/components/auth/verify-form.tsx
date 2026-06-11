@@ -152,23 +152,21 @@ export function VerifyForm({ initialEmail }: { initialEmail: string }) {
             type="submit"
             size="lg"
             className="w-full"
-            disabled={locked || verify.isExecuting}
+            loading={verify.isExecuting}
+            disabled={locked}
           >
-            {verify.isExecuting ? t("common.loading") : t("auth.verify")}
+            {t("auth.verify")}
           </Button>
           <Button
             type="button"
             variant="outline"
             size="lg"
             className="w-full"
-            disabled={resend.isExecuting || cooldown > 0 || !email}
+            loading={resend.isExecuting}
+            disabled={cooldown > 0 || !email}
             onClick={() => resend.execute({ email })}
           >
-            {cooldown > 0
-              ? t("auth.resendIn", { seconds: cooldown })
-              : resend.isExecuting
-                ? t("common.loading")
-                : t("auth.resendCode")}
+            {cooldown > 0 ? t("auth.resendIn", { seconds: cooldown }) : t("auth.resendCode")}
           </Button>
           <p className="text-center text-sm">
             <Link href="/login" className="underline">
