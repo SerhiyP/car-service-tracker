@@ -1,4 +1,4 @@
-import { ObjectId } from "mongodb";
+import { MongoServerError, ObjectId } from "mongodb";
 import { getDb } from "@/lib/db";
 
 export interface VerificationCodeDoc {
@@ -22,16 +22,29 @@ export async function findCodeByUserId(
   return (await codes().findOne({ userId: toObjectId(userId) })) as VerificationCodeDoc | null;
 }
 
-/** Replaces any existing code for the user and resets the attempt counter. */
-export async function upsertCode(
+/**
+ * Atomically stores a fresh code (resetting attempts) — but only when no code
+ * exists or the previous send is older than `cooldownMs`. Concurrency-safe:
+ * when the filter misses because a recent doc exists, the upsert attempts an
+ * insert and trips the unique userId index instead of double-sending.
+ */
+export async function upsertCodeIfCooldownPassed(
   userId: ObjectId | string,
   fields: { codeHash: string; expiresAt: Date; lastSentAt: Date },
-): Promise<void> {
-  await codes().updateOne(
-    { userId: toObjectId(userId) },
-    { $set: { ...fields, attempts: 0 } },
-    { upsert: true },
-  );
+  cooldownMs: number,
+): Promise<boolean> {
+  const cutoff = new Date(fields.lastSentAt.getTime() - cooldownMs);
+  try {
+    await codes().updateOne(
+      { userId: toObjectId(userId), lastSentAt: { $lte: cutoff } },
+      { $set: { ...fields, attempts: 0 } },
+      { upsert: true },
+    );
+    return true;
+  } catch (e) {
+    if (e instanceof MongoServerError && e.code === 11000) return false; // cooldown active
+    throw e;
+  }
 }
 
 /** Atomically increments and returns the new attempt count. */

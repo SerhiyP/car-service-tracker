@@ -22,11 +22,12 @@ import {
   deleteCodeForUser,
   findCodeByUserId,
   incrementAttempts,
-  upsertCode,
+  upsertCodeIfCooldownPassed,
 } from "@/lib/repositories/verification-codes";
 import {
   CODE_TTL_MS,
   MAX_ATTEMPTS,
+  RESEND_COOLDOWN_MS,
   cooldownSecondsLeft,
   generateCode,
   hashCode,
@@ -46,16 +47,25 @@ export type ResendCodeResult =
   | { status: "alreadyVerified" }
   | { status: "cooldown"; retryAfterSec: number };
 
-/** Stores a fresh code (resetting attempts) and emails it. */
-async function issueCode(userId: ObjectId | string, email: string): Promise<void> {
+/**
+ * Atomically claims the send slot (cooldown-gated), then emails a fresh code.
+ * Returns false when the cooldown blocked the send.
+ */
+async function issueCode(userId: ObjectId | string, email: string): Promise<boolean> {
   const code = generateCode();
   const now = new Date();
-  await upsertCode(userId, {
-    codeHash: hashCode(code),
-    expiresAt: new Date(now.getTime() + CODE_TTL_MS),
-    lastSentAt: now,
-  });
+  const claimed = await upsertCodeIfCooldownPassed(
+    userId,
+    {
+      codeHash: hashCode(code),
+      expiresAt: new Date(now.getTime() + CODE_TTL_MS),
+      lastSentAt: now,
+    },
+    RESEND_COOLDOWN_MS,
+  );
+  if (!claimed) return false;
   await sendVerificationEmail(email, code, await getLocale());
+  return true;
 }
 
 export const registerAction = actionClient
@@ -132,6 +142,8 @@ export const verifyEmailAction = actionClient
       return { status: "codeInvalid", attemptsLeft: MAX_ATTEMPTS - attempts };
     }
 
+    // Concurrent correct submissions are idempotent: re-marking verified and
+    // re-deleting the code are both no-ops.
     await markEmailVerified(user._id);
     await deleteCodeForUser(user._id);
     return { status: "verified" };
@@ -144,19 +156,21 @@ export const resendVerificationCodeAction = actionClient
     if (!user) throw new ActionError("auth.emailNotFound");
     if (user.emailVerified) return { status: "alreadyVerified" };
 
-    const existing = await findCodeByUserId(user._id);
-    if (existing) {
-      const retryAfterSec = cooldownSecondsLeft(existing.lastSentAt, new Date());
-      if (retryAfterSec > 0) return { status: "cooldown", retryAfterSec };
-    }
-
+    let sent: boolean;
     try {
-      await issueCode(user._id, user.email);
+      sent = await issueCode(user._id, user.email);
     } catch (e) {
       console.error("sending verification code failed:", e);
       // Drop the undelivered code so the cooldown doesn't block an immediate retry.
       await deleteCodeForUser(user._id);
       throw new ActionError("auth.sendFailed");
+    }
+    if (!sent) {
+      const existing = await findCodeByUserId(user._id);
+      const retryAfterSec = existing
+        ? cooldownSecondsLeft(existing.lastSentAt, new Date())
+        : 1;
+      return { status: "cooldown", retryAfterSec: Math.max(1, retryAfterSec) };
     }
     return { status: "sent" };
   });
