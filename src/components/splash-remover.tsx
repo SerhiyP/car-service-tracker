@@ -10,8 +10,9 @@ export function SplashRemover() {
     el.style.pointerEvents = "none";
     const remove = () => el.remove();
     const tid = setTimeout(remove, 400);
-    el.addEventListener("transitionend", () => { clearTimeout(tid); remove(); }, { once: true });
-    return () => { clearTimeout(tid); };
+    const handler = () => { clearTimeout(tid); remove(); };
+    el.addEventListener("transitionend", handler, { once: true });
+    return () => { clearTimeout(tid); el.removeEventListener("transitionend", handler); };
   }, []);
   return null;
 }

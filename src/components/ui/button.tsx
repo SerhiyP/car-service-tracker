@@ -55,6 +55,7 @@ function Button({
       data-slot="button"
       className={cn(buttonVariants({ variant, size, className }))}
       disabled={loading || disabled}
+      aria-busy={loading || undefined}
       {...props}
     >
       {loading && <Loader2 className="animate-spin" />}

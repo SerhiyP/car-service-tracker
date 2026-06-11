@@ -50,7 +50,7 @@ export default async function RootLayout({
             position: "fixed",
             inset: 0,
             zIndex: 9999,
-            background: "var(--background, oklch(0.98 0.004 85))",
+            background: "var(--background, light-dark(oklch(0.98 0.004 85), oklch(0.15 0.005 85)))",
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
