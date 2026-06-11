@@ -150,6 +150,7 @@ export function VerifyForm({ initialEmail }: { initialEmail: string }) {
           </div>
           <Button
             type="submit"
+            size="lg"
             className="w-full"
             disabled={locked || verify.isExecuting}
           >
@@ -158,6 +159,7 @@ export function VerifyForm({ initialEmail }: { initialEmail: string }) {
           <Button
             type="button"
             variant="outline"
+            size="lg"
             className="w-full"
             disabled={resend.isExecuting || cooldown > 0 || !email}
             onClick={() => resend.execute({ email })}

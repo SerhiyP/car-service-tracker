@@ -1,5 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { sendVerificationEmail } from "./email";
+import { sendPasswordResetEmail, sendVerificationEmail } from "./email";
 
 describe("sendVerificationEmail", () => {
   beforeEach(() => {
@@ -67,5 +67,17 @@ describe("sendVerificationEmail", () => {
 
     const body = JSON.parse((fetchMock.mock.calls[0] as [string, RequestInit])[1].body as string);
     expect(body.subject).toBe("Your Car Service Tracker verification code");
+  });
+
+  it("posts a localized password reset email to Brevo", async () => {
+    const fetchMock = vi.fn().mockResolvedValue(new Response("{}", { status: 201 }));
+    vi.stubGlobal("fetch", fetchMock);
+
+    await sendPasswordResetEmail("user@example.com", "654321", "en");
+
+    const [, init] = fetchMock.mock.calls[0] as [string, RequestInit];
+    const body = JSON.parse(init.body as string);
+    expect(body.subject).toBe("Your Car Service Tracker password reset code");
+    expect(body.textContent).toContain("654321");
   });
 });

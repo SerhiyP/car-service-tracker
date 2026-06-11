@@ -19,3 +19,9 @@ export const verifyEmailSchema = z.object({
 export const resendCodeSchema = z.object({
   email: z.email("validation.emailInvalid"),
 });
+
+export const resetPasswordSchema = z.object({
+  email: z.email("validation.emailInvalid"),
+  code: z.string().regex(/^\d{6}$/, "validation.codeInvalid"),
+  newPassword: z.string().min(8, "validation.passwordMin").max(200, "validation.passwordMax"),
+});

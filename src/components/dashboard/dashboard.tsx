@@ -9,7 +9,7 @@ import { updateCarMileageAction } from "@/actions/cars";
 import { computeMaintenance, latestLogFor } from "@/lib/maintenance";
 import { useGarageStore } from "@/stores/garage";
 import { Skeleton } from "@/components/ui/skeleton";
-import { CarSelect } from "./car-select";
+import { CarSwitcher } from "./car-switcher";
 import { LogServiceDialog } from "./log-service-dialog";
 import { MileageForm } from "./mileage-form";
 import { StatusCard } from "./status-card";
@@ -61,7 +61,7 @@ export function Dashboard() {
 
   return (
     <div className="space-y-4">
-      <CarSelect />
+      <CarSwitcher />
       <MileageForm currentMileage={car.currentMileage} onSubmit={handleMileage} />
 
       {carRules.length === 0 ? (

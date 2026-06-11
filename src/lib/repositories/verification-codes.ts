@@ -1,9 +1,12 @@
 import { MongoServerError, ObjectId } from "mongodb";
 import { getDb } from "@/lib/db";
 
+export type CodePurpose = "verify" | "reset";
+
 export interface VerificationCodeDoc {
   _id: ObjectId;
   userId: ObjectId;
+  purpose?: CodePurpose; // absent on legacy docs = "verify"
   codeHash: string;
   expiresAt: Date; // TTL index — Mongo deletes the doc shortly after this moment
   attempts: number;
@@ -30,7 +33,7 @@ export async function findCodeByUserId(
  */
 export async function upsertCodeIfCooldownPassed(
   userId: ObjectId | string,
-  fields: { codeHash: string; expiresAt: Date; lastSentAt: Date },
+  fields: { codeHash: string; expiresAt: Date; lastSentAt: Date; purpose: CodePurpose },
   cooldownMs: number,
 ): Promise<boolean> {
   const cutoff = new Date(fields.lastSentAt.getTime() - cooldownMs);

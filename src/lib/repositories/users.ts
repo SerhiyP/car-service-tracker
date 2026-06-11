@@ -36,6 +36,15 @@ export async function markEmailVerified(userId: ObjectId | string): Promise<bool
   return result.matchedCount === 1;
 }
 
+export async function updateUserPassword(
+  userId: ObjectId | string,
+  passwordHash: string,
+): Promise<boolean> {
+  const _id = typeof userId === "string" ? new ObjectId(userId) : userId;
+  const result = await users().updateOne({ _id }, { $set: { passwordHash } });
+  return result.matchedCount === 1;
+}
+
 /** Permanently removes the user and everything they own. */
 export async function deleteUserCascade(userId: ObjectId | string): Promise<void> {
   const _id = typeof userId === "string" ? new ObjectId(userId) : userId;

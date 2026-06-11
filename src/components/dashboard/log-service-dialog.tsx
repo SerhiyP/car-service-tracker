@@ -100,7 +100,7 @@ export function LogServiceDialog({
             <Label htmlFor="log-date">{t("serviceDate")}</Label>
             <Input id="log-date" name="date" type="date" max={today} defaultValue={today} required />
           </div>
-          <Button type="submit" className="w-full">
+          <Button type="submit" size="lg" className="w-full">
             {t("logService")}
           </Button>
         </form>

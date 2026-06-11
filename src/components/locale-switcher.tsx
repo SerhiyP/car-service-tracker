@@ -30,7 +30,7 @@ export function LocaleSwitcher() {
         });
       }}
     >
-      <SelectTrigger disabled={isPending} className="w-28" aria-label={t("language")}>
+      <SelectTrigger disabled={isPending} className="w-28" size="sm" aria-label={t("language")}>
         <SelectValue />
       </SelectTrigger>
       <SelectContent>
