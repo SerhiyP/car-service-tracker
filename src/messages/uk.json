@@ -79,7 +79,8 @@
     "logService": "Записати сервіс",
     "statusOk": "ОК",
     "statusDue": "Скоро заміна",
-    "statusOverdue": "Прострочено"
+    "statusOverdue": "Прострочено",
+    "hiddenRules": "{count, plural, one {# компонент ще не обслуговувався} few {# компоненти ще не обслуговувалися} many {# компонентів ще не обслуговувалися} other {# компонента ще не обслуговувалося}}"
   },
   "garage": {
     "title": "Гараж",
@@ -118,7 +119,10 @@
     "logVisitSubmit": "Записати вибрані ({count})",
     "visitLogged": "{count, plural, one {Записано # роботу} few {Записано # роботи} many {Записано # робіт} other {Записано # роботи}}",
     "totalCost": "Загальна вартість (₴, необовʼязково)",
-    "visitTotal": "Разом за візит: {amount}"
+    "visitTotal": "Разом за візит: {amount}",
+    "editVisit": "Редагувати запис",
+    "saveVisit": "Зберегти зміни ({count})",
+    "visitUpdated": "Запис оновлено"
   },
   "standardRules": {
     "engineOil": "Моторна олива та масляний фільтр",

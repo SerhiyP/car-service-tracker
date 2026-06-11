@@ -79,7 +79,8 @@
     "logService": "Log service",
     "statusOk": "OK",
     "statusDue": "Due soon",
-    "statusOverdue": "Overdue"
+    "statusOverdue": "Overdue",
+    "hiddenRules": "{count, plural, one {# item} other {# items}} not serviced yet"
   },
   "garage": {
     "title": "Garage",
@@ -118,7 +119,10 @@
     "logVisitSubmit": "Log selected ({count})",
     "visitLogged": "{count, plural, one {# service logged} other {# services logged}}",
     "totalCost": "Total cost (₴, optional)",
-    "visitTotal": "Visit total: {amount}"
+    "visitTotal": "Visit total: {amount}",
+    "editVisit": "Edit service entry",
+    "saveVisit": "Save changes ({count})",
+    "visitUpdated": "Entry updated"
   },
   "standardRules": {
     "engineOil": "Engine oil & oil filter",
