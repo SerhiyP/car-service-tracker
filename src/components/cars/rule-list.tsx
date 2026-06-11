@@ -2,7 +2,7 @@
 
 import { useTranslations } from "next-intl";
 import { toast } from "sonner";
-import { Pencil, Plus, Trash2 } from "lucide-react";
+import { Pencil, Plus, Trash2, Wrench } from "lucide-react";
 import { deleteRuleAction } from "@/actions/rules";
 import { actionErrorKey } from "@/lib/action-feedback";
 import { useGarageStore } from "@/stores/garage";
@@ -30,9 +30,16 @@ export function RuleList({ carId }: { carId: string }) {
   return (
     <div className="space-y-3">
       <h3 className="font-semibold">{t("car.rules")}</h3>
+      {rules.length === 0 && (
+        <div className="flex flex-col items-center gap-1 py-8 text-center">
+          <Wrench className="mb-2 size-10 text-muted-foreground/40" aria-hidden="true" />
+          <p className="font-medium">{t("car.noRules")}</p>
+          <p className="text-sm text-muted-foreground">{t("car.noRulesHint")}</p>
+        </div>
+      )}
       {rules.map((rule) => (
         <Card key={rule.id}>
-          <CardContent className="flex items-center justify-between p-4">
+          <CardContent className="flex items-center justify-between">
             <div>
               <p className="font-medium">{rule.componentName}</p>
               <p className="text-sm text-muted-foreground">
@@ -70,7 +77,7 @@ export function RuleList({ carId }: { carId: string }) {
       <RuleFormDialog
         carId={carId}
         trigger={
-          <Button variant="outline" className="w-full">
+          <Button variant="outline" size="lg" className="w-full">
             <Plus className="size-4" /> {t("car.addRule")}
           </Button>
         }
