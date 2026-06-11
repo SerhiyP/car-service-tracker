@@ -1,5 +1,10 @@
 import { LoginForm } from "@/components/auth/login-form";
 
-export default function LoginPage() {
-  return <LoginForm />;
+export default async function LoginPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ verified?: string }>;
+}) {
+  const { verified } = await searchParams;
+  return <LoginForm verified={verified === "1"} />;
 }

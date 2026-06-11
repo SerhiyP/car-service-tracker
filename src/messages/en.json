@@ -42,7 +42,9 @@
     "codeInvalidAttempts": "Wrong code — {attemptsLeft, plural, one {# attempt} other {# attempts}} left",
     "tooManyAttempts": "Too many wrong attempts. Request a new code.",
     "codeExpired": "This code has expired. Request a new code.",
-    "noActiveCode": "No active code for this email. Request a new one."
+    "noActiveCode": "No active code for this email. Request a new one.",
+    "verifiedNowLogin": "Email verified — please sign in",
+    "verifyNow": "Verify now"
   },
   "dashboard": {
     "title": "Dashboard",

@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import Link from "next/link";
 import { useAction } from "next-safe-action/hooks";
 import { useTranslations } from "next-intl";
@@ -9,9 +10,10 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 
-export function LoginForm() {
+export function LoginForm({ verified = false }: { verified?: boolean }) {
   const t = useTranslations();
   const { execute, result, isExecuting } = useAction(loginAction);
+  const [submittedEmail, setSubmittedEmail] = useState("");
 
   return (
     <Card>
@@ -24,12 +26,14 @@ export function LoginForm() {
           onSubmit={(e) => {
             e.preventDefault();
             const data = new FormData(e.currentTarget);
-            execute({
-              email: String(data.get("email")),
-              password: String(data.get("password")),
-            });
+            const email = String(data.get("email"));
+            setSubmittedEmail(email);
+            execute({ email, password: String(data.get("password")) });
           }}
         >
+          {verified && (
+            <p className="text-sm text-green-600">{t("auth.verifiedNowLogin")}</p>
+          )}
           <div className="space-y-2">
             <Label htmlFor="email">{t("auth.email")}</Label>
             <Input id="email" name="email" type="email" autoComplete="email" required />
@@ -44,9 +48,19 @@ export function LoginForm() {
               required
             />
           </div>
-          {result.serverError && (
+          {result.serverError === "auth.emailNotVerified" ? (
+            <div className="space-y-1">
+              <p className="text-sm text-destructive">{t("auth.emailNotVerified")}</p>
+              <Link
+                href={`/verify?email=${encodeURIComponent(submittedEmail)}`}
+                className="text-sm underline"
+              >
+                {t("auth.verifyNow")}
+              </Link>
+            </div>
+          ) : result.serverError ? (
             <p className="text-sm text-destructive">{t(result.serverError)}</p>
-          )}
+          ) : null}
           <Button type="submit" className="w-full" disabled={isExecuting}>
             {isExecuting ? t("common.loading") : t("auth.signIn")}
           </Button>
