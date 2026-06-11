@@ -49,8 +49,8 @@ describe("StatusCard", () => {
 
   it("shows the OK pill for a green component", () => {
     renderCard({
-      componentName: "Engine Oil",
-      info: { status: "green", remainingKm: 8000, remainingDays: 120 },
+      componentName: "Coolant",
+      info: { status: "green", remainingKm: 12000, remainingDays: 200 },
       lastService: null,
       onLogService: () => {},
     });

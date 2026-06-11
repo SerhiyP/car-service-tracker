@@ -51,7 +51,7 @@ export function StatusCard({
     <Card>
       <CardContent className="space-y-1.5">
         <div className="flex items-center justify-between gap-3">
-          <p className="truncate font-medium">{componentName}</p>
+          <p className="min-w-0 flex-1 truncate font-medium">{componentName}</p>
           <span
             className={cn(
               "shrink-0 rounded-full px-2.5 py-0.5 text-xs font-medium",
