@@ -66,7 +66,21 @@ After the action resolves or fails, call `store.setIsServerSyncing(false)`. The 
 |---|---|
 | `Dashboard` | Replace `!hasHydrated` check with `isServerSyncing`. Keep existing 3-block skeleton unchanged. |
 | `CarList` | When `isServerSyncing`: two `Card`-height skeletons + one button-height skeleton |
-| `CarDetail` | When `isServerSyncing`: title-block skeleton (h-8 w-48) + three button-height skeletons + four row skeletons for service history |
+| `CarDetail` | When `isServerSyncing`: full-page skeleton (see below). `ServiceHistory` and `RuleList` never render until sync is done — their "no records" empty states will not flash. |
+
+**`CarDetail` skeleton shape when `isServerSyncing`:**
+```
+h-8 w-48        ← car name placeholder
+h-4 w-24        ← mileage placeholder
+h-10 w-full     ← "Log services" button
+h-10 w-full     ← "Add rule" / "Standard rules" row
+h-4 w-32        ← "Service history" heading
+h-14 w-full     ← log row
+h-14 w-full     ← log row
+h-4 w-32        ← "Maintenance rules" heading
+h-14 w-full     ← rule row
+h-14 w-full     ← rule row
+```
 
 `hasHydrated` is removed from all loading checks once `isServerSyncing` covers the same ground more accurately. (`hasHydrated` itself stays in the store as it is still used as a guard in `setAll` to preserve `selectedCarId`.)
 
