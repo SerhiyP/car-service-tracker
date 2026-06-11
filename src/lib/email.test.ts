@@ -51,4 +51,21 @@ describe("sendVerificationEmail", () => {
       /BREVO_API_KEY/,
     );
   });
+
+  it("throws when EMAIL_FROM is missing", async () => {
+    vi.stubEnv("EMAIL_FROM", "");
+    await expect(sendVerificationEmail("user@example.com", "123456", "en")).rejects.toThrow(
+      /EMAIL_FROM/,
+    );
+  });
+
+  it("falls back to the default locale for unknown locales", async () => {
+    const fetchMock = vi.fn().mockResolvedValue(new Response("{}", { status: 201 }));
+    vi.stubGlobal("fetch", fetchMock);
+
+    await sendVerificationEmail("user@example.com", "123456", "../../etc/passwd");
+
+    const body = JSON.parse((fetchMock.mock.calls[0] as [string, RequestInit])[1].body as string);
+    expect(body.subject).toBe("Your Car Service Tracker verification code");
+  });
 });

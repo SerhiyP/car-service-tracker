@@ -1,4 +1,5 @@
 import { createTranslator } from "next-intl";
+import { defaultLocale, locales, type Locale } from "@/i18n/config";
 
 /**
  * Sends the verification code via Brevo's transactional API.
@@ -16,8 +17,12 @@ export async function sendVerificationEmail(
   if (!from) throw new Error("EMAIL_FROM is not set");
   const fromName = process.env.EMAIL_FROM_NAME ?? "Car Service Tracker";
 
-  const messages = (await import(`../messages/${locale}.json`)).default;
-  const t = createTranslator({ locale, messages });
+  // Whitelist-validate: `locale` feeds a dynamic import path.
+  const safeLocale: Locale = (locales as readonly string[]).includes(locale)
+    ? (locale as Locale)
+    : defaultLocale;
+  const messages = (await import(`../messages/${safeLocale}.json`)).default;
+  const t = createTranslator({ locale: safeLocale, messages });
 
   const res = await fetch("https://api.brevo.com/v3/smtp/email", {
     method: "POST",
@@ -34,6 +39,7 @@ export async function sendVerificationEmail(
     }),
   });
   if (!res.ok) {
-    throw new Error(`Brevo send failed: ${res.status} ${await res.text()}`);
+    const body = (await res.text()).slice(0, 200);
+    throw new Error(`Brevo send failed: ${res.status} ${body}`);
   }
 }
