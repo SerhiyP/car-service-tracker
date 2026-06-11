@@ -58,7 +58,7 @@ export function Dashboard() {
   const now = new Date();
 
   async function handleMileage(mileage: number) {
-    if (!car) return;
+    if (!car) return false;
     const previous = car.currentMileage;
     store.setCarMileage(car.id, mileage);
     const result = await updateCarMileageAction({ carId: car.id, mileage });
@@ -66,7 +66,9 @@ export function Dashboard() {
       store.setCarMileage(car.id, previous);
       const errorKey = actionErrorKey(result);
       if (errorKey) toast.error(tRoot(errorKey));
+      return false;
     }
+    return true;
   }
 
   return (

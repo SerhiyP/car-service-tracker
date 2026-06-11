@@ -1,4 +1,4 @@
-import { cleanup, fireEvent, render, within } from "@testing-library/react";
+import { cleanup, fireEvent, render, waitFor, within } from "@testing-library/react";
 import { NextIntlClientProvider } from "next-intl";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import en from "@/messages/en.json";
@@ -6,7 +6,7 @@ import { MileageForm } from "./mileage-form";
 
 afterEach(cleanup);
 
-function renderForm(onSubmit: (mileage: number) => void) {
+function renderForm(onSubmit: (mileage: number) => Promise<boolean>) {
   const { container } = render(
     <NextIntlClientProvider locale="en" messages={en}>
       <MileageForm currentMileage={120000} onSubmit={onSubmit} />
@@ -21,31 +21,42 @@ function expand(view: ReturnType<typeof within>) {
 
 describe("MileageForm", () => {
   it("is collapsed by default, showing the formatted mileage", () => {
-    const view = renderForm(vi.fn());
+    const view = renderForm(vi.fn().mockResolvedValue(true));
     expect(view.getByText("120,000 km")).toBeInTheDocument();
     expect(view.queryByRole("spinbutton")).not.toBeInTheDocument();
   });
 
   it("expands on edit with the current value focused", () => {
-    const view = renderForm(vi.fn());
+    const view = renderForm(vi.fn().mockResolvedValue(true));
     expand(view);
     const input = view.getByRole("spinbutton");
     expect(input).toHaveValue(120000);
     expect(input).toHaveFocus();
   });
 
-  it("submits the entered mileage and collapses", () => {
-    const onSubmit = vi.fn();
+  it("submits the entered mileage and collapses", async () => {
+    const onSubmit = vi.fn().mockResolvedValue(true);
     const view = renderForm(onSubmit);
     expand(view);
     fireEvent.change(view.getByRole("spinbutton"), { target: { value: "121500" } });
     fireEvent.click(view.getByRole("button", { name: "Update" }));
     expect(onSubmit).toHaveBeenCalledWith(121500);
-    expect(view.queryByRole("spinbutton")).not.toBeInTheDocument();
+    await waitFor(() => expect(view.queryByRole("spinbutton")).not.toBeInTheDocument());
+  });
+
+  it("stays expanded when the update fails", async () => {
+    const onSubmit = vi.fn().mockResolvedValue(false);
+    const view = renderForm(onSubmit);
+    expand(view);
+    fireEvent.change(view.getByRole("spinbutton"), { target: { value: "121500" } });
+    fireEvent.click(view.getByRole("button", { name: "Update" }));
+    await waitFor(() => expect(onSubmit).toHaveBeenCalled());
+    expect(view.getByRole("spinbutton")).toBeInTheDocument();
+    expect(view.getByRole("spinbutton")).toHaveValue(121500);
   });
 
   it("does not submit an empty value and stays expanded", () => {
-    const onSubmit = vi.fn();
+    const onSubmit = vi.fn().mockResolvedValue(true);
     const view = renderForm(onSubmit);
     expand(view);
     fireEvent.change(view.getByRole("spinbutton"), { target: { value: "" } });
@@ -55,7 +66,7 @@ describe("MileageForm", () => {
   });
 
   it("collapses without submitting on Escape", () => {
-    const onSubmit = vi.fn();
+    const onSubmit = vi.fn().mockResolvedValue(true);
     const view = renderForm(onSubmit);
     expand(view);
     fireEvent.keyDown(view.getByRole("spinbutton"), { key: "Escape" });

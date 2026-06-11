@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { useTranslations } from "next-intl";
+import { useFormatter, useTranslations } from "next-intl";
 import { Pencil } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -12,18 +12,20 @@ export function MileageForm({
   onSubmit,
 }: {
   currentMileage: number;
-  onSubmit: (mileage: number) => void;
+  onSubmit: (mileage: number) => Promise<boolean>;
 }) {
   const t = useTranslations();
+  const format = useFormatter();
   const [editing, setEditing] = useState(false);
   const [value, setValue] = useState("");
+  const [busy, setBusy] = useState(false);
 
   if (!editing) {
     return (
       <div className="flex items-center justify-between">
         <div>
           <p className="text-sm text-muted-foreground">{t("dashboard.currentMileage")}</p>
-          <p className="font-medium">{currentMileage.toLocaleString()} km</p>
+          <p className="font-medium">{format.number(currentMileage)} km</p>
         </div>
         <Button
           variant="ghost"
@@ -43,12 +45,16 @@ export function MileageForm({
   return (
     <form
       className="flex items-end gap-2"
-      onSubmit={(e) => {
+      onSubmit={async (e) => {
         e.preventDefault();
         const mileage = Number(value);
         if (value === "" || !Number.isFinite(mileage) || mileage < 0) return;
-        onSubmit(Math.floor(mileage));
-        setEditing(false);
+        setBusy(true);
+        try {
+          if (await onSubmit(Math.floor(mileage))) setEditing(false);
+        } finally {
+          setBusy(false);
+        }
       }}
     >
       <div className="flex-1 space-y-1">
@@ -66,7 +72,7 @@ export function MileageForm({
           }}
         />
       </div>
-      <Button type="submit" size="lg">
+      <Button type="submit" size="lg" disabled={busy}>
         {t("dashboard.updateMileage")}
       </Button>
     </form>
