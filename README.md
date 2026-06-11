@@ -3,13 +3,20 @@
 Mobile-first PWA for tracking vehicle consumables and maintenance schedules.
 Offline read access, MongoDB Atlas sync, multi-user, multi-vehicle, EN/UK.
 
+**Demo:** <https://car-service-tracker-flame.vercel.app/>
+
 ## Features
 
 - **Garage** — multiple cars per account, quick mileage updates.
 - **Consumables** — custom components with km and/or month intervals
-  (whichever comes first); Green / Yellow / Red status on the dashboard.
-- **Service log** — per-component history; logging a service can auto-raise
-  the car's mileage.
+  (whichever comes first), or one-tap presets from a standard-rules picker;
+  Green / Yellow / Red status on the dashboard. Never-serviced components
+  stay off the dashboard behind an "n items not serviced yet" link until
+  their first log.
+- **Service visits** — services are logged per garage visit: pick everything
+  done at once, with a shared date/mileage and an optional total cost (₴).
+  Visits are editable afterwards (services, date, mileage, cost); logging or
+  editing at a higher mileage auto-raises the car's mileage.
 - **Email verification** — registration requires confirming a 6-digit emailed
   code before login works.
 - **Account deletion** — danger zone on the Garage page; typed-word
@@ -54,11 +61,7 @@ log in → "Verify now" → resend code.
 
 ## Docs
 
-Design specs and implementation plans live in `docs/superpowers/`:
-
-- Core app: `specs/2026-06-10-car-maintenance-tracker-design.md`,
-  `plans/2026-06-10-car-maintenance-tracker.md`
-- Email verification: `specs/2026-06-11-email-verification-design.md`,
-  `plans/2026-06-11-email-verification.md`
-- Delete account: `specs/2026-06-11-delete-account-design.md`,
-  `plans/2026-06-11-delete-account.md`
+Every feature ships with a design spec in `docs/superpowers/specs/` and a
+matching implementation plan in `docs/superpowers/plans/`, named
+`YYYY-MM-DD-<topic>`. Start with
+`specs/2026-06-10-car-maintenance-tracker-design.md` for the core app.

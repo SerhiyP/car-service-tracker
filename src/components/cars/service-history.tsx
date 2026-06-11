@@ -3,19 +3,21 @@
 import { useState } from "react";
 import { useFormatter, useTranslations } from "next-intl";
 import { toast } from "sonner";
-import { ClipboardList, Trash2 } from "lucide-react";
+import { ClipboardList, Pencil, Trash2 } from "lucide-react";
 import { deleteLogAction } from "@/actions/logs";
 import { actionErrorKey } from "@/lib/action-feedback";
 import { useGarageStore } from "@/stores/garage";
 import type { ServiceLog } from "@/lib/types";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
+import { EditVisitDialog } from "./edit-visit-dialog";
 import { LogVisitDialog } from "./log-visit-dialog";
 
 export function ServiceHistory({ carId }: { carId: string }) {
   const t = useTranslations();
   const format = useFormatter();
   const [logOpen, setLogOpen] = useState(false);
+  const [editing, setEditing] = useState<ServiceLog | null>(null);
   const car = useGarageStore((s) => s.cars).find((c) => c.id === carId);
   const hasRules = useGarageStore((s) => s.rules).some((r) => r.carId === carId);
   const visits = useGarageStore((s) => s.visits);
@@ -91,19 +93,36 @@ export function ServiceHistory({ carId }: { carId: string }) {
                   </p>
                 )}
               </div>
-              <Button
-                variant="ghost"
-                size="icon"
-                aria-label={t("common.delete")}
-                onClick={() => handleDelete(log.id)}
-              >
-                <Trash2 className="size-4" />
-              </Button>
+              <div className="flex gap-1">
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  aria-label={t("common.edit")}
+                  onClick={() => setEditing(log)}
+                >
+                  <Pencil className="size-4" />
+                </Button>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  aria-label={t("common.delete")}
+                  onClick={() => handleDelete(log.id)}
+                >
+                  <Trash2 className="size-4" />
+                </Button>
+              </div>
             </CardContent>
           </Card>
         );
       })}
       {car && <LogVisitDialog car={car} open={logOpen} onOpenChange={setLogOpen} />}
+      {car && editing && (
+        <EditVisitDialog
+          car={car}
+          editedLog={editing}
+          onOpenChange={(open) => !open && setEditing(null)}
+        />
+      )}
     </div>
   );
 }

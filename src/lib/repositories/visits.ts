@@ -52,3 +52,34 @@ export async function deleteVisit(visitId: string, carId: string): Promise<boole
   });
   return result.deletedCount === 1;
 }
+
+export async function getVisit(visitId: string, carId: string): Promise<ServiceVisit | null> {
+  const doc = await visits().findOne({
+    _id: new ObjectId(visitId),
+    carId: new ObjectId(carId),
+  });
+  return doc ? toVisit(doc) : null;
+}
+
+export async function updateVisit(input: {
+  visitId: string;
+  carId: string;
+  mileageAtService: number;
+  dateAtService: Date;
+  totalCost?: number;
+}): Promise<ServiceVisit | null> {
+  const doc = await visits().findOneAndUpdate(
+    { _id: new ObjectId(input.visitId), carId: new ObjectId(input.carId) },
+    {
+      $set: {
+        mileageAtService: input.mileageAtService,
+        dateAtService: input.dateAtService,
+        ...(input.totalCost !== undefined && { totalCost: input.totalCost }),
+      },
+      // Clearing the cost field in the form clears the stored cost.
+      ...(input.totalCost === undefined && { $unset: { totalCost: "" } }),
+    },
+    { returnDocument: "after" },
+  );
+  return doc ? toVisit(doc) : null;
+}

@@ -65,3 +65,44 @@ export async function deleteLog(logId: string, carId: string): Promise<ServiceLo
   });
   return doc ? toLog(doc) : null;
 }
+
+export async function getLog(logId: string, carId: string): Promise<ServiceLog | null> {
+  const doc = await logs().findOne({
+    _id: new ObjectId(logId),
+    carId: new ObjectId(carId),
+  });
+  return doc ? toLog(doc) : null;
+}
+
+export async function listLogsByVisitId(visitId: string, carId: string): Promise<ServiceLog[]> {
+  const docs = await logs()
+    .find({ visitId: new ObjectId(visitId), carId: new ObjectId(carId) })
+    .toArray();
+  return docs.map(toLog);
+}
+
+export async function deleteLogsByVisitIdAndComponents(
+  visitId: string,
+  carId: string,
+  componentNames: string[],
+): Promise<number> {
+  if (componentNames.length === 0) return 0;
+  const result = await logs().deleteMany({
+    visitId: new ObjectId(visitId),
+    carId: new ObjectId(carId),
+    componentName: { $in: componentNames },
+  });
+  return result.deletedCount;
+}
+
+export async function updateLogsByVisitId(
+  visitId: string,
+  carId: string,
+  update: { mileageAtService: number; dateAtService: Date },
+): Promise<number> {
+  const result = await logs().updateMany(
+    { visitId: new ObjectId(visitId), carId: new ObjectId(carId) },
+    { $set: { mileageAtService: update.mileageAtService, dateAtService: update.dateAtService } },
+  );
+  return result.modifiedCount;
+}

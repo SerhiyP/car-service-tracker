@@ -24,6 +24,11 @@ interface GarageState {
   removeLog: (logId: string) => void;
   addVisit: (visit: ServiceVisit) => void;
   removeVisit: (visitId: string) => void;
+  applyVisitUpdate: (
+    visit: ServiceVisit,
+    visitLogs: ServiceLog[],
+    removeLogId?: string,
+  ) => void;
   setHasHydrated: (v: boolean) => void;
 }
 
@@ -99,6 +104,19 @@ export const useGarageStore = create<GarageState>()(
 
       removeVisit: (visitId) =>
         set((s) => ({ visits: s.visits.filter((v) => v.id !== visitId) })),
+
+      // Server result is authoritative for an edited visit: swap the visit in,
+      // replace every log carrying its id, and drop a converted legacy log.
+      applyVisitUpdate: (visit, visitLogs, removeLogId) =>
+        set((s) => ({
+          visits: s.visits.some((v) => v.id === visit.id)
+            ? s.visits.map((v) => (v.id === visit.id ? visit : v))
+            : [visit, ...s.visits],
+          logs: [
+            ...visitLogs,
+            ...s.logs.filter((l) => l.visitId !== visit.id && l.id !== removeLogId),
+          ],
+        })),
 
       setHasHydrated: (v) => set({ hasHydrated: v }),
     }),

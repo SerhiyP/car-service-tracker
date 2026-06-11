@@ -64,4 +64,46 @@ describe("garage store", () => {
     expect(s.selectedCarId).toBe("b");
   });
 
+  it("applyVisitUpdate upserts the visit, replaces its logs, and drops a converted legacy log", () => {
+    const visit = {
+      id: "v1",
+      carId: "a",
+      mileageAtService: 5000,
+      dateAtService: "2026-02-01T00:00:00.000Z",
+      totalCost: 900,
+    };
+    const log = (id: string, componentName: string, visitId?: string) => ({
+      id,
+      carId: "a",
+      componentName,
+      mileageAtService: 5000,
+      dateAtService: "2026-02-01T00:00:00.000Z",
+      ...(visitId && { visitId }),
+    });
+    useGarageStore.setState({
+      visits: [{ ...visit, totalCost: 100 }],
+      logs: [log("stale1", "Oil", "v1"), log("legacy", "Brakes"), log("other", "Coolant", "v9")],
+    });
+
+    useGarageStore
+      .getState()
+      .applyVisitUpdate(visit, [log("new1", "Oil", "v1"), log("new2", "Brakes", "v1")], "legacy");
+
+    const s = useGarageStore.getState();
+    expect(s.visits).toEqual([visit]);
+    expect(s.logs.map((l) => l.id).sort()).toEqual(["new1", "new2", "other"]);
+  });
+
+  it("applyVisitUpdate inserts a visit it has not seen before", () => {
+    useGarageStore.setState({ visits: [], logs: [] });
+    const visit = {
+      id: "v2",
+      carId: "a",
+      mileageAtService: 1,
+      dateAtService: "2026-02-01T00:00:00.000Z",
+    };
+    useGarageStore.getState().applyVisitUpdate(visit, [], undefined);
+    expect(useGarageStore.getState().visits).toEqual([visit]);
+  });
+
 });

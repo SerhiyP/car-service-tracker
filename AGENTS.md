@@ -38,8 +38,17 @@ Run all four before considering any change done.
   `src/auth.ts` with Credentials). Login is blocked for unverified emails.
 - **shadcn/ui here is on Base UI, not Radix** — `DialogTrigger render={...}`,
   not `asChild`; Select's `onValueChange` can pass `null`.
-- **Optimistic updates:** creates are non-optimistic (need server ids);
-  updates/deletes snapshot → apply → rollback + toast on failure.
+- **Optimistic updates:** creates AND visit edits are non-optimistic (the
+  server returns new ids / the authoritative log set); other updates and
+  deletes snapshot → apply → rollback + toast on failure.
+- **Service visits are the only logging path.** A visit
+  (`service_visits` collection) holds the shared date/mileage and the
+  optional `totalCost`; each log carries a `visitId` (legacy logs lack it
+  and still render). `createVisitAction`/`updateVisitAction`
+  (`src/actions/visits.ts`) own all log writes — the update diff-syncs the
+  visit's logs and converts a legacy log via `target: {logId}`. Deleting the
+  last log of a visit removes the visit; edits can never empty one
+  (`componentNames.min(1)`). Mileage on log/edit is raise-only for the car.
 - **Env:** the Mongo connection string is `MONGODB_URI_CAR` (deliberately not
   `MONGODB_URI` — a global shell export once shadowed it; real env vars beat
   `.env.local`).
