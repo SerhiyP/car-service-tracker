@@ -12,6 +12,8 @@
   },
   "nav": {
     "dashboard": "Dashboard",
+    "log": "Log",
+    "car": "Car",
     "garage": "Garage"
   },
   "auth": {
