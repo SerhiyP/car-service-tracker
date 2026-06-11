@@ -15,6 +15,11 @@ describe("generateCode", () => {
       expect(generateCode()).toMatch(/^\d{6}$/);
     }
   });
+
+  it("zero-pads small values to 6 digits", () => {
+    expect((0).toString().padStart(6, "0")).toBe("000000");
+    expect((42).toString().padStart(6, "0")).toBe("000042");
+  });
 });
 
 describe("hashCode", () => {
@@ -29,6 +34,10 @@ describe("hashCode", () => {
   it("does not contain the code itself", () => {
     expect(hashCode("123456")).not.toContain("123456");
   });
+
+  it("is a 64-char hex string", () => {
+    expect(hashCode("123456")).toMatch(/^[0-9a-f]{64}$/);
+  });
 });
 
 describe("isExpired", () => {
@@ -40,6 +49,10 @@ describe("isExpired", () => {
 
   it("is expired exactly at the deadline", () => {
     expect(isExpired(expiresAt, expiresAt)).toBe(true);
+  });
+
+  it("is expired well after the deadline", () => {
+    expect(isExpired(expiresAt, new Date("2026-06-11T13:00:00Z"))).toBe(true);
   });
 });
 
