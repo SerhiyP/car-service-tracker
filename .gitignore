@@ -43,3 +43,6 @@ next-env.d.ts
 # serwist generated service worker
 public/sw.js
 public/sw.js.map
+
+# IDE
+.idea/
