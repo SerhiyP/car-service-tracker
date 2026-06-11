@@ -20,6 +20,13 @@ export function MileageForm({
   const [value, setValue] = useState("");
   const [busy, setBusy] = useState(false);
 
+  // React-approved "derived state from props" reset — no effects.
+  const [prevMileage, setPrevMileage] = useState(currentMileage);
+  if (editing && prevMileage !== currentMileage) {
+    setPrevMileage(currentMileage);
+    setValue(String(currentMileage));
+  }
+
   if (!editing) {
     return (
       <div className="flex items-center justify-between">
@@ -33,6 +40,7 @@ export function MileageForm({
           aria-label={t("common.edit")}
           onClick={() => {
             setValue(String(currentMileage));
+            setPrevMileage(currentMileage);
             setEditing(true);
           }}
         >
@@ -68,7 +76,7 @@ export function MileageForm({
           value={value}
           onChange={(e) => setValue(e.target.value)}
           onKeyDown={(e) => {
-            if (e.key === "Escape") setEditing(false);
+            if (e.key === "Escape" && !busy) setEditing(false);
           }}
         />
       </div>

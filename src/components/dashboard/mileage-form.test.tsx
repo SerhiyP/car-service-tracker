@@ -73,4 +73,32 @@ describe("MileageForm", () => {
     expect(onSubmit).not.toHaveBeenCalled();
     expect(view.queryByRole("spinbutton")).not.toBeInTheDocument();
   });
+
+  it("resets the expanded input when currentMileage changes externally", () => {
+    const onSubmit = vi.fn().mockResolvedValue(true);
+    const { rerender, container } = render(
+      <NextIntlClientProvider locale="en" messages={en}>
+        <MileageForm currentMileage={120000} onSubmit={onSubmit} />
+      </NextIntlClientProvider>,
+    );
+    const view = within(container);
+    expand(view);
+    rerender(
+      <NextIntlClientProvider locale="en" messages={en}>
+        <MileageForm currentMileage={125000} onSubmit={onSubmit} />
+      </NextIntlClientProvider>,
+    );
+    expect(view.getByRole("spinbutton")).toHaveValue(125000);
+  });
+
+  it("ignores Escape while a submit is pending", async () => {
+    const onSubmit = vi.fn(() => new Promise<boolean>(() => {}));
+    const view = renderForm(onSubmit);
+    expand(view);
+    fireEvent.change(view.getByRole("spinbutton"), { target: { value: "121500" } });
+    fireEvent.click(view.getByRole("button", { name: "Update" }));
+    await waitFor(() => expect(onSubmit).toHaveBeenCalled());
+    fireEvent.keyDown(view.getByRole("spinbutton"), { key: "Escape" });
+    expect(view.getByRole("spinbutton")).toBeInTheDocument();
+  });
 });
