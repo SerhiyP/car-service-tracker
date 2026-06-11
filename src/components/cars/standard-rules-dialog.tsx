@@ -116,7 +116,8 @@ export function StandardRulesDialog({
         <Button
           size="lg"
           className="w-full"
-          disabled={busy || selectedKeys.length === 0}
+          loading={busy}
+          disabled={selectedKeys.length === 0}
           onClick={handleSubmit}
         >
           {t("car.standardRulesSubmit", { count: selectedKeys.length })}

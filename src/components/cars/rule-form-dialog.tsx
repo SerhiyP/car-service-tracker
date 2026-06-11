@@ -149,7 +149,7 @@ export function RuleFormDialog({
           >
             {intervalErrorKey ? t(intervalErrorKey) : t("car.intervalHint")}
           </p>
-          <Button type="submit" size="lg" className="w-full" disabled={busy}>
+          <Button type="submit" size="lg" className="w-full" loading={busy}>
             {t("common.save")}
           </Button>
         </form>

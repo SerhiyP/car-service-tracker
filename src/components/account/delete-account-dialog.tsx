@@ -74,14 +74,15 @@ export function DeleteAccountDialog() {
           <Button
             variant="destructive"
             className="w-full"
-            disabled={!confirmed || isExecuting}
+            loading={isExecuting}
+            disabled={!confirmed}
             onClick={() => {
               // Purge the offline cache before the account disappears.
               useGarageStore.persist.clearStorage();
               execute();
             }}
           >
-            {isExecuting ? t("common.loading") : t("account.deleteAccount")}
+            {t("account.deleteAccount")}
           </Button>
         </DialogContent>
       </Dialog>

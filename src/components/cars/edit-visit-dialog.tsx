@@ -160,7 +160,8 @@ export function EditVisitDialog({
             type="submit"
             size="lg"
             className="w-full"
-            disabled={busy || selected.length === 0}
+            loading={busy}
+            disabled={selected.length === 0}
           >
             {t("car.saveVisit", { count: selected.length })}
           </Button>
