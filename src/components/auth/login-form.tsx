@@ -14,9 +14,11 @@ export function LoginForm({ error = false }: { error?: boolean }) {
       </CardHeader>
       <CardContent>
         <form action={loginWithGoogleAction} className="space-y-4">
-          {error && (
-            <p className="text-sm text-destructive">{t("auth.googleSignInFailed")}</p>
-          )}
+          <div aria-live="polite">
+            {error && (
+              <p className="text-sm text-destructive">{t("auth.googleSignInFailed")}</p>
+            )}
+          </div>
           <Button type="submit" size="lg" className="w-full">
             {t("auth.continueWithGoogle")}
           </Button>
