@@ -28,14 +28,16 @@ Run all four before considering any change done.
   (`actionErrorKey` in `src/lib/action-feedback.ts`).
 - **Server actions** (`src/actions/`): `actionClient` for public,
   `authActionClient` for authenticated (injects `ctx.userId`). Actions with
-  structured outcomes return **discriminated status unions** (see
-  `verifyEmailAction`) rather than throwing, so data travels with the result.
+  structured outcomes return **discriminated status unions** rather than
+  throwing, so data travels with the result.
 - **Repositories** (`src/lib/repositories/`): thin, untested wrappers over the
   mongodb driver; ObjectId↔string conversion at the boundary; all queries
   scoped by `userId` (data isolation) — never trust a client-supplied id
   without an ownership check.
 - **Auth:** Auth.js v5 split config (`src/auth.config.ts` DB-free +
-  `src/auth.ts` with Credentials). Login is blocked for unverified emails.
+  `src/auth.ts` with Google). Google-only sign-in: the `jwt` callback
+  find-or-creates the `users` doc by email (`src/lib/google-user.ts`) and
+  stores the Mongo id in `token.id`. Env: `AUTH_GOOGLE_ID`/`AUTH_GOOGLE_SECRET`.
 - **shadcn/ui here is on Base UI, not Radix** — `DialogTrigger render={...}`,
   not `asChild`; Select's `onValueChange` can pass `null`.
 - **Optimistic updates:** creates AND visit edits are non-optimistic (the
@@ -54,7 +56,7 @@ Run all four before considering any change done.
   `.env.local`).
 - Dates in business logic use **UTC accessors** (see `addMonths` in
   `src/lib/maintenance.ts`) — local-time accessors caused TZ bugs.
-- Component tests follow `src/components/auth/verify-form.test.tsx`: real
+- Component tests follow `src/components/account/delete-account-dialog.test.tsx`: real
   `NextIntlClientProvider` + en catalog, `vi.hoisted` for anything captured by
   `vi.mock` factories, mocked `useAction` driving `onSuccess`/`onError`.
 

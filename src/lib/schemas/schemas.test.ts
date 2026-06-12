@@ -1,32 +1,9 @@
 import { describe, expect, it } from "vitest";
-import { registerSchema, verifyEmailSchema, resendCodeSchema } from "./auth";
 import { carInputSchema, mileageUpdateSchema } from "./car";
 import { ruleInputSchema, standardRulesInputSchema } from "./rule";
 import { visitInputSchema, visitUpdateSchema } from "./visit";
 
 const oid = "65f1a2b3c4d5e6f7a8b9c0d1";
-
-describe("auth schemas", () => {
-  it("accepts a valid registration", () => {
-    expect(
-      registerSchema.safeParse({
-        name: "Serhii",
-        email: "a@b.co",
-        password: "12345678",
-      }).success,
-    ).toBe(true);
-  });
-  it("rejects short passwords and bad emails", () => {
-    expect(
-      registerSchema.safeParse({ name: "S", email: "a@b.co", password: "123" })
-        .success,
-    ).toBe(false);
-    expect(
-      registerSchema.safeParse({ name: "S", email: "nope", password: "12345678" })
-        .success,
-    ).toBe(false);
-  });
-});
 
 describe("car schemas", () => {
   it("accepts a valid car", () => {
@@ -61,33 +38,6 @@ describe("rule schema", () => {
     expect(
       ruleInputSchema.safeParse({ carId: oid, componentName: "Oil", intervalKm: 0 }).success,
     ).toBe(false);
-  });
-});
-
-describe("verifyEmailSchema", () => {
-  it("accepts an email with a 6-digit code", () => {
-    const result = verifyEmailSchema.safeParse({ email: "a@b.co", code: "012345" });
-    expect(result.success).toBe(true);
-  });
-
-  it.each(["12345", "1234567", "12345a", "", "123 56"])("rejects code %j", (code) => {
-    const result = verifyEmailSchema.safeParse({ email: "a@b.co", code });
-    expect(result.success).toBe(false);
-  });
-
-  it("rejects an invalid email", () => {
-    const result = verifyEmailSchema.safeParse({ email: "nope", code: "123456" });
-    expect(result.success).toBe(false);
-  });
-});
-
-describe("resendCodeSchema", () => {
-  it("accepts a valid email", () => {
-    expect(resendCodeSchema.safeParse({ email: "a@b.co" }).success).toBe(true);
-  });
-
-  it("rejects an invalid email", () => {
-    expect(resendCodeSchema.safeParse({ email: "nope" }).success).toBe(false);
   });
 });
 

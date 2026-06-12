@@ -30,10 +30,6 @@ async function ensureIndexes(db: Db): Promise<void> {
     db
       .collection("service_logs")
       .createIndex({ carId: 1, componentName: 1, dateAtService: -1 }),
-    db.collection("verification_codes").createIndex({ userId: 1 }, { unique: true }),
-    db
-      .collection("verification_codes")
-      .createIndex({ expiresAt: 1 }, { expireAfterSeconds: 0 }),
   ]);
 }
 

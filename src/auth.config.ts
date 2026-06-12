@@ -7,7 +7,7 @@ export const authConfig = {
     maxAge: 30 * 24 * 60 * 60, // 30 days total
     updateAge: 24 * 60 * 60, // re-issue at most daily (rolling)
   },
-  pages: { signIn: "/login" },
+  pages: { signIn: "/login", error: "/login" },
   providers: [],
   callbacks: {
     jwt({ token, user }) {
