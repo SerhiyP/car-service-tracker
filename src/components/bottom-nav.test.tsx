@@ -1,4 +1,4 @@
-import { cleanup, fireEvent, render, screen } from "@testing-library/react";
+import { cleanup, render, screen } from "@testing-library/react";
 import { NextIntlClientProvider } from "next-intl";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import en from "@/messages/en.json";
@@ -6,14 +6,12 @@ import { useGarageStore } from "@/stores/garage";
 
 // vi.mock factories are hoisted above imports — anything they capture
 // must come from vi.hoisted, or it is "accessed before initialization".
-const { pathnameMock, routerPush } = vi.hoisted(() => ({
+const { pathnameMock } = vi.hoisted(() => ({
   pathnameMock: vi.fn(() => "/"),
-  routerPush: vi.fn(),
 }));
 
 vi.mock("next/navigation", () => ({
   usePathname: pathnameMock,
-  useRouter: () => ({ push: routerPush }),
 }));
 
 import { BottomNav } from "./bottom-nav";
@@ -30,7 +28,6 @@ const rule = { id: "r1", carId, componentName: "Engine oil", intervalKm: 10000 }
 afterEach(cleanup);
 beforeEach(() => {
   pathnameMock.mockReturnValue("/");
-  routerPush.mockReset();
   useGarageStore.setState({
     cars: [car],
     rules: [rule],
@@ -54,7 +51,10 @@ describe("BottomNav", () => {
   it("renders all four items", () => {
     renderNav();
     expect(screen.getByRole("link", { name: "Dashboard" })).toHaveAttribute("href", "/");
-    expect(screen.getByRole("button", { name: "Service" })).toBeEnabled();
+    expect(screen.getByRole("link", { name: "Service" })).toHaveAttribute(
+      "href",
+      `/cars/${carId}/log-visit`,
+    );
     expect(screen.getByRole("link", { name: "Car" })).toHaveAttribute(
       "href",
       `/cars/${carId}`,
@@ -62,23 +62,28 @@ describe("BottomNav", () => {
     expect(screen.getByRole("link", { name: "Garage" })).toHaveAttribute("href", "/cars");
   });
 
-  it("navigates to the log-visit page for the selected car", () => {
-    renderNav();
-    fireEvent.click(screen.getByRole("button", { name: "Service" }));
-    expect(routerPush).toHaveBeenCalledWith(`/cars/${carId}/log-visit`);
-  });
-
   it("disables Log when the selected car has no rules", () => {
     useGarageStore.setState({ rules: [] });
     renderNav();
-    expect(screen.getByRole("button", { name: "Service" })).toBeDisabled();
+    expect(screen.queryByRole("link", { name: "Service" })).not.toBeInTheDocument();
+    expect(screen.getByText("Service")).toBeInTheDocument();
   });
 
   it("disables Log and Car when there are no cars", () => {
     useGarageStore.setState({ cars: [], rules: [], selectedCarId: null });
     renderNav();
-    expect(screen.getByRole("button", { name: "Service" })).toBeDisabled();
+    expect(screen.queryByRole("link", { name: "Service" })).not.toBeInTheDocument();
     expect(screen.queryByRole("link", { name: "Car" })).not.toBeInTheDocument();
+  });
+
+  it("marks Service current on the log-visit page", () => {
+    pathnameMock.mockReturnValue(`/cars/${carId}/log-visit`);
+    renderNav();
+    expect(screen.getByRole("link", { name: "Service" })).toHaveAttribute(
+      "aria-current",
+      "page",
+    );
+    expect(screen.getByRole("link", { name: "Car" })).not.toHaveAttribute("aria-current");
   });
 
   it("marks Car (not Garage) current on the selected car's page", () => {
@@ -102,7 +107,7 @@ describe("BottomNav", () => {
     );
   });
 
-  it("navigates to the log-visit page of the newly selected car", () => {
+  it("links Service to the log-visit page of the newly selected car", () => {
     const otherId = "65f1a2b3c4d5e6f7a8b9c0d2";
     useGarageStore.setState((s) => ({
       cars: [...s.cars, { ...car, id: otherId, name: "Golf" }],
@@ -110,7 +115,9 @@ describe("BottomNav", () => {
       selectedCarId: otherId,
     }));
     renderNav();
-    fireEvent.click(screen.getByRole("button", { name: "Service" }));
-    expect(routerPush).toHaveBeenCalledWith(`/cars/${otherId}/log-visit`);
+    expect(screen.getByRole("link", { name: "Service" })).toHaveAttribute(
+      "href",
+      `/cars/${otherId}/log-visit`,
+    );
   });
 });

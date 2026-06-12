@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname } from "next/navigation";
 import { useTranslations } from "next-intl";
 import {
   CarFront,
@@ -40,7 +40,6 @@ function ItemIcon({ icon: Icon, active }: { icon: LucideIcon; active: boolean })
 export function BottomNav() {
   const t = useTranslations("nav");
   const pathname = usePathname();
-  const router = useRouter();
   // isServerSyncing is not persisted, so it is true on the server and during
   // hydration even when persisted cars are already in the store — these
   // selectors return the initial values until GarageProvider's first sync,
@@ -52,6 +51,7 @@ export function BottomNav() {
   const hasRules = car !== null && rules.some((r) => r.carId === car.id);
 
   const dashboardActive = pathname === "/";
+  const logActive = car !== null && pathname === `/cars/${car.id}/log-visit`;
   const carActive = car !== null && pathname === `/cars/${car.id}`;
   const garageActive = pathname === "/cars";
 
@@ -66,15 +66,21 @@ export function BottomNav() {
           <ItemIcon icon={LayoutDashboard} active={dashboardActive} />
           {t("dashboard")}
         </Link>
-        <button
-          type="button"
-          disabled={!hasRules}
-          onClick={() => car && router.push(`/cars/${car.id}/log-visit`)}
-          className={cn(itemClasses(false), "disabled:opacity-40")}
-        >
-          <ItemIcon icon={Wrench} active={false} />
-          {t("log")}
-        </button>
+        {car && hasRules ? (
+          <Link
+            href={`/cars/${car.id}/log-visit`}
+            aria-current={logActive ? "page" : undefined}
+            className={itemClasses(logActive)}
+          >
+            <ItemIcon icon={Wrench} active={logActive} />
+            {t("log")}
+          </Link>
+        ) : (
+          <span aria-disabled="true" className={cn(itemClasses(false), "opacity-40")}>
+            <ItemIcon icon={Wrench} active={false} />
+            {t("log")}
+          </span>
+        )}
         {car ? (
           <Link
             href={`/cars/${car.id}`}
