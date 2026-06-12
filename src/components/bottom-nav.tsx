@@ -1,8 +1,8 @@
 "use client";
 
-import { useState, useSyncExternalStore } from "react";
+import { useSyncExternalStore } from "react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 import {
   CarFront,
@@ -12,7 +12,6 @@ import {
   type LucideIcon,
 } from "lucide-react";
 import { useGarageStore } from "@/stores/garage";
-import { LogVisitDialog } from "@/components/cars/log-visit-dialog";
 import { cn } from "@/lib/utils";
 
 function itemClasses(active: boolean) {
@@ -38,7 +37,7 @@ function ItemIcon({ icon: Icon, active }: { icon: LucideIcon; active: boolean })
 export function BottomNav() {
   const t = useTranslations("nav");
   const pathname = usePathname();
-  const [logOpen, setLogOpen] = useState(false);
+  const router = useRouter();
   // The persisted store rehydrates synchronously on the client, so without
   // this gate the first client render (cars present) would not match the
   // server HTML (no cars) and hydration would fail.
@@ -53,16 +52,6 @@ export function BottomNav() {
   const rules = useGarageStore((s) => s.rules);
   const selectedCarId = useGarageStore((s) => s.selectedCarId);
   const car = mounted ? (cars.find((c) => c.id === selectedCarId) ?? null) : null;
-
-  // Selection changed out from under an open dialog (e.g. car deleted):
-  // close instead of silently retargeting the form to another car.
-  // Derived-state reset during render (React-recommended pattern) avoids an
-  // effect and the associated extra render cycle.
-  const [prevCarId, setPrevCarId] = useState(selectedCarId);
-  if (prevCarId !== selectedCarId) {
-    setPrevCarId(selectedCarId);
-    setLogOpen(false);
-  }
   const hasRules = car !== null && rules.some((r) => r.carId === car.id);
 
   const dashboardActive = pathname === "/";
@@ -83,7 +72,7 @@ export function BottomNav() {
         <button
           type="button"
           disabled={!hasRules}
-          onClick={() => setLogOpen(true)}
+          onClick={() => car && router.push(`/cars/${car.id}/log-visit`)}
           className={cn(itemClasses(false), "disabled:opacity-40")}
         >
           <ItemIcon icon={Wrench} active={false} />
@@ -113,7 +102,6 @@ export function BottomNav() {
           {t("garage")}
         </Link>
       </div>
-      {car && <LogVisitDialog car={car} open={logOpen} onOpenChange={setLogOpen} />}
     </nav>
   );
 }
