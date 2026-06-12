@@ -85,7 +85,6 @@ export function EditVisitPage({ carId, logId }: { carId: string; logId: string }
 
   if (!car || !editedLog) return null;
 
-  const today = new Date().toISOString().slice(0, 10);
   const initialDate = (visit?.dateAtService ?? editedLog.dateAtService).slice(0, 10);
   const initialMileage = visit?.mileageAtService ?? editedLog.mileageAtService;
 
