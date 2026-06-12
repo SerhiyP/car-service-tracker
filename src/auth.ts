@@ -11,7 +11,11 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     signIn({ account, profile }) {
       // Email match grants access to the existing account — require a
       // Google-verified address so an unverified mailbox can't claim it.
-      return account?.provider === "google" && profile?.email_verified === true;
+      return (
+        account?.provider === "google" &&
+        profile?.email_verified === true &&
+        !!profile.email
+      );
     },
     async jwt({ token, account, profile }) {
       if (account?.provider === "google" && profile?.email) {
