@@ -28,8 +28,8 @@ Run all four before considering any change done.
   (`actionErrorKey` in `src/lib/action-feedback.ts`).
 - **Server actions** (`src/actions/`): `actionClient` for public,
   `authActionClient` for authenticated (injects `ctx.userId`). Actions with
-  structured outcomes return **discriminated status unions** (see
-  `verifyEmailAction`) rather than throwing, so data travels with the result.
+  structured outcomes return **discriminated status unions** rather than
+  throwing, so data travels with the result.
 - **Repositories** (`src/lib/repositories/`): thin, untested wrappers over the
   mongodb driver; ObjectId↔string conversion at the boundary; all queries
   scoped by `userId` (data isolation) — never trust a client-supplied id
@@ -56,7 +56,7 @@ Run all four before considering any change done.
   `.env.local`).
 - Dates in business logic use **UTC accessors** (see `addMonths` in
   `src/lib/maintenance.ts`) — local-time accessors caused TZ bugs.
-- Component tests follow `src/components/auth/verify-form.test.tsx`: real
+- Component tests follow `src/components/account/delete-account-dialog.test.tsx`: real
   `NextIntlClientProvider` + en catalog, `vi.hoisted` for anything captured by
   `vi.mock` factories, mocked `useAction` driving `onSuccess`/`onError`.
 
