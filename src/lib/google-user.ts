@@ -15,6 +15,7 @@ export async function resolveGoogleUserId(email: string, name: string): Promise<
     if (e instanceof MongoServerError && e.code === 11000) {
       const winner = await findUserByEmail(email);
       if (winner) return winner._id.toHexString();
+      throw new Error(`duplicate-key insert but re-read found no user for ${email}`);
     }
     throw e;
   }

@@ -43,6 +43,16 @@ describe("resolveGoogleUserId", () => {
     await expect(resolveGoogleUserId("a@b.co", "A")).resolves.toBe(_id.toHexString());
   });
 
+  it("throws a diagnosable error when the race re-read finds nothing", async () => {
+    findUserByEmail.mockResolvedValue(null);
+    const dup = new MongoServerError({ message: "E11000 duplicate key" });
+    dup.code = 11000;
+    createGoogleUser.mockRejectedValue(dup);
+    await expect(resolveGoogleUserId("a@b.co", "A")).rejects.toThrow(
+      "duplicate-key insert but re-read found no user",
+    );
+  });
+
   it("propagates other DB errors", async () => {
     findUserByEmail.mockResolvedValue(null);
     createGoogleUser.mockRejectedValue(new Error("db down"));
