@@ -58,7 +58,7 @@ beforeEach(() => {
 describe("CarDetail", () => {
   it("selects the viewed car in the garage store", () => {
     render(
-      <NextIntlClientProvider locale="en" messages={en}>
+      <NextIntlClientProvider locale="en" timeZone="UTC" messages={en}>
         <CarDetail carId={carB.id} />
       </NextIntlClientProvider>,
     );
@@ -67,7 +67,7 @@ describe("CarDetail", () => {
 
   it("does not select an unknown car id", () => {
     render(
-      <NextIntlClientProvider locale="en" messages={en}>
+      <NextIntlClientProvider locale="en" timeZone="UTC" messages={en}>
         <CarDetail carId="000000000000000000000000" />
       </NextIntlClientProvider>,
     );
@@ -81,7 +81,7 @@ describe("CarDetail", () => {
       ],
     });
     render(
-      <NextIntlClientProvider locale="en" messages={en}>
+      <NextIntlClientProvider locale="en" timeZone="UTC" messages={en}>
         <CarDetail carId={carB.id} />
       </NextIntlClientProvider>,
     );
@@ -108,7 +108,7 @@ describe("CarDetail", () => {
       ),
     });
     render(
-      <NextIntlClientProvider locale="en" messages={en}>
+      <NextIntlClientProvider locale="en" timeZone="UTC" messages={en}>
         <CarDetail carId={carB.id} />
       </NextIntlClientProvider>,
     );
@@ -120,7 +120,7 @@ describe("CarDetail", () => {
 
   it("disables Log services when the car has no rules", () => {
     render(
-      <NextIntlClientProvider locale="en" messages={en}>
+      <NextIntlClientProvider locale="en" timeZone="UTC" messages={en}>
         <CarDetail carId={carB.id} />
       </NextIntlClientProvider>,
     );
@@ -130,7 +130,7 @@ describe("CarDetail", () => {
   it("shows skeleton while isServerSyncing and hides car content", () => {
     useGarageStore.setState({ isServerSyncing: true });
     render(
-      <NextIntlClientProvider locale="en" messages={en}>
+      <NextIntlClientProvider locale="en" timeZone="UTC" messages={en}>
         <CarDetail carId={carB.id} />
       </NextIntlClientProvider>,
     );

@@ -20,7 +20,7 @@ afterEach(() => {
 
 function renderForm(error = false) {
   return render(
-    <NextIntlClientProvider locale="en" messages={en}>
+    <NextIntlClientProvider locale="en" timeZone="UTC" messages={en}>
       <LoginForm error={error} />
     </NextIntlClientProvider>,
   );

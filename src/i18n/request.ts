@@ -11,6 +11,9 @@ export default getRequestConfig(async () => {
 
   return {
     locale,
+    // Business logic uses UTC date accessors; format in UTC too so server
+    // and client render identical markup regardless of environment TZ.
+    timeZone: "UTC",
     messages: (await import(`../messages/${locale}.json`)).default,
   };
 });

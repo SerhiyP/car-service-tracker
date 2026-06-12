@@ -8,7 +8,7 @@ afterEach(cleanup);
 
 function renderCard(props: Parameters<typeof StatusCard>[0]) {
   return render(
-    <NextIntlClientProvider locale="en" messages={en}>
+    <NextIntlClientProvider locale="en" timeZone="UTC" messages={en}>
       <StatusCard {...props} />
     </NextIntlClientProvider>,
   );

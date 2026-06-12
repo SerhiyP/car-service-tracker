@@ -13,7 +13,7 @@ vi.mock("@/actions/cars", () => ({
 
 function renderList() {
   return render(
-    <NextIntlClientProvider locale="en" messages={en}>
+    <NextIntlClientProvider locale="en" timeZone="UTC" messages={en}>
       <CarList />
     </NextIntlClientProvider>,
   );
