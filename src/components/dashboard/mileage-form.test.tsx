@@ -8,7 +8,7 @@ afterEach(cleanup);
 
 function renderForm(onSubmit: (mileage: number) => Promise<boolean>) {
   const { container } = render(
-    <NextIntlClientProvider locale="en" messages={en}>
+    <NextIntlClientProvider locale="en" timeZone="UTC" messages={en}>
       <MileageForm currentMileage={120000} onSubmit={onSubmit} />
     </NextIntlClientProvider>,
   );
@@ -77,14 +77,14 @@ describe("MileageForm", () => {
   it("resets the expanded input when currentMileage changes externally", () => {
     const onSubmit = vi.fn().mockResolvedValue(true);
     const { rerender, container } = render(
-      <NextIntlClientProvider locale="en" messages={en}>
+      <NextIntlClientProvider locale="en" timeZone="UTC" messages={en}>
         <MileageForm currentMileage={120000} onSubmit={onSubmit} />
       </NextIntlClientProvider>,
     );
     const view = within(container);
     expand(view);
     rerender(
-      <NextIntlClientProvider locale="en" messages={en}>
+      <NextIntlClientProvider locale="en" timeZone="UTC" messages={en}>
         <MileageForm currentMileage={125000} onSubmit={onSubmit} />
       </NextIntlClientProvider>,
     );

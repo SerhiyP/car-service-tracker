@@ -28,7 +28,7 @@ beforeEach(() => {
 
 function openDialog() {
   render(
-    <NextIntlClientProvider locale="en" messages={en}>
+    <NextIntlClientProvider locale="en" timeZone="UTC" messages={en}>
       <DeleteAccountDialog />
     </NextIntlClientProvider>,
   );

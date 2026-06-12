@@ -27,7 +27,7 @@ beforeEach(() => {
 
 function renderDialog() {
   render(
-    <NextIntlClientProvider locale="en" messages={en}>
+    <NextIntlClientProvider locale="en" timeZone="UTC" messages={en}>
       <StandardRulesDialog carId={carId} trigger={<button>open</button>} />
     </NextIntlClientProvider>,
   );

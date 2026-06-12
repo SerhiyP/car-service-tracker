@@ -54,7 +54,7 @@ beforeEach(() => {
 
 function renderDashboard() {
   render(
-    <NextIntlClientProvider locale="en" messages={en}>
+    <NextIntlClientProvider locale="en" timeZone="UTC" messages={en}>
       <Dashboard />
     </NextIntlClientProvider>,
   );
