@@ -38,6 +38,7 @@ beforeEach(() => {
     visits: [],
     selectedCarId: carId,
     hasHydrated: true,
+    isServerSyncing: false,
   });
 });
 

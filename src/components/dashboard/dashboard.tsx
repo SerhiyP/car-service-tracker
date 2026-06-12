@@ -12,6 +12,8 @@ import {
   latestLogFor,
 } from "@/lib/maintenance";
 import { useGarageStore } from "@/stores/garage";
+
+const { cars: INIT_CARS, rules: INIT_RULES, logs: INIT_LOGS } = useGarageStore.getInitialState();
 import { Skeleton } from "@/components/ui/skeleton";
 import { CarSwitcher } from "./car-switcher";
 import { MileageForm } from "./mileage-form";
@@ -21,9 +23,11 @@ export function Dashboard() {
   const t = useTranslations("dashboard");
   const tRoot = useTranslations();
   const router = useRouter();
-  const store = useGarageStore();
-  const { cars, rules, logs, selectedCarId, isServerSyncing } = store;
-
+  const isServerSyncing = useGarageStore((s) => s.isServerSyncing);
+  const selectedCarId = useGarageStore((s) => (s.isServerSyncing ? null : s.selectedCarId));
+  const cars = useGarageStore((s) => (s.isServerSyncing ? INIT_CARS : s.cars));
+  const rules = useGarageStore((s) => (s.isServerSyncing ? INIT_RULES : s.rules));
+  const logs = useGarageStore((s) => (s.isServerSyncing ? INIT_LOGS : s.logs));
   if (isServerSyncing) {
     return (
       <div className="space-y-3">
@@ -59,10 +63,10 @@ export function Dashboard() {
   async function handleMileage(mileage: number) {
     if (!car) return false;
     const previous = car.currentMileage;
-    store.setCarMileage(car.id, mileage);
+    useGarageStore.getState().setCarMileage(car.id, mileage);
     const result = await updateCarMileageAction({ carId: car.id, mileage });
     if (!result?.data) {
-      store.setCarMileage(car.id, previous);
+      useGarageStore.getState().setCarMileage(car.id, previous);
       const errorKey = actionErrorKey(result);
       if (errorKey) toast.error(tRoot(errorKey));
       return false;

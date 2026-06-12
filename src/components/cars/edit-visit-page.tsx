@@ -16,10 +16,15 @@ export function EditVisitPage({ carId, logId }: { carId: string; logId: string }
   const router = useRouter();
   const [busy, setBusy] = useState(false);
   const store = useGarageStore();
-  const car = useGarageStore((s) => s.cars).find((c) => c.id === carId) ?? null;
-  const editedLog = useGarageStore((s) => s.logs).find((l) => l.id === logId) ?? null;
+  // isServerSyncing is not persisted — same on server and client initially.
+  // GarageProvider sets it to false after the first server sync.
+  const isServerSyncing = useGarageStore((s) => s.isServerSyncing);
+  const allCars = useGarageStore((s) => s.cars);
+  const allLogs = useGarageStore((s) => s.logs);
+  const car = isServerSyncing ? null : (allCars.find((c) => c.id === carId) ?? null);
+  const editedLog = isServerSyncing ? null : (allLogs.find((l) => l.id === logId) ?? null);
   const visit = useGarageStore((s) => s.visits).find((v) => v.id === editedLog?.visitId) ?? null;
-  const currentComponents = useGarageStore((s) => s.logs)
+  const currentComponents = allLogs
     .filter((l) => editedLog?.visitId != null && l.visitId === editedLog.visitId)
     .map((l) => l.componentName);
   if (currentComponents.length === 0 && editedLog) {
@@ -34,8 +39,10 @@ export function EditVisitPage({ carId, logId }: { carId: string; logId: string }
   ];
 
   useEffect(() => {
-    if (!car || !editedLog || editedLog.carId !== carId) router.replace("/");
-  }, [car, editedLog, carId, router]);
+    if (!isServerSyncing && (!car || !editedLog || editedLog.carId !== carId)) {
+      router.replace("/");
+    }
+  }, [isServerSyncing, car, editedLog, carId, router]);
 
   function goBack() {
     router.back();
@@ -79,7 +86,7 @@ export function EditVisitPage({ carId, logId }: { carId: string; logId: string }
     }
   }
 
-  if (!car || !editedLog || editedLog.carId !== carId) return null;
+  if (isServerSyncing || !car || !editedLog || editedLog.carId !== carId) return null;
 
   const initialDate = (visit?.dateAtService ?? editedLog.dateAtService).slice(0, 10);
   const initialMileage = visit?.mileageAtService ?? editedLog.mileageAtService;

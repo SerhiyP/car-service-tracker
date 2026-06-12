@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { toast } from "sonner";
 import { ArrowLeft } from "lucide-react";
@@ -11,20 +11,30 @@ import { useGarageStore } from "@/stores/garage";
 import { Button } from "@/components/ui/button";
 import { VisitForm } from "./visit-form";
 
-export function LogVisitPage({ carId }: { carId: string }) {
+export function LogVisitPage({
+  carId,
+  preselectedComponent,
+}: {
+  carId: string;
+  preselectedComponent: string | null;
+}) {
   const t = useTranslations();
   const router = useRouter();
-  const searchParams = useSearchParams();
   const [busy, setBusy] = useState(false);
   const store = useGarageStore();
-  const car = useGarageStore((s) => s.cars).find((c) => c.id === carId) ?? null;
+  // isServerSyncing is not persisted, so it starts as `true` on both server and client.
+  // GarageProvider sets it to `false` in a useEffect after the first server sync.
+  // This is the established hydration-safe gate used by Dashboard and CarDetail.
+  const isServerSyncing = useGarageStore((s) => s.isServerSyncing);
+  const cars = useGarageStore((s) => s.cars);
   const ruleNames = useGarageStore((s) => s.rules)
     .filter((r) => r.carId === carId)
     .map((r) => r.componentName);
+  const car = isServerSyncing ? null : (cars.find((c) => c.id === carId) ?? null);
 
   useEffect(() => {
-    if (!car) router.replace("/");
-  }, [car, router]);
+    if (!isServerSyncing && !car) router.replace("/");
+  }, [isServerSyncing, car, router]);
 
   function goBack() {
     router.back();
@@ -62,9 +72,8 @@ export function LogVisitPage({ carId }: { carId: string }) {
     }
   }
 
-  if (!car) return null;
+  if (isServerSyncing || !car) return null;
 
-  const preselectedComponent = searchParams.get("component");
   const today = new Date().toISOString().slice(0, 10);
 
   return (
