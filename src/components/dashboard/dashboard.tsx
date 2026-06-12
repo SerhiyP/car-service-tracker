@@ -1,8 +1,8 @@
 "use client";
 
-import { useState } from "react";
 import Link from "next/link";
 import { useTranslations } from "next-intl";
+import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { actionErrorKey } from "@/lib/action-feedback";
 import { updateCarMileageAction } from "@/actions/cars";
@@ -14,16 +14,15 @@ import {
 import { useGarageStore } from "@/stores/garage";
 import { Skeleton } from "@/components/ui/skeleton";
 import { CarSwitcher } from "./car-switcher";
-import { LogVisitDialog } from "@/components/cars/log-visit-dialog";
 import { MileageForm } from "./mileage-form";
 import { StatusCard } from "./status-card";
 
 export function Dashboard() {
   const t = useTranslations("dashboard");
   const tRoot = useTranslations();
+  const router = useRouter();
   const store = useGarageStore();
   const { cars, rules, logs, selectedCarId, isServerSyncing } = store;
-  const [logComponent, setLogComponent] = useState<string | null>(null);
 
   if (isServerSyncing) {
     return (
@@ -108,7 +107,11 @@ export function Dashboard() {
                 componentName={rule.componentName}
                 info={info}
                 lastService={last}
-                onLogService={() => setLogComponent(rule.componentName)}
+                onLogService={() =>
+                  router.push(
+                    `/cars/${car.id}/log-visit?component=${encodeURIComponent(rule.componentName)}`,
+                  )
+                }
               />
             ))}
           {hiddenCount > 0 && (
@@ -120,13 +123,6 @@ export function Dashboard() {
           )}
         </div>
       )}
-
-      <LogVisitDialog
-        car={car}
-        preselectedComponent={logComponent}
-        open={logComponent !== null}
-        onOpenChange={(open) => !open && setLogComponent(null)}
-      />
     </div>
   );
 }
