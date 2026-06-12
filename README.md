@@ -17,8 +17,8 @@ Offline read access, MongoDB Atlas sync, multi-user, multi-vehicle, EN/UK.
   done at once, with a shared date/mileage and an optional total cost (₴).
   Visits are editable afterwards (services, date, mileage, cost); logging or
   editing at a higher mileage auto-raises the car's mileage.
-- **Email verification** — registration requires confirming a 6-digit emailed
-  code before login works.
+- **Google sign-in** — authentication is Google-only; an account is created
+  on first sign-in and matched by email afterwards.
 - **Account deletion** — danger zone on the Garage page; typed-word
   confirmation, cascades to all user data.
 - **Offline** — read-only access to last-synced data (Serwist app shell +
@@ -28,7 +28,7 @@ Offline read access, MongoDB Atlas sync, multi-user, multi-vehicle, EN/UK.
 ## Tech stack
 
 Next.js 16 (App Router, React 19), TypeScript, MongoDB Atlas (native driver),
-Auth.js v5 (Credentials, rolling JWT sessions), Zod v4 + next-safe-action,
+Auth.js v5 (Google, rolling JWT sessions), Zod v4 + next-safe-action,
 Zustand (persist + optimistic updates), Tailwind v4 + shadcn/ui (Base UI),
 next-intl, Serwist, Vitest.
 
@@ -38,20 +38,20 @@ next-intl, Serwist, Vitest.
    - `MONGODB_URI_CAR` — MongoDB Atlas connection string
    - `MONGODB_DB` — database name (default `car_service_tracker`)
    - `AUTH_SECRET` — `openssl rand -base64 32`
-   - `BREVO_API_KEY` — Brevo API key (app.brevo.com → SMTP & API → API Keys)
-   - `EMAIL_FROM` — sender address verified in Brevo
-   - `EMAIL_FROM_NAME` — display name for the sender (e.g. `Car Service Tracker`)
+   - `AUTH_GOOGLE_ID` / `AUTH_GOOGLE_SECRET` — Google OAuth client
+     (console.cloud.google.com → APIs & Services → Credentials; add
+     `http://localhost:3000/api/auth/callback/google` and your production
+     `https://<domain>/api/auth/callback/google` as authorized redirect URIs)
 2. `npm install`
 3. `npm run dev`
 
 When deploying (e.g. Vercel), set the same environment variables.
 
-## Email verification
+## Authentication
 
-Registration emails a 6-digit code (15-minute expiry, 5 attempts, 60s resend
-cooldown) via [Brevo](https://www.brevo.com). Login is blocked until the email
-is verified. Accounts created before this feature verify through the same flow:
-log in → "Verify now" → resend code.
+Sign-in is Google-only (Auth.js v5, JWT sessions). On first sign-in a user
+record is created; subsequent sign-ins match it by email, so accounts that
+existed before the switch keep their data.
 
 ## Scripts
 
