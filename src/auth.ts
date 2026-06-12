@@ -1,26 +1,23 @@
 import NextAuth from "next-auth";
-import Credentials from "next-auth/providers/credentials";
-import bcrypt from "bcryptjs";
-import { loginSchema } from "@/lib/schemas/auth";
-import { findUserByEmail } from "@/lib/repositories/users";
+import Google from "next-auth/providers/google";
 import { authConfig } from "@/auth.config";
+import { resolveGoogleUserId } from "@/lib/google-user";
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
   ...authConfig,
-  providers: [
-    Credentials({
-      credentials: { email: {}, password: {} },
-      async authorize(credentials) {
-        const parsed = loginSchema.safeParse(credentials);
-        if (!parsed.success) return null;
-        const user = await findUserByEmail(parsed.data.email);
-        if (!user?.passwordHash) return null;
-        const valid = await bcrypt.compare(parsed.data.password, user.passwordHash);
-        if (!valid) return null;
-        // Unverified (and legacy pre-verification) accounts cannot sign in.
-        if (!user.emailVerified) return null;
-        return { id: user._id.toHexString(), email: user.email, name: user.name };
-      },
-    }),
-  ],
+  providers: [Google],
+  callbacks: {
+    ...authConfig.callbacks,
+    signIn({ account, profile }) {
+      // Email match grants access to the existing account — require a
+      // Google-verified address so an unverified mailbox can't claim it.
+      return account?.provider === "google" && profile?.email_verified === true;
+    },
+    async jwt({ token, account, profile }) {
+      if (account?.provider === "google" && profile?.email) {
+        token.id = await resolveGoogleUserId(profile.email, profile.name ?? profile.email);
+      }
+      return token;
+    },
+  },
 });
