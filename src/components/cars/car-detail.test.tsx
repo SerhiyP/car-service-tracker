@@ -6,10 +6,14 @@ import { useGarageStore } from "@/stores/garage";
 
 // vi.mock factories are hoisted above imports — anything they capture
 // must come from vi.hoisted, or it is "accessed before initialization".
-const { actions } = vi.hoisted(() => ({
+const { actions, routerPush } = vi.hoisted(() => ({
   actions: { rule: vi.fn(), log: vi.fn(), visit: vi.fn() },
+  routerPush: vi.fn(),
 }));
 
+vi.mock("next/navigation", () => ({
+  useRouter: () => ({ push: routerPush }),
+}));
 vi.mock("@/actions/rules", () => ({
   createRuleAction: actions.rule,
   updateRuleAction: actions.rule,
