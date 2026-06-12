@@ -55,7 +55,9 @@
     "resetPassword": "Встановити новий пароль",
     "resetEmailSubject": "Код відновлення пароля Car Service Tracker",
     "resetEmailBody": "Ваш код відновлення пароля: {code}. Він діє 15 хвилин.",
-    "resetNowLogin": "Пароль оновлено — увійдіть"
+    "resetNowLogin": "Пароль оновлено — увійдіть",
+    "continueWithGoogle": "Увійти через Google",
+    "googleSignInFailed": "Не вдалося увійти через Google. Спробуйте ще раз."
   },
   "account": {
     "deleteAccount": "Видалити обліковий запис",

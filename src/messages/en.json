@@ -55,7 +55,9 @@
     "resetPassword": "Set new password",
     "resetEmailSubject": "Your Car Service Tracker password reset code",
     "resetEmailBody": "Your password reset code is {code}. It expires in 15 minutes.",
-    "resetNowLogin": "Password updated — please sign in"
+    "resetNowLogin": "Password updated — please sign in",
+    "continueWithGoogle": "Continue with Google",
+    "googleSignInFailed": "Google sign-in failed. Please try again."
   },
   "account": {
     "deleteAccount": "Delete account",

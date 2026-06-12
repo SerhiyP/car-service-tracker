@@ -3,8 +3,8 @@ import { LoginForm } from "@/components/auth/login-form";
 export default async function LoginPage({
   searchParams,
 }: {
-  searchParams: Promise<{ verified?: string; reset?: string }>;
+  searchParams: Promise<{ error?: string }>;
 }) {
-  const { verified, reset } = await searchParams;
-  return <LoginForm verified={verified === "1"} reset={reset === "1"} />;
+  const { error } = await searchParams;
+  return <LoginForm error={Boolean(error)} />;
 }

@@ -192,3 +192,8 @@ export const deleteAccountAction = authActionClient.action(async ({ ctx }) => {
 export async function logoutAction() {
   await signOut({ redirectTo: "/login" });
 }
+
+export async function loginWithGoogleAction() {
+  // Throws NEXT_REDIRECT into the Google consent flow.
+  await signIn("google", { redirectTo: "/" });
+}
