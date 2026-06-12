@@ -34,15 +34,11 @@ export function EditVisitPage({ carId, logId }: { carId: string; logId: string }
   ];
 
   useEffect(() => {
-    if (!car || !editedLog) router.replace("/");
-  }, [car, editedLog, router]);
+    if (!car || !editedLog || editedLog.carId !== carId) router.replace("/");
+  }, [car, editedLog, carId, router]);
 
   function goBack() {
-    if (typeof window !== "undefined" && window.history.length > 1) {
-      router.back();
-    } else {
-      router.push("/");
-    }
+    router.back();
   }
 
   async function handleSubmit(values: {
@@ -83,7 +79,7 @@ export function EditVisitPage({ carId, logId }: { carId: string; logId: string }
     }
   }
 
-  if (!car || !editedLog) return null;
+  if (!car || !editedLog || editedLog.carId !== carId) return null;
 
   const initialDate = (visit?.dateAtService ?? editedLog.dateAtService).slice(0, 10);
   const initialMileage = visit?.mileageAtService ?? editedLog.mileageAtService;

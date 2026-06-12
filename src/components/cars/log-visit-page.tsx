@@ -27,11 +27,7 @@ export function LogVisitPage({ carId }: { carId: string }) {
   }, [car, router]);
 
   function goBack() {
-    if (typeof window !== "undefined" && window.history.length > 1) {
-      router.back();
-    } else {
-      router.push("/");
-    }
+    router.back();
   }
 
   async function handleSubmit(values: {
