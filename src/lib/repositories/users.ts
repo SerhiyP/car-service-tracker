@@ -6,7 +6,7 @@ export interface UserDoc {
   _id: ObjectId;
   email: string;
   name: string;
-  passwordHash: string;
+  passwordHash?: string; // legacy credentials accounts; removed in cleanup task
   emailVerified?: Date | null; // absent on legacy accounts = unverified
 }
 
@@ -26,6 +26,17 @@ export async function createUser(input: {
     email: input.email.toLowerCase(),
     passwordHash: input.passwordHash,
     emailVerified: null,
+  });
+  return result.insertedId.toHexString();
+}
+
+export async function createGoogleUser(input: {
+  email: string;
+  name: string;
+}): Promise<string> {
+  const result = await users().insertOne({
+    name: input.name,
+    email: input.email.toLowerCase(),
   });
   return result.insertedId.toHexString();
 }

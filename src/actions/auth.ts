@@ -113,7 +113,7 @@ export const loginAction = actionClient
         // authorize() failed — classify so the form can offer verification.
         const user = await findUserByEmail(parsedInput.email);
         if (
-          user &&
+          user?.passwordHash &&
           !user.emailVerified &&
           (await bcrypt.compare(parsedInput.password, user.passwordHash))
         ) {

@@ -14,7 +14,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         const parsed = loginSchema.safeParse(credentials);
         if (!parsed.success) return null;
         const user = await findUserByEmail(parsed.data.email);
-        if (!user) return null;
+        if (!user?.passwordHash) return null;
         const valid = await bcrypt.compare(parsed.data.password, user.passwordHash);
         if (!valid) return null;
         // Unverified (and legacy pre-verification) accounts cannot sign in.
