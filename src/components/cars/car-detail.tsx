@@ -8,9 +8,12 @@ import { RuleList } from "./rule-list";
 import { ServiceHistory } from "./service-history";
 
 export function CarDetail({ carId }: { carId: string }) {
-  const car = useGarageStore((s) => s.cars).find((c) => c.id === carId);
-  const selectCar = useGarageStore((s) => s.selectCar);
   const isServerSyncing = useGarageStore((s) => s.isServerSyncing);
+  // isServerSyncing is not persisted, so it is true on the server and during
+  // hydration — the selector returns undefined until GarageProvider's first
+  // sync, keeping the first client render identical to the server HTML.
+  const car = useGarageStore((s) => (s.isServerSyncing ? undefined : s.cars.find((c) => c.id === carId)));
+  const selectCar = useGarageStore((s) => s.selectCar);
   const carExists = car !== undefined;
 
   // Viewing a car makes it the selected car so the bottom nav's Car/Log

@@ -8,6 +8,10 @@ import { deleteCarAction } from "@/actions/cars";
 import { actionErrorKey } from "@/lib/action-feedback";
 import { computeMaintenance } from "@/lib/maintenance";
 import { useGarageStore } from "@/stores/garage";
+
+// Stable references from the initial store config — same objects on every call,
+// so selectors that return them don't trigger useSyncExternalStore infinite loops.
+const { cars: INIT_CARS, rules: INIT_RULES, logs: INIT_LOGS } = useGarageStore.getInitialState();
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -17,25 +21,23 @@ import { CarFormDialog } from "./car-form-dialog";
 export function CarList() {
   const t = useTranslations();
   const format = useFormatter();
-  const cars = useGarageStore((s) => s.cars);
-  const rules = useGarageStore((s) => s.rules);
-  const logs = useGarageStore((s) => s.logs);
+  // isServerSyncing is not persisted, so it is true on the server and during
+  // hydration even when persisted data is already in the store — the selectors
+  // return [] until GarageProvider's first sync, matching the server HTML.
   const isServerSyncing = useGarageStore((s) => s.isServerSyncing);
-  const store = useGarageStore();
+  const cars = useGarageStore((s) => (s.isServerSyncing ? INIT_CARS : s.cars));
+  const rules = useGarageStore((s) => (s.isServerSyncing ? INIT_RULES : s.rules));
+  const logs = useGarageStore((s) => (s.isServerSyncing ? INIT_LOGS : s.logs));
+  const removeCar = useGarageStore((s) => s.removeCar);
 
   async function handleDelete(carId: string) {
     if (!window.confirm(t("garage.deleteCarConfirm"))) return;
-    const snapshot = {
-      cars: store.cars,
-      rules: store.rules,
-      logs: store.logs,
-      selectedCarId: store.selectedCarId,
-    };
-    store.removeCar(carId);
+    const { cars: prevCars, rules: prevRules, logs: prevLogs, selectedCarId } = useGarageStore.getState();
+    removeCar(carId);
     const result = await deleteCarAction({ carId });
     const errorKey = actionErrorKey(result);
     if (errorKey) {
-      useGarageStore.setState(snapshot);
+      useGarageStore.setState({ cars: prevCars, rules: prevRules, logs: prevLogs, selectedCarId });
       toast.error(t(errorKey));
     }
   }

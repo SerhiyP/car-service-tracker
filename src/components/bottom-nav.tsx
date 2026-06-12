@@ -1,6 +1,5 @@
 "use client";
 
-import { useSyncExternalStore } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
@@ -13,6 +12,10 @@ import {
 } from "lucide-react";
 import { useGarageStore } from "@/stores/garage";
 import { cn } from "@/lib/utils";
+
+// Stable references from the initial store config — same objects on every call,
+// so selectors that return them don't trigger useSyncExternalStore infinite loops.
+const { cars: INIT_CARS, rules: INIT_RULES } = useGarageStore.getInitialState();
 
 function itemClasses(active: boolean) {
   return cn(
@@ -38,20 +41,14 @@ export function BottomNav() {
   const t = useTranslations("nav");
   const pathname = usePathname();
   const router = useRouter();
-  // The persisted store rehydrates synchronously on the client, so without
-  // this gate the first client render (cars present) would not match the
-  // server HTML (no cars) and hydration would fail.
-  // useSyncExternalStore returns the serverSnapshot on the server / first
-  // hydration pass and switches to the clientSnapshot only after mount.
-  const mounted = useSyncExternalStore(
-    () => () => {},
-    () => true,
-    () => false,
-  );
-  const cars = useGarageStore((s) => s.cars);
-  const rules = useGarageStore((s) => s.rules);
-  const selectedCarId = useGarageStore((s) => s.selectedCarId);
-  const car = mounted ? (cars.find((c) => c.id === selectedCarId) ?? null) : null;
+  // isServerSyncing is not persisted, so it is true on the server and during
+  // hydration even when persisted cars are already in the store — these
+  // selectors return the initial values until GarageProvider's first sync,
+  // keeping the first client render identical to the server HTML.
+  const cars = useGarageStore((s) => (s.isServerSyncing ? INIT_CARS : s.cars));
+  const rules = useGarageStore((s) => (s.isServerSyncing ? INIT_RULES : s.rules));
+  const selectedCarId = useGarageStore((s) => (s.isServerSyncing ? null : s.selectedCarId));
+  const car = cars.find((c) => c.id === selectedCarId) ?? null;
   const hasRules = car !== null && rules.some((r) => r.carId === car.id);
 
   const dashboardActive = pathname === "/";
