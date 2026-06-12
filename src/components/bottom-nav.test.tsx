@@ -1,4 +1,4 @@
-import { act, cleanup, fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { cleanup, fireEvent, render, screen } from "@testing-library/react";
 import { NextIntlClientProvider } from "next-intl";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import en from "@/messages/en.json";
@@ -6,16 +6,14 @@ import { useGarageStore } from "@/stores/garage";
 
 // vi.mock factories are hoisted above imports — anything they capture
 // must come from vi.hoisted, or it is "accessed before initialization".
-const { pathnameMock, createVisit } = vi.hoisted(() => ({
+const { pathnameMock, routerPush } = vi.hoisted(() => ({
   pathnameMock: vi.fn(() => "/"),
-  createVisit: vi.fn(),
+  routerPush: vi.fn(),
 }));
 
 vi.mock("next/navigation", () => ({
   usePathname: pathnameMock,
-}));
-vi.mock("@/actions/visits", () => ({
-  createVisitAction: createVisit,
+  useRouter: () => ({ push: routerPush }),
 }));
 
 import { BottomNav } from "./bottom-nav";
@@ -32,6 +30,7 @@ const rule = { id: "r1", carId, componentName: "Engine oil", intervalKm: 10000 }
 afterEach(cleanup);
 beforeEach(() => {
   pathnameMock.mockReturnValue("/");
+  routerPush.mockReset();
   useGarageStore.setState({
     cars: [car],
     rules: [rule],
@@ -39,6 +38,7 @@ beforeEach(() => {
     visits: [],
     selectedCarId: carId,
     hasHydrated: true,
+    isServerSyncing: false,
   });
 });
 
@@ -62,11 +62,10 @@ describe("BottomNav", () => {
     expect(screen.getByRole("link", { name: "Garage" })).toHaveAttribute("href", "/cars");
   });
 
-  it("opens the log visit dialog for the selected car", () => {
+  it("navigates to the log-visit page for the selected car", () => {
     renderNav();
     fireEvent.click(screen.getByRole("button", { name: "Service" }));
-    expect(screen.getByText("Log services")).toBeInTheDocument();
-    expect(screen.getByRole("checkbox", { name: "Engine oil" })).toBeInTheDocument();
+    expect(routerPush).toHaveBeenCalledWith(`/cars/${carId}/log-visit`);
   });
 
   it("disables Log when the selected car has no rules", () => {
@@ -103,19 +102,15 @@ describe("BottomNav", () => {
     );
   });
 
-  it("closes the log dialog when the selected car changes", async () => {
+  it("navigates to the log-visit page of the newly selected car", () => {
+    const otherId = "65f1a2b3c4d5e6f7a8b9c0d2";
+    useGarageStore.setState((s) => ({
+      cars: [...s.cars, { ...car, id: otherId, name: "Golf" }],
+      rules: [...s.rules, { id: "r2", carId: otherId, componentName: "Engine oil", intervalKm: 10000 }],
+      selectedCarId: otherId,
+    }));
     renderNav();
     fireEvent.click(screen.getByRole("button", { name: "Service" }));
-    expect(screen.getByText("Log services")).toBeInTheDocument();
-    const otherId = "65f1a2b3c4d5e6f7a8b9c0d2";
-    act(() =>
-      useGarageStore.setState((s) => ({
-        cars: [...s.cars, { ...car, id: otherId, name: "Golf" }],
-        selectedCarId: otherId,
-      })),
-    );
-    await waitFor(() =>
-      expect(screen.queryByText("Log services")).not.toBeInTheDocument(),
-    );
+    expect(routerPush).toHaveBeenCalledWith(`/cars/${otherId}/log-visit`);
   });
 });

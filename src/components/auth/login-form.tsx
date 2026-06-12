@@ -78,8 +78,8 @@ export function LoginForm({ verified = false, reset = false }: { verified?: bool
           ) : result.serverError ? (
             <p className="text-sm text-destructive">{t(result.serverError)}</p>
           ) : null}
-          <Button type="submit" size="lg" className="w-full" disabled={isExecuting}>
-            {isExecuting ? t("common.loading") : t("auth.signIn")}
+          <Button type="submit" size="lg" className="w-full" loading={isExecuting}>
+            {t("auth.signIn")}
           </Button>
           <p className="text-center text-sm">
             <Link href="/register" className="underline">

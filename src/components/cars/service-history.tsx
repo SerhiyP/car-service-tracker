@@ -1,7 +1,7 @@
 "use client";
 
-import { useState } from "react";
 import { useFormatter, useTranslations } from "next-intl";
+import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { Pencil, Trash2 } from "lucide-react";
 import { deleteLogAction } from "@/actions/logs";
@@ -10,13 +10,11 @@ import { useGarageStore } from "@/stores/garage";
 import type { ServiceLog } from "@/lib/types";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { EditVisitDialog } from "./edit-visit-dialog";
 
 export function ServiceHistory({ carId }: { carId: string }) {
   const t = useTranslations();
   const format = useFormatter();
-  const [editing, setEditing] = useState<ServiceLog | null>(null);
-  const car = useGarageStore((s) => s.cars).find((c) => c.id === carId);
+  const router = useRouter();
   const visits = useGarageStore((s) => s.visits);
   const logs = useGarageStore((s) => s.logs)
     .filter((l) => l.carId === carId)
@@ -83,7 +81,7 @@ export function ServiceHistory({ carId }: { carId: string }) {
                   variant="ghost"
                   size="icon"
                   aria-label={t("common.edit")}
-                  onClick={() => setEditing(log)}
+                  onClick={() => router.push(`/cars/${carId}/edit-visit/${log.id}`)}
                 >
                   <Pencil className="size-4" />
                 </Button>
@@ -100,13 +98,6 @@ export function ServiceHistory({ carId }: { carId: string }) {
           </Card>
         );
       })}
-      {car && editing && (
-        <EditVisitDialog
-          car={car}
-          editedLog={editing}
-          onOpenChange={(open) => !open && setEditing(null)}
-        />
-      )}
     </div>
   );
 }

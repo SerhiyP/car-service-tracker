@@ -1,8 +1,8 @@
 "use client";
 
-import { useState } from "react";
 import Link from "next/link";
 import { useTranslations } from "next-intl";
+import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { actionErrorKey } from "@/lib/action-feedback";
 import { updateCarMileageAction } from "@/actions/cars";
@@ -12,20 +12,23 @@ import {
   latestLogFor,
 } from "@/lib/maintenance";
 import { useGarageStore } from "@/stores/garage";
+
+const { cars: INIT_CARS, rules: INIT_RULES, logs: INIT_LOGS } = useGarageStore.getInitialState();
 import { Skeleton } from "@/components/ui/skeleton";
 import { CarSwitcher } from "./car-switcher";
-import { LogVisitDialog } from "@/components/cars/log-visit-dialog";
 import { MileageForm } from "./mileage-form";
 import { StatusCard } from "./status-card";
 
 export function Dashboard() {
   const t = useTranslations("dashboard");
   const tRoot = useTranslations();
-  const store = useGarageStore();
-  const { cars, rules, logs, selectedCarId, hasHydrated } = store;
-  const [logComponent, setLogComponent] = useState<string | null>(null);
-
-  if (!hasHydrated) {
+  const router = useRouter();
+  const isServerSyncing = useGarageStore((s) => s.isServerSyncing);
+  const selectedCarId = useGarageStore((s) => (s.isServerSyncing ? null : s.selectedCarId));
+  const cars = useGarageStore((s) => (s.isServerSyncing ? INIT_CARS : s.cars));
+  const rules = useGarageStore((s) => (s.isServerSyncing ? INIT_RULES : s.rules));
+  const logs = useGarageStore((s) => (s.isServerSyncing ? INIT_LOGS : s.logs));
+  if (isServerSyncing) {
     return (
       <div className="space-y-3">
         <Skeleton className="h-16 w-full" />
@@ -60,10 +63,10 @@ export function Dashboard() {
   async function handleMileage(mileage: number) {
     if (!car) return false;
     const previous = car.currentMileage;
-    store.setCarMileage(car.id, mileage);
+    useGarageStore.getState().setCarMileage(car.id, mileage);
     const result = await updateCarMileageAction({ carId: car.id, mileage });
     if (!result?.data) {
-      store.setCarMileage(car.id, previous);
+      useGarageStore.getState().setCarMileage(car.id, previous);
       const errorKey = actionErrorKey(result);
       if (errorKey) toast.error(tRoot(errorKey));
       return false;
@@ -108,7 +111,11 @@ export function Dashboard() {
                 componentName={rule.componentName}
                 info={info}
                 lastService={last}
-                onLogService={() => setLogComponent(rule.componentName)}
+                onLogService={() =>
+                  router.push(
+                    `/cars/${car.id}/log-visit?component=${encodeURIComponent(rule.componentName)}`,
+                  )
+                }
               />
             ))}
           {hiddenCount > 0 && (
@@ -120,13 +127,6 @@ export function Dashboard() {
           )}
         </div>
       )}
-
-      <LogVisitDialog
-        car={car}
-        preselectedComponent={logComponent}
-        open={logComponent !== null}
-        onOpenChange={(open) => !open && setLogComponent(null)}
-      />
     </div>
   );
 }

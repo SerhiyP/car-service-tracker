@@ -80,7 +80,7 @@ export function MileageForm({
           }}
         />
       </div>
-      <Button type="submit" size="lg" disabled={busy}>
+      <Button type="submit" size="lg" loading={busy}>
         {t("dashboard.updateMileage")}
       </Button>
     </form>

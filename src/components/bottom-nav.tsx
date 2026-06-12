@@ -1,8 +1,7 @@
 "use client";
 
-import { useState, useSyncExternalStore } from "react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 import {
   CarFront,
@@ -12,8 +11,11 @@ import {
   type LucideIcon,
 } from "lucide-react";
 import { useGarageStore } from "@/stores/garage";
-import { LogVisitDialog } from "@/components/cars/log-visit-dialog";
 import { cn } from "@/lib/utils";
+
+// Stable references from the initial store config — same objects on every call,
+// so selectors that return them don't trigger useSyncExternalStore infinite loops.
+const { cars: INIT_CARS, rules: INIT_RULES } = useGarageStore.getInitialState();
 
 function itemClasses(active: boolean) {
   return cn(
@@ -38,31 +40,15 @@ function ItemIcon({ icon: Icon, active }: { icon: LucideIcon; active: boolean })
 export function BottomNav() {
   const t = useTranslations("nav");
   const pathname = usePathname();
-  const [logOpen, setLogOpen] = useState(false);
-  // The persisted store rehydrates synchronously on the client, so without
-  // this gate the first client render (cars present) would not match the
-  // server HTML (no cars) and hydration would fail.
-  // useSyncExternalStore returns the serverSnapshot on the server / first
-  // hydration pass and switches to the clientSnapshot only after mount.
-  const mounted = useSyncExternalStore(
-    () => () => {},
-    () => true,
-    () => false,
-  );
-  const cars = useGarageStore((s) => s.cars);
-  const rules = useGarageStore((s) => s.rules);
-  const selectedCarId = useGarageStore((s) => s.selectedCarId);
-  const car = mounted ? (cars.find((c) => c.id === selectedCarId) ?? null) : null;
-
-  // Selection changed out from under an open dialog (e.g. car deleted):
-  // close instead of silently retargeting the form to another car.
-  // Derived-state reset during render (React-recommended pattern) avoids an
-  // effect and the associated extra render cycle.
-  const [prevCarId, setPrevCarId] = useState(selectedCarId);
-  if (prevCarId !== selectedCarId) {
-    setPrevCarId(selectedCarId);
-    setLogOpen(false);
-  }
+  const router = useRouter();
+  // isServerSyncing is not persisted, so it is true on the server and during
+  // hydration even when persisted cars are already in the store — these
+  // selectors return the initial values until GarageProvider's first sync,
+  // keeping the first client render identical to the server HTML.
+  const cars = useGarageStore((s) => (s.isServerSyncing ? INIT_CARS : s.cars));
+  const rules = useGarageStore((s) => (s.isServerSyncing ? INIT_RULES : s.rules));
+  const selectedCarId = useGarageStore((s) => (s.isServerSyncing ? null : s.selectedCarId));
+  const car = cars.find((c) => c.id === selectedCarId) ?? null;
   const hasRules = car !== null && rules.some((r) => r.carId === car.id);
 
   const dashboardActive = pathname === "/";
@@ -83,7 +69,7 @@ export function BottomNav() {
         <button
           type="button"
           disabled={!hasRules}
-          onClick={() => setLogOpen(true)}
+          onClick={() => car && router.push(`/cars/${car.id}/log-visit`)}
           className={cn(itemClasses(false), "disabled:opacity-40")}
         >
           <ItemIcon icon={Wrench} active={false} />
@@ -113,7 +99,6 @@ export function BottomNav() {
           {t("garage")}
         </Link>
       </div>
-      {car && <LogVisitDialog car={car} open={logOpen} onOpenChange={setLogOpen} />}
     </nav>
   );
 }

@@ -6,10 +6,14 @@ import { useGarageStore } from "@/stores/garage";
 
 // vi.mock factories are hoisted above imports — anything they capture
 // must come from vi.hoisted, or it is "accessed before initialization".
-const { actions } = vi.hoisted(() => ({
+const { actions, routerPush } = vi.hoisted(() => ({
   actions: { rule: vi.fn(), log: vi.fn(), visit: vi.fn() },
+  routerPush: vi.fn(),
 }));
 
+vi.mock("next/navigation", () => ({
+  useRouter: () => ({ push: routerPush }),
+}));
 vi.mock("@/actions/rules", () => ({
   createRuleAction: actions.rule,
   updateRuleAction: actions.rule,
@@ -47,7 +51,7 @@ beforeEach(() => {
     logs: [],
     visits: [],
     selectedCarId: carA.id,
-    hasHydrated: true,
+    isServerSyncing: false,
   });
 });
 
@@ -121,5 +125,17 @@ describe("CarDetail", () => {
       </NextIntlClientProvider>,
     );
     expect(screen.getByRole("button", { name: /Log services/ })).toBeDisabled();
+  });
+
+  it("shows skeleton while isServerSyncing and hides car content", () => {
+    useGarageStore.setState({ isServerSyncing: true });
+    render(
+      <NextIntlClientProvider locale="en" messages={en}>
+        <CarDetail carId={carB.id} />
+      </NextIntlClientProvider>,
+    );
+    expect(document.querySelector("[data-slot='skeleton']")).toBeInTheDocument();
+    expect(screen.queryByText("Service history")).not.toBeInTheDocument();
+    expect(screen.queryByText("Maintenance rules")).not.toBeInTheDocument();
   });
 });

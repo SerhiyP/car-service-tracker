@@ -34,27 +34,20 @@ export function DeleteAccountDialog() {
     confirmText.trim().toLocaleLowerCase() === confirmWord.toLocaleLowerCase();
 
   return (
-    <section className="space-y-2 rounded-xl border border-destructive/40 p-4">
-      <h3 className="text-sm font-semibold text-destructive">
-        {t("account.dangerZone")}
-      </h3>
-      <Dialog
-        open={open}
-        onOpenChange={(v) => {
-          setOpen(v);
-          if (!v) setConfirmText("");
-        }}
-      >
-        <DialogTrigger
-          render={
-            <Button
-              variant="outline"
-              className="w-full border-destructive/40 text-destructive"
-            >
-              {t("account.deleteAccount")}
-            </Button>
-          }
-        />
+    <Dialog
+      open={open}
+      onOpenChange={(v) => {
+        setOpen(v);
+        if (!v) setConfirmText("");
+      }}
+    >
+      <DialogTrigger
+        render={
+          <Button variant="ghost" size="sm" className="text-xs text-muted-foreground">
+            {t("account.deleteAccount")}
+          </Button>
+        }
+      />
         <DialogContent>
           <DialogHeader>
             <DialogTitle>{t("account.deleteAccount")}</DialogTitle>
@@ -74,17 +67,17 @@ export function DeleteAccountDialog() {
           <Button
             variant="destructive"
             className="w-full"
-            disabled={!confirmed || isExecuting}
+            loading={isExecuting}
+            disabled={!confirmed}
             onClick={() => {
               // Purge the offline cache before the account disappears.
               useGarageStore.persist.clearStorage();
               execute();
             }}
           >
-            {isExecuting ? t("common.loading") : t("account.deleteAccount")}
+            {t("account.deleteAccount")}
           </Button>
         </DialogContent>
-      </Dialog>
-    </section>
+    </Dialog>
   );
 }

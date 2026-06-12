@@ -6,9 +6,9 @@
     "delete": "Delete",
     "edit": "Edit",
     "add": "Add",
-    "loading": "Loading…",
     "offline": "Offline",
-    "confirmDelete": "Are you sure? This cannot be undone."
+    "confirmDelete": "Are you sure? This cannot be undone.",
+    "back": "Back"
   },
   "nav": {
     "dashboard": "Dashboard",
@@ -58,7 +58,6 @@
     "resetNowLogin": "Password updated — please sign in"
   },
   "account": {
-    "dangerZone": "Danger zone",
     "deleteAccount": "Delete account",
     "deleteWarning": "This permanently deletes your account, cars, rules, and service history. This cannot be undone.",
     "deleteConfirmInstruction": "Type {word} to confirm",
@@ -93,7 +92,12 @@
     "deleteCarConfirm": "Delete this car and all its rules and history?",
     "details": "Details",
     "noCars": "No cars in your garage yet",
-    "noCarsHint": "Add your first car to start tracking maintenance"
+    "noCarsHint": "Add your first car to start tracking maintenance",
+    "rulesCount": "{count, plural, one {# rule} other {# rules}}",
+    "lastService": "Last: {date}",
+    "neverServiced": "Never serviced",
+    "overdueCount": "{count, plural, one {# item overdue} other {# items overdue}}",
+    "dueCount": "{count, plural, one {# item due soon} other {# items due soon}}"
   },
   "car": {
     "rules": "Maintenance rules",
