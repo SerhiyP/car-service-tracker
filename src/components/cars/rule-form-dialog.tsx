@@ -6,7 +6,8 @@ import { toast } from "sonner";
 import { createRuleAction, updateRuleAction } from "@/actions/rules";
 import { actionErrorKey } from "@/lib/action-feedback";
 import { useGarageStore } from "@/stores/garage";
-import type { MaintenanceRule } from "@/lib/types";
+import { iconByKey } from "@/lib/component-icons";
+import { COMPONENT_ICON_KEYS, type ComponentIconKey, type MaintenanceRule } from "@/lib/types";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -17,6 +18,13 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 export function RuleFormDialog({
   carId,
@@ -28,9 +36,11 @@ export function RuleFormDialog({
   trigger: React.ReactElement;
 }) {
   const t = useTranslations();
+  const tIcons = useTranslations("componentIcons");
   const [open, setOpen] = useState(false);
   const [busy, setBusy] = useState(false);
   const [intervalErrorKey, setIntervalErrorKey] = useState<string | null>(null);
+  const [icon, setIcon] = useState<ComponentIconKey | "auto">(rule?.icon ?? "auto");
   const { upsertRule } = useGarageStore();
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
@@ -54,13 +64,20 @@ export function RuleFormDialog({
       return;
     }
     setIntervalErrorKey(null);
+    const iconValue = icon === "auto" ? undefined : icon;
     setBusy(true);
 
     try {
       if (rule) {
         // Optimistic update with rollback
         const previous = rule;
-        const updated: MaintenanceRule = { ...rule, componentName, intervalKm, intervalMonths };
+        const updated: MaintenanceRule = {
+          ...rule,
+          componentName,
+          intervalKm,
+          intervalMonths,
+          icon: iconValue,
+        };
         upsertRule(updated);
         setOpen(false);
         const result = await updateRuleAction({
@@ -69,6 +86,7 @@ export function RuleFormDialog({
           componentName,
           intervalKm,
           intervalMonths,
+          icon: iconValue,
         });
         const errorKey = actionErrorKey(result);
         if (errorKey) {
@@ -82,6 +100,7 @@ export function RuleFormDialog({
           componentName,
           intervalKm,
           intervalMonths,
+          icon: iconValue,
         });
         const errorKey = actionErrorKey(result);
         if (errorKey) {
@@ -113,6 +132,28 @@ export function RuleFormDialog({
               required
               maxLength={100}
             />
+          </div>
+          <div className="space-y-2">
+            <Label>{t("car.icon")}</Label>
+            <Select value={icon} onValueChange={(v) => v && setIcon(v as ComponentIconKey | "auto")}>
+              <SelectTrigger className="w-full" aria-label={t("car.icon")}>
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="auto">{t("car.iconAuto")}</SelectItem>
+                {COMPONENT_ICON_KEYS.map((key) => {
+                  const Icon = iconByKey(key);
+                  return (
+                    <SelectItem key={key} value={key}>
+                      <span className="flex items-center gap-2">
+                        <Icon className="size-4" />
+                        {tIcons(key)}
+                      </span>
+                    </SelectItem>
+                  );
+                })}
+              </SelectContent>
+            </Select>
           </div>
           <div className="grid grid-cols-2 gap-3">
             <div className="space-y-2">
