@@ -5,30 +5,79 @@ import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { Pencil, Trash2 } from "lucide-react";
 import { deleteLogAction } from "@/actions/logs";
+import { deleteVisitAction } from "@/actions/visits";
 import { actionErrorKey } from "@/lib/action-feedback";
+import { resolveIcon } from "@/lib/component-icons";
 import { useGarageStore } from "@/stores/garage";
 import type { ServiceLog } from "@/lib/types";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
+
+type Entry = {
+  kind: "visit" | "legacy";
+  id: string;
+  date: string;
+  mileage: number;
+  totalCost: number | null;
+  logs: ServiceLog[];
+};
 
 export function ServiceHistory({ carId }: { carId: string }) {
   const t = useTranslations();
   const format = useFormatter();
   const router = useRouter();
   const visits = useGarageStore((s) => s.visits);
-  const logs = useGarageStore((s) => s.logs)
-    .filter((l) => l.carId === carId)
-    .sort((a, b) => b.dateAtService.localeCompare(a.dateAtService));
+  const rules = useGarageStore((s) => s.rules);
+  const allLogs = useGarageStore((s) => s.logs);
   const store = useGarageStore();
 
-  // The visit total renders once per visit, on its first (newest) row.
-  function visitTotalFor(log: ServiceLog, index: number): number | null {
-    if (!log.visitId) return null;
-    if (logs.findIndex((l) => l.visitId === log.visitId) !== index) return null;
-    return visits.find((v) => v.id === log.visitId)?.totalCost ?? null;
+  const carLogs = allLogs.filter((l) => l.carId === carId);
+
+  const entries: Entry[] = [];
+  for (const visit of visits.filter((v) => v.carId === carId)) {
+    const logs = carLogs.filter((l) => l.visitId === visit.id);
+    if (logs.length === 0) continue;
+    entries.push({
+      kind: "visit",
+      id: visit.id,
+      date: visit.dateAtService,
+      mileage: visit.mileageAtService,
+      totalCost: visit.totalCost ?? null,
+      logs,
+    });
+  }
+  for (const log of carLogs.filter((l) => !l.visitId)) {
+    entries.push({
+      kind: "legacy",
+      id: log.id,
+      date: log.dateAtService,
+      mileage: log.mileageAtService,
+      totalCost: null,
+      logs: [log],
+    });
+  }
+  entries.sort((a, b) => b.date.localeCompare(a.date));
+
+  function iconFor(log: ServiceLog) {
+    const rule = rules.find((r) => r.carId === carId && r.componentName === log.componentName);
+    return resolveIcon({ name: log.componentName, storedKey: rule?.icon });
   }
 
-  async function handleDelete(logId: string) {
+  async function handleDeleteVisit(visitId: string) {
+    if (!window.confirm(t("car.deleteVisitConfirm"))) return;
+    const snapshot = { visits: store.visits, logs: store.logs };
+    store.removeVisitAndLogs(visitId);
+    const result = await deleteVisitAction({ carId, visitId });
+    const errorKey = actionErrorKey(result);
+    if (errorKey) {
+      useGarageStore.setState(snapshot);
+      toast.error(t(errorKey));
+    } else {
+      toast.success(t("car.visitDeleted"));
+    }
+  }
+
+  async function handleDeleteLog(logId: string) {
     if (!window.confirm(t("car.deleteLogConfirm"))) return;
     const previous = store.logs;
     store.removeLog(logId);
@@ -44,28 +93,23 @@ export function ServiceHistory({ carId }: { carId: string }) {
 
   return (
     <div className="space-y-3">
-      <h3 className="text-sm font-medium text-muted-foreground">{t("car.history")}</h3>
-      {logs.length === 0 && (
+      {entries.length === 0 && (
         <p className="text-sm text-muted-foreground">{t("car.noLogs")}</p>
       )}
-      {logs.map((log, index) => {
-        const visitTotal = visitTotalFor(log, index);
-        return (
-          <Card key={log.id}>
-            <CardContent className="flex items-center justify-between">
+      {entries.map((entry) => (
+        <Card key={entry.id}>
+          <CardContent className="flex items-start justify-between">
+            <div className="space-y-2">
               <div>
-                <p className="font-medium">{log.componentName}</p>
-                <p className="text-sm text-muted-foreground">
-                  {format.dateTime(new Date(log.dateAtService), {
-                    dateStyle: "medium",
-                  })}
+                <p className="font-medium">
+                  {format.dateTime(new Date(entry.date), { dateStyle: "medium" })}
                   {" · "}
-                  {log.mileageAtService.toLocaleString()} km
+                  {entry.mileage.toLocaleString()} km
                 </p>
-                {visitTotal !== null && (
+                {entry.totalCost !== null && (
                   <p className="text-sm text-muted-foreground">
                     {t("car.visitTotal", {
-                      amount: format.number(visitTotal, {
+                      amount: format.number(entry.totalCost, {
                         style: "currency",
                         currency: "UAH",
                         currencyDisplay: "narrowSymbol",
@@ -76,28 +120,44 @@ export function ServiceHistory({ carId }: { carId: string }) {
                   </p>
                 )}
               </div>
-              <div className="flex gap-1">
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  aria-label={t("common.edit")}
-                  onClick={() => router.push(`/cars/${carId}/edit-visit/${log.id}`)}
-                >
-                  <Pencil className="size-4" />
-                </Button>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  aria-label={t("common.delete")}
-                  onClick={() => handleDelete(log.id)}
-                >
-                  <Trash2 className="size-4" />
-                </Button>
+              <div className="flex flex-wrap gap-2">
+                {entry.logs.map((log) => {
+                  const Icon = iconFor(log);
+                  return (
+                    <Icon
+                      key={log.id}
+                      className="size-5 text-muted-foreground"
+                      aria-label={log.componentName}
+                    />
+                  );
+                })}
               </div>
-            </CardContent>
-          </Card>
-        );
-      })}
+            </div>
+            <div className="flex gap-1">
+              <Button
+                variant="ghost"
+                size="icon"
+                aria-label={t("common.edit")}
+                onClick={() => router.push(`/cars/${carId}/edit-visit/${entry.logs[0].id}`)}
+              >
+                <Pencil className="size-4" />
+              </Button>
+              <Button
+                variant="ghost"
+                size="icon"
+                aria-label={t("common.delete")}
+                onClick={() =>
+                  entry.kind === "visit"
+                    ? handleDeleteVisit(entry.id)
+                    : handleDeleteLog(entry.id)
+                }
+              >
+                <Trash2 className="size-4" />
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
+      ))}
     </div>
   );
 }
