@@ -39,6 +39,24 @@ describe("rule schema", () => {
       ruleInputSchema.safeParse({ carId: oid, componentName: "Oil", intervalKm: 0 }).success,
     ).toBe(false);
   });
+  it("accepts a valid icon and rejects an unknown one", () => {
+    expect(
+      ruleInputSchema.safeParse({
+        carId: oid,
+        componentName: "Oil",
+        intervalKm: 10000,
+        icon: "oil",
+      }).success,
+    ).toBe(true);
+    expect(
+      ruleInputSchema.safeParse({
+        carId: oid,
+        componentName: "Oil",
+        intervalKm: 10000,
+        icon: "rocket",
+      }).success,
+    ).toBe(false);
+  });
 });
 
 describe("standard rules schema", () => {
