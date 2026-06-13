@@ -1,3 +1,20 @@
+export const COMPONENT_ICON_KEYS = [
+  "oil",
+  "filter",
+  "spark",
+  "brake",
+  "belt",
+  "coolant",
+  "transmission",
+  "battery",
+  "tire",
+  "light",
+  "fluid",
+  "wrench",
+] as const;
+
+export type ComponentIconKey = (typeof COMPONENT_ICON_KEYS)[number];
+
 export interface Car {
   id: string;
   name: string;
@@ -11,6 +28,8 @@ export interface MaintenanceRule {
   componentName: string;
   intervalKm?: number;
   intervalMonths?: number;
+  /** User-picked icon; when absent the icon is inferred from componentName. */
+  icon?: ComponentIconKey;
 }
 
 export interface ServiceLog {
