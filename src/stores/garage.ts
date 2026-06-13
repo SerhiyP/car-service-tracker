@@ -26,6 +26,7 @@ interface GarageState {
   removeLog: (logId: string) => void;
   addVisit: (visit: ServiceVisit) => void;
   removeVisit: (visitId: string) => void;
+  removeVisitAndLogs: (visitId: string) => void;
   applyVisitUpdate: (
     visit: ServiceVisit,
     visitLogs: ServiceLog[],
@@ -107,6 +108,12 @@ export const useGarageStore = create<GarageState>()(
 
       removeVisit: (visitId) =>
         set((s) => ({ visits: s.visits.filter((v) => v.id !== visitId) })),
+
+      removeVisitAndLogs: (visitId) =>
+        set((s) => ({
+          visits: s.visits.filter((v) => v.id !== visitId),
+          logs: s.logs.filter((l) => l.visitId !== visitId),
+        })),
 
       // Server result is authoritative for an edited visit: swap the visit in,
       // replace every log carrying its id, and drop a converted legacy log.

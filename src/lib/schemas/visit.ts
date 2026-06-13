@@ -32,3 +32,8 @@ export const visitUpdateSchema = z.object({
   ]),
   ...visitFields,
 });
+
+export const visitDeleteSchema = z.object({
+  carId: objectIdSchema,
+  visitId: objectIdSchema,
+});

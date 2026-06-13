@@ -95,6 +95,14 @@ export async function deleteLogsByVisitIdAndComponents(
   return result.deletedCount;
 }
 
+export async function deleteLogsByVisitId(visitId: string, carId: string): Promise<number> {
+  const result = await logs().deleteMany({
+    visitId: new ObjectId(visitId),
+    carId: new ObjectId(carId),
+  });
+  return result.deletedCount;
+}
+
 export async function updateLogsByVisitId(
   visitId: string,
   carId: string,

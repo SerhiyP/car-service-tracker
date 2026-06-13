@@ -1,12 +1,13 @@
 "use server";
 
 import { ActionError, authActionClient } from "@/lib/safe-action";
-import { visitInputSchema, visitUpdateSchema } from "@/lib/schemas/visit";
+import { visitDeleteSchema, visitInputSchema, visitUpdateSchema } from "@/lib/schemas/visit";
 import { getCar, setCarMileage } from "@/lib/repositories/cars";
 import { listRulesByCarIds } from "@/lib/repositories/rules";
 import {
   createLogs,
   deleteLog,
+  deleteLogsByVisitId,
   deleteLogsByVisitIdAndComponents,
   getLog,
   listLogsByVisitId,
@@ -152,4 +153,15 @@ export const updateVisitAction = authActionClient
     }
 
     return { visit, logs, newCarMileage };
+  });
+
+export const deleteVisitAction = authActionClient
+  .inputSchema(visitDeleteSchema)
+  .action(async ({ parsedInput, ctx }) => {
+    const { carId, visitId } = parsedInput;
+    if (!(await getCar(ctx.userId, carId))) throw new ActionError("errors.notFound");
+    if (!(await getVisit(visitId, carId))) throw new ActionError("errors.notFound");
+    await deleteLogsByVisitId(visitId, carId);
+    await deleteVisit(visitId, carId);
+    return { ok: true };
   });

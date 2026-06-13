@@ -106,6 +106,24 @@ describe("garage store", () => {
     expect(useGarageStore.getState().visits).toEqual([visit]);
   });
 
+  it("removeVisitAndLogs drops the visit and all its logs, leaving others", () => {
+    useGarageStore.setState({
+      visits: [
+        { id: "v1", carId: "c1", mileageAtService: 100, dateAtService: "2026-01-01T00:00:00.000Z" },
+        { id: "v2", carId: "c1", mileageAtService: 200, dateAtService: "2026-02-01T00:00:00.000Z" },
+      ],
+      logs: [
+        { id: "l1", carId: "c1", componentName: "Oil", mileageAtService: 100, dateAtService: "2026-01-01T00:00:00.000Z", visitId: "v1" },
+        { id: "l2", carId: "c1", componentName: "Air filter", mileageAtService: 100, dateAtService: "2026-01-01T00:00:00.000Z", visitId: "v1" },
+        { id: "l3", carId: "c1", componentName: "Battery", mileageAtService: 200, dateAtService: "2026-02-01T00:00:00.000Z", visitId: "v2" },
+      ],
+    });
+    useGarageStore.getState().removeVisitAndLogs("v1");
+    const s = useGarageStore.getState();
+    expect(s.visits.map((v) => v.id)).toEqual(["v2"]);
+    expect(s.logs.map((l) => l.id)).toEqual(["l3"]);
+  });
+
   it("isServerSyncing starts true and setIsServerSyncing clears it", () => {
     useGarageStore.setState(useGarageStore.getInitialState());
     expect(useGarageStore.getState().isServerSyncing).toBe(true);
