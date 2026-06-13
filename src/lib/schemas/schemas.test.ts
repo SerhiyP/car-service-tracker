@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { carInputSchema, mileageUpdateSchema } from "./car";
 import { ruleInputSchema, standardRulesInputSchema } from "./rule";
-import { visitInputSchema, visitUpdateSchema } from "./visit";
+import { visitDeleteSchema, visitInputSchema, visitUpdateSchema } from "./visit";
 
 const oid = "65f1a2b3c4d5e6f7a8b9c0d1";
 
@@ -37,6 +37,24 @@ describe("rule schema", () => {
   it("rejects non-positive intervals", () => {
     expect(
       ruleInputSchema.safeParse({ carId: oid, componentName: "Oil", intervalKm: 0 }).success,
+    ).toBe(false);
+  });
+  it("accepts a valid icon and rejects an unknown one", () => {
+    expect(
+      ruleInputSchema.safeParse({
+        carId: oid,
+        componentName: "Oil",
+        intervalKm: 10000,
+        icon: "oil",
+      }).success,
+    ).toBe(true);
+    expect(
+      ruleInputSchema.safeParse({
+        carId: oid,
+        componentName: "Oil",
+        intervalKm: 10000,
+        icon: "rocket",
+      }).success,
     ).toBe(false);
   });
 });
@@ -93,6 +111,14 @@ describe("visit schema", () => {
     const future = new Date(Date.now() + 7 * 86_400_000).toISOString();
     expect(visitInputSchema.safeParse({ ...valid, dateAtService: future }).success).toBe(false);
     expect(visitInputSchema.safeParse({ ...valid, carId: "short" }).success).toBe(false);
+  });
+});
+
+describe("visit delete schema", () => {
+  it("accepts a valid carId + visitId and rejects malformed ids", () => {
+    expect(visitDeleteSchema.safeParse({ carId: oid, visitId: oid }).success).toBe(true);
+    expect(visitDeleteSchema.safeParse({ carId: oid, visitId: "short" }).success).toBe(false);
+    expect(visitDeleteSchema.safeParse({ carId: oid }).success).toBe(false);
   });
 });
 

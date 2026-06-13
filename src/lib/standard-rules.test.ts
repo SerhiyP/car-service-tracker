@@ -45,8 +45,8 @@ describe("resolveStandardRules", () => {
   it("maps selected keys to rule inputs with translated names", () => {
     const result = resolveStandardRules(["engineOil", "battery"], [], t);
     expect(result).toEqual([
-      { componentName: "name:engineOil", intervalKm: 10_000, intervalMonths: 12 },
-      { componentName: "name:battery", intervalMonths: 60 },
+      { componentName: "name:engineOil", intervalKm: 10_000, intervalMonths: 12, icon: "oil" },
+      { componentName: "name:battery", intervalMonths: 60, icon: "battery" },
     ]);
   });
 
@@ -57,7 +57,7 @@ describe("resolveStandardRules", () => {
       t,
     );
     expect(result).toEqual([
-      { componentName: "name:airFilter", intervalKm: 30_000, intervalMonths: 24 },
+      { componentName: "name:airFilter", intervalKm: 30_000, intervalMonths: 24, icon: "filter" },
     ]);
   });
 

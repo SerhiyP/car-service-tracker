@@ -1,4 +1,4 @@
-import { cleanup, render, screen } from "@testing-library/react";
+import { cleanup, fireEvent, render, screen } from "@testing-library/react";
 import { NextIntlClientProvider } from "next-intl";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import en from "@/messages/en.json";
@@ -74,7 +74,7 @@ describe("CarDetail", () => {
     expect(useGarageStore.getState().selectedCarId).toBe(carA.id);
   });
 
-  it("shows the action buttons above the history and rules sections", () => {
+  it("shows History by default and reveals Rules when its tab is selected", () => {
     useGarageStore.setState({
       rules: [
         { id: "r1", carId: carB.id, componentName: "Engine oil", intervalKm: 10000 },
@@ -87,13 +87,11 @@ describe("CarDetail", () => {
     );
     expect(screen.getByRole("button", { name: /Log services/ })).toBeEnabled();
     expect(screen.getByRole("button", { name: /Add rule/ })).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: /Add standard rules/ })).toBeInTheDocument();
-    // History section precedes the rules section in the DOM.
-    const history = screen.getByText("Service history");
-    const rules = screen.getByText("Maintenance rules");
-    expect(
-      history.compareDocumentPosition(rules) & Node.DOCUMENT_POSITION_FOLLOWING,
-    ).toBeTruthy();
+    const historyTab = screen.getByRole("button", { name: "Service history" });
+    expect(historyTab).toHaveAttribute("aria-pressed", "true");
+    expect(screen.queryByText("Engine oil")).not.toBeInTheDocument();
+    fireEvent.click(screen.getByRole("button", { name: "Maintenance rules" }));
+    expect(screen.getByText("Engine oil")).toBeInTheDocument();
   });
 
   it("hides Add standard rules once the car has more than 3 rules", () => {

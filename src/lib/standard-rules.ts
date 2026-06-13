@@ -1,3 +1,5 @@
+import type { ComponentIconKey } from "@/lib/types";
+
 export const STANDARD_RULE_KEYS = [
   "engineOil",
   "airFilter",
@@ -21,30 +23,32 @@ export interface StandardRule {
   key: StandardRuleKey;
   intervalKm?: number;
   intervalMonths?: number;
+  icon: ComponentIconKey;
 }
 
 /** Conservative defaults; users edit the created rules like any other rule. */
 export const STANDARD_RULES: readonly StandardRule[] = [
-  { key: "engineOil", intervalKm: 10_000, intervalMonths: 12 },
-  { key: "airFilter", intervalKm: 30_000, intervalMonths: 24 },
-  { key: "cabinFilter", intervalKm: 15_000, intervalMonths: 12 },
-  { key: "fuelFilter", intervalKm: 30_000 },
-  { key: "sparkPlugs", intervalKm: 60_000 },
-  { key: "brakePadsFront", intervalKm: 40_000 },
-  { key: "brakePadsRear", intervalKm: 60_000 },
-  { key: "brakeDiscsFront", intervalKm: 80_000 },
-  { key: "brakeDiscsRear", intervalKm: 100_000 },
-  { key: "brakeFluid", intervalKm: 40_000, intervalMonths: 24 },
-  { key: "timingBelt", intervalKm: 90_000, intervalMonths: 60 },
-  { key: "coolant", intervalKm: 60_000, intervalMonths: 48 },
-  { key: "transmissionOil", intervalKm: 60_000 },
-  { key: "battery", intervalMonths: 60 },
+  { key: "engineOil", intervalKm: 10_000, intervalMonths: 12, icon: "oil" },
+  { key: "airFilter", intervalKm: 30_000, intervalMonths: 24, icon: "filter" },
+  { key: "cabinFilter", intervalKm: 15_000, intervalMonths: 12, icon: "filter" },
+  { key: "fuelFilter", intervalKm: 30_000, icon: "filter" },
+  { key: "sparkPlugs", intervalKm: 60_000, icon: "spark" },
+  { key: "brakePadsFront", intervalKm: 40_000, icon: "brake" },
+  { key: "brakePadsRear", intervalKm: 60_000, icon: "brake" },
+  { key: "brakeDiscsFront", intervalKm: 80_000, icon: "brake" },
+  { key: "brakeDiscsRear", intervalKm: 100_000, icon: "brake" },
+  { key: "brakeFluid", intervalKm: 40_000, intervalMonths: 24, icon: "fluid" },
+  { key: "timingBelt", intervalKm: 90_000, intervalMonths: 60, icon: "belt" },
+  { key: "coolant", intervalKm: 60_000, intervalMonths: 48, icon: "coolant" },
+  { key: "transmissionOil", intervalKm: 60_000, icon: "transmission" },
+  { key: "battery", intervalMonths: 60, icon: "battery" },
 ];
 
 export interface StandardRuleResolved {
   componentName: string;
   intervalKm?: number;
   intervalMonths?: number;
+  icon?: ComponentIconKey;
 }
 
 /**
@@ -64,5 +68,6 @@ export function resolveStandardRules(
     componentName: t(r.key),
     ...(r.intervalKm !== undefined && { intervalKm: r.intervalKm }),
     ...(r.intervalMonths !== undefined && { intervalMonths: r.intervalMonths }),
+    icon: r.icon,
   }));
 }

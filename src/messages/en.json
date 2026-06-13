@@ -93,7 +93,25 @@
     "visitTotal": "Visit total: {amount}",
     "editVisit": "Edit service entry",
     "saveVisit": "Save changes ({count})",
-    "visitUpdated": "Entry updated"
+    "visitUpdated": "Entry updated",
+    "icon": "Icon",
+    "iconAuto": "Auto (from name)",
+    "deleteVisitConfirm": "Delete this visit and all its services?",
+    "visitDeleted": "Visit deleted"
+  },
+  "componentIcons": {
+    "oil": "Oil",
+    "filter": "Filter",
+    "spark": "Spark plugs",
+    "brake": "Brakes",
+    "belt": "Belt",
+    "coolant": "Coolant",
+    "transmission": "Transmission",
+    "battery": "Battery",
+    "tire": "Tires",
+    "light": "Lights",
+    "fluid": "Fluid",
+    "wrench": "Other"
   },
   "standardRules": {
     "engineOil": "Engine oil & oil filter",

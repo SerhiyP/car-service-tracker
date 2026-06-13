@@ -29,7 +29,6 @@ export function RuleList({ carId }: { carId: string }) {
 
   return (
     <div className="space-y-3">
-      <h3 className="text-sm font-medium text-muted-foreground">{t("car.rules")}</h3>
       {rules.length === 0 && (
         <div className="flex flex-col items-center gap-1 py-8 text-center">
           <Wrench className="mb-2 size-10 text-muted-foreground/40" aria-hidden="true" />
