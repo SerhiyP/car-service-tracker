@@ -93,7 +93,25 @@
     "visitTotal": "Разом за візит: {amount}",
     "editVisit": "Редагувати запис",
     "saveVisit": "Зберегти зміни ({count})",
-    "visitUpdated": "Запис оновлено"
+    "visitUpdated": "Запис оновлено",
+    "icon": "Іконка",
+    "iconAuto": "Авто (за назвою)",
+    "deleteVisitConfirm": "Видалити цей запис і всі його роботи?",
+    "visitDeleted": "Запис видалено"
+  },
+  "componentIcons": {
+    "oil": "Олива",
+    "filter": "Фільтр",
+    "spark": "Свічки",
+    "brake": "Гальма",
+    "belt": "Ремінь",
+    "coolant": "Антифриз",
+    "transmission": "Трансмісія",
+    "battery": "Акумулятор",
+    "tire": "Шини",
+    "light": "Світло",
+    "fluid": "Рідина",
+    "wrench": "Інше"
   },
   "standardRules": {
     "engineOil": "Моторна олива та масляний фільтр",
