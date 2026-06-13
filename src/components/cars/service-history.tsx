@@ -126,6 +126,7 @@ export function ServiceHistory({ carId }: { carId: string }) {
                   return (
                     <Icon
                       key={log.id}
+                      role="img"
                       className="size-5 text-muted-foreground"
                       aria-label={log.componentName}
                     />
